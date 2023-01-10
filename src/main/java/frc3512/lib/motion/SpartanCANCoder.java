@@ -3,7 +3,6 @@ package frc3512.lib.motion;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.CANCoderSimCollection;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import frc3512.lib.util.CANCoderUtil;
@@ -14,7 +13,6 @@ public class SpartanCANCoder {
 
   private CANCoder cancoder;
   private CANCoderConfiguration config;
-  private CANCoderSimCollection sim;
 
   boolean inverted;
 
@@ -28,7 +26,6 @@ public class SpartanCANCoder {
     this.inverted = invert;
     cancoder = new CANCoder(id);
     config = new CANCoderConfiguration();
-    sim = cancoder.getSimCollection();
     buildConfig();
     configEncoder();
   }
@@ -44,7 +41,6 @@ public class SpartanCANCoder {
     this.inverted = invert;
     cancoder = new CANCoder(id, canivore);
     config = new CANCoderConfiguration();
-    sim = cancoder.getSimCollection();
     buildConfig();
     configEncoder();
   }
@@ -60,10 +56,6 @@ public class SpartanCANCoder {
     config.sensorDirection = inverted;
     config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
     config.sensorTimeBase = SensorTimeBase.PerSecond;
-  }
-
-  public void addSimulatedPosition(double position) {
-    sim.addPosition((int) position);
   }
 
   public double getPosition() {

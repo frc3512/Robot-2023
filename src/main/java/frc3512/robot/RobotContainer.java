@@ -17,7 +17,8 @@ public class RobotContainer {
   private Swerve m_swerve = new Swerve();
 
   // Xbox controllers
-  private final CommandXboxController driver = new CommandXboxController(Constants.OperatorConstants.xboxController1Port);
+  private final CommandXboxController driver =
+      new CommandXboxController(Constants.OperatorConstants.xboxController1Port);
 
   // Drive Controls
   private final int translationAxis = XboxController.Axis.kLeftY.value;
