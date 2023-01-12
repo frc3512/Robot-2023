@@ -132,8 +132,6 @@ public class Swerve extends SubsystemBase {
         Constants.SwerveConstants.swerveKinematics.toChassisSpeeds(getStates());
     yawSim += chassisSpeeds.omegaRadiansPerSecond * 0.02;
 
-    System.out.println("Yaw Sim value: " + yawSim);
-
-    gyroSim.setRawHeading(-Units.radiansToDegrees(yawSim));
+    gyroSim.setRawHeading(-Units.radiansToDegrees(yawSim) - getYaw().getDegrees());
   }
 }
