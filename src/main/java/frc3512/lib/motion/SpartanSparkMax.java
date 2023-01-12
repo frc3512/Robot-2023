@@ -4,8 +4,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc3512.lib.util.CANSparkMaxUtil;
 import frc3512.lib.util.CANSparkMaxUtil.Usage;
 
@@ -17,6 +21,12 @@ public class SpartanSparkMax {
   private CANSparkMax motor;
   private RelativeEncoder encoder;
   private SparkMaxPIDController controller;
+
+  private double simPosition;
+  private double simVelocity;
+  private double currentAngle;
+  private double simTurnAngle;
+  private double simAngleDiff;
 
   boolean inverted;
   Usage usage;
@@ -37,10 +47,39 @@ public class SpartanSparkMax {
     motor.restoreFactoryDefaults();
     CANSparkMaxUtil.setCANSparkMaxBusUsage(motor, usage);
     motor.setInverted(invert);
+
+    REVPhysicsSim.getInstance().addSparkMax(motor, DCMotor.getNEO(1));
   }
 
   public void setPosition(double position) {
     encoder.setPosition(position);
+  }
+
+  public void setCurrentAngle(double angle) {
+    currentAngle = angle;
+  }
+
+  public void updateSimVelocity(SwerveModuleState state) {
+    simVelocity = state.speedMetersPerSecond;
+    double distance = simVelocity / 50.0;
+
+    simPosition += distance;
+  }
+
+  public void updateSimPosition(double angle) {
+    if (angle != currentAngle && simTurnAngle == 0) {
+      simAngleDiff = angle - currentAngle;
+      simTurnAngle = simAngleDiff / 20.0;
+    }
+
+    if (simTurnAngle != 0) {
+      currentAngle = simTurnAngle;
+
+      if ((Math.abs(angle - currentAngle)) < .1) {
+        currentAngle = angle;
+        simTurnAngle = 0;
+      }
+    }
   }
 
   public void setVelocityConverstionFactor(double factor) {
@@ -114,10 +153,26 @@ public class SpartanSparkMax {
   }
 
   public double getVelocity() {
-    return encoder.getVelocity();
+    if (RobotBase.isReal()) {
+      return encoder.getVelocity();
+    } else {
+      return simVelocity;
+    }
   }
 
   public double getPosition() {
-    return encoder.getPosition();
+    if (RobotBase.isReal()) {
+      return encoder.getPosition();
+    } else {
+      return simPosition;
+    }
+  }
+
+  public double getAngle() {
+    if (RobotBase.isReal()) {
+      return encoder.getPosition();
+    } else {
+      return currentAngle;
+    }
   }
 }
