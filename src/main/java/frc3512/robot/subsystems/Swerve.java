@@ -3,7 +3,6 @@ package frc3512.robot.subsystems;
 import com.ctre.phoenix.sensors.BasePigeonSimCollection;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.revrobotics.REVPhysicsSim;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
