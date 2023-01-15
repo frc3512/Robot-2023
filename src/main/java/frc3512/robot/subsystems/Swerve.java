@@ -1,6 +1,7 @@
 package frc3512.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +20,7 @@ import frc3512.robot.Constants;
 
 public class Swerve extends SubsystemBase {
   private final Pigeon2 gyro;
+  private final Vision vision;
 
   private SwerveDrivePoseEstimator swervePoseEstimator;
   private SwerveModule[] mSwerveMods;
@@ -26,11 +29,15 @@ public class Swerve extends SubsystemBase {
   private final SpartanDoubleEntry gyroYaw;
   private final SpartanPose2dEntry odometryPose;
 
+  public PIDController controller = new PIDController(0.1, 0.0, 0.0);
+
   /** Subsystem class for the swerve drive. */
-  public Swerve() {
+  public Swerve(Vision vision) {
+    this.vision = vision;
     gyro = new Pigeon2(Constants.SwerveConstants.pigeonID);
     gyro.configFactoryDefault();
     zeroGyro();
+    controller.setTolerance(4.5);
 
     mSwerveMods =
         new SwerveModule[] {
@@ -97,8 +104,18 @@ public class Swerve extends SubsystemBase {
     return positions;
   }
 
+  public double getDistanceFromTarget(Pose2d targetPose) {
+    return vision.getRange(getPose(), targetPose);
+  }
+
   public void zeroGyro() {
     gyro.setYaw(0);
+  }
+
+  public void stop() {
+    for (SwerveModule mod : mSwerveMods) {
+      mod.stop();
+    }
   }
 
   public Rotation2d getYaw() {
@@ -110,10 +127,22 @@ public class Swerve extends SubsystemBase {
   @Override
   public void periodic() {
     swervePoseEstimator.update(getYaw(), getPositions());
-    for (SwerveModule mod : mSwerveMods) {
-      mod.periodic();
+
+    if (RobotBase.isReal() && vision.hasTargets()) {
+      var camPose = vision.estimateGlobalPose(getPose());
+
+      if (camPose.get() != null) {
+        swervePoseEstimator.addVisionMeasurement(
+            camPose.get().estimatedPose.toPose2d(), camPose.get().timestampSeconds);
+      }
     }
+
     field.setRobotPose(getPose());
+
+    mSwerveMods[0].periodic();
+    mSwerveMods[1].periodic();
+    mSwerveMods[2].periodic();
+    mSwerveMods[3].periodic();
     gyroYaw.set(getYaw().getDegrees());
     odometryPose.set(getPose());
   }

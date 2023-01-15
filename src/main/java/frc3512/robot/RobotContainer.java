@@ -8,13 +8,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc3512.robot.commands.TeleopSwerve;
 import frc3512.robot.subsystems.Swerve;
+import frc3512.robot.subsystems.Vision;
 
 public class RobotContainer {
   // Auton Chooser
   private final SendableChooser<Command> m_autonChooser = new SendableChooser<Command>();
 
   // Robot subsystems
-  private Swerve m_swerve = new Swerve();
+  private Vision m_vision = new Vision();
+  private Swerve m_swerve = new Swerve(m_vision);
 
   // Xbox controllers
   private final CommandXboxController driver =
@@ -45,7 +47,7 @@ public class RobotContainer {
             m_swerve,
             () -> -driver.getRawAxis(translationAxis),
             () -> -driver.getRawAxis(strafeAxis),
-            () -> -driver.getRawAxis(rotationAxis),
+            () -> driver.getRawAxis(rotationAxis),
             () -> driver.rightStick().getAsBoolean()));
   }
 
