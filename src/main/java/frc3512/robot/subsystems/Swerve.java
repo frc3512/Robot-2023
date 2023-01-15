@@ -1,7 +1,7 @@
 package frc3512.robot.subsystems;
 
 import com.ctre.phoenix.sensors.BasePigeonSimCollection;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -23,9 +23,9 @@ import frc3512.lib.logging.SpartanPose2dEntry;
 import frc3512.robot.Constants;
 
 public class Swerve extends SubsystemBase {
-  private final WPI_Pigeon2 gyro;
-  private final BasePigeonSimCollection gyroSim;
-  double yawSim = 0.0;
+  private final Pigeon2 gyro;
+  private double yawSim = 0.0;
+  private BasePigeonSimCollection gyroSim;
 
   private final Vision vision;
 
@@ -41,7 +41,7 @@ public class Swerve extends SubsystemBase {
   /** Subsystem class for the swerve drive. */
   public Swerve(Vision vision) {
     this.vision = vision;
-    gyro = new WPI_Pigeon2(Constants.SwerveConstants.pigeonID);
+    gyro = new Pigeon2(Constants.SwerveConstants.pigeonID);
     gyroSim = gyro.getSimCollection();
     gyro.configFactoryDefault();
     zeroGyro();
