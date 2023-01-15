@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.lib.motion.SpartanCANCoder;
 import frc3512.lib.motion.SpartanSparkMax;
@@ -129,10 +130,15 @@ public class SwerveModule {
 
     angleMotor.performPositionControl(angle.getDegrees());
     lastAngle = angle;
+
+    if (RobotBase.isSimulation()) {
+      driveMotor.updateSimVelocity(desiredState);
+      angleMotor.setCurrentAngle(angle.getDegrees());
+    }
   }
 
   private Rotation2d getAngle() {
-    return Rotation2d.fromDegrees(angleMotor.getPosition());
+    return Rotation2d.fromDegrees(angleMotor.getAngle());
   }
 
   public Rotation2d getCanCoder() {
