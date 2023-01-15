@@ -1,6 +1,9 @@
 package frc3512.robot.subsystems;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.BasePigeonSimCollection;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.revrobotics.REVPhysicsSim;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -10,6 +13,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +23,10 @@ import frc3512.lib.logging.SpartanPose2dEntry;
 import frc3512.robot.Constants;
 
 public class Swerve extends SubsystemBase {
-  private final Pigeon2 gyro;
+  private final WPI_Pigeon2 gyro;
+  private final BasePigeonSimCollection gyroSim;
+  double yawSim = 0.0;
+
   private final Vision vision;
 
   private SwerveDrivePoseEstimator swervePoseEstimator;
@@ -34,7 +41,8 @@ public class Swerve extends SubsystemBase {
   /** Subsystem class for the swerve drive. */
   public Swerve(Vision vision) {
     this.vision = vision;
-    gyro = new Pigeon2(Constants.SwerveConstants.pigeonID);
+    gyro = new WPI_Pigeon2(Constants.SwerveConstants.pigeonID);
+    gyroSim = gyro.getSimCollection();
     gyro.configFactoryDefault();
     zeroGyro();
     controller.setTolerance(4.5);
@@ -145,5 +153,16 @@ public class Swerve extends SubsystemBase {
     mSwerveMods[3].periodic();
     gyroYaw.set(getYaw().getDegrees());
     odometryPose.set(getPose());
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    REVPhysicsSim.getInstance().run();
+
+    ChassisSpeeds chassisSpeeds =
+        Constants.SwerveConstants.swerveKinematics.toChassisSpeeds(getStates());
+    yawSim += chassisSpeeds.omegaRadiansPerSecond * 0.02;
+
+    gyroSim.setRawHeading(-Units.radiansToDegrees(yawSim) - getYaw().getDegrees());
   }
 }
