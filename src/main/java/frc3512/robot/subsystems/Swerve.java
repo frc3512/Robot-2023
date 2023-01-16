@@ -3,6 +3,7 @@ package frc3512.robot.subsystems;
 import com.ctre.phoenix.sensors.BasePigeonSimCollection;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.revrobotics.REVPhysicsSim;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,6 +26,8 @@ public class Swerve extends SubsystemBase {
   private final BasePigeonSimCollection gyroSim;
   double yawSim = 0.0;
 
+  private final Vision vision;
+
   private SwerveDrivePoseEstimator swervePoseEstimator;
   private SwerveModule[] mSwerveMods;
 
@@ -31,12 +35,18 @@ public class Swerve extends SubsystemBase {
   private final SpartanDoubleEntry gyroYaw;
   private final SpartanPose2dEntry odometryPose;
 
+  public PIDController controller = new PIDController(0.1, 0.0, 0.0);
+
   /** Subsystem class for the swerve drive. */
-  public Swerve() {
+  public Swerve(Vision vision) {
+    this.vision = vision;
+
     gyro = new WPI_Pigeon2(Constants.SwerveConstants.pigeonID);
     gyroSim = gyro.getSimCollection();
     gyro.configFactoryDefault();
     zeroGyro();
+
+    controller.setTolerance(4.5);
 
     mSwerveMods =
         new SwerveModule[] {
@@ -113,13 +123,29 @@ public class Swerve extends SubsystemBase {
         : Rotation2d.fromDegrees(gyro.getYaw());
   }
 
+  public double getDistanceFromTarget(Pose2d targetPose) {
+    return vision.getRange(getPose(), targetPose);
+  }
+
   @Override
   public void periodic() {
-    swervePoseEstimator.update(getYaw(), getPositions());
-    for (SwerveModule mod : mSwerveMods) {
-      mod.periodic();
+    if (RobotBase.isReal()) {
+      var camPose = vision.estimateGlobalPose(getPose());
+
+      if (camPose.get() != null) {
+        var pose = camPose.get().estimatedPose.toPose2d();
+        var timestamp = camPose.get().timestampSeconds;
+        swervePoseEstimator.addVisionMeasurement(pose, timestamp);
+      }
     }
+
+    swervePoseEstimator.update(getYaw(), getPositions());
     field.setRobotPose(getPose());
+
+    mSwerveMods[0].periodic();
+    mSwerveMods[1].periodic();
+    mSwerveMods[2].periodic();
+    mSwerveMods[3].periodic();
     gyroYaw.set(getYaw().getDegrees());
     odometryPose.set(getPose());
   }
