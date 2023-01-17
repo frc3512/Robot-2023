@@ -125,15 +125,18 @@ public class Swerve extends SubsystemBase {
     swervePoseEstimator.update(getYaw(), getPositions());
 
     if (RobotBase.isReal()) {
-      var camPose = vision.estimateGlobalPose(getPose());
+      if (vision.hasTargets()) {
+        var camPose = vision.estimateGlobalPose(getPose());
 
-      if (camPose != null && vision.hasTargets()) {
-        var pose = camPose.get().estimatedPose.toPose2d();
-        var timestamp = camPose.get().timestampSeconds;
-        swervePoseEstimator.addVisionMeasurement(pose, timestamp);
+        if (camPose.isPresent()) {
+          var pose = camPose.get().estimatedPose.toPose2d();
+          var timestamp = camPose.get().timestampSeconds;
+          swervePoseEstimator.addVisionMeasurement(pose, timestamp);
+        }
       }
     }
 
+    vision.setRobotPose(getPose());
     field.setRobotPose(getPose());
 
     mSwerveMods[0].periodic();

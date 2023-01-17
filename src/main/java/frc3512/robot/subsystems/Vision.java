@@ -31,6 +31,7 @@ public class Vision extends SubsystemBase {
   private boolean haveTargets = false;
   private double lastYaw = 0.0;
   private double lastDistance = 0.0;
+  private Pose2d lastRobotPose = new Pose2d();
 
   private SpartanDoubleEntry yawEntry;
   private SpartanDoubleEntry distanceEntry;
@@ -62,6 +63,14 @@ public class Vision extends SubsystemBase {
     distanceEntry = new SpartanDoubleEntry("/Diagnostics/Vision/Distance");
   }
 
+  public void setRobotPose(Pose2d robotPose) {
+    if (robotPose != null) {
+      lastRobotPose = robotPose;
+    } else {
+      lastRobotPose = new Pose2d();
+    }
+  }
+
   public boolean hasTargets() {
     return haveTargets;
   }
@@ -74,11 +83,12 @@ public class Vision extends SubsystemBase {
     }
   }
 
-  public double getDistanceFromTarget(Pose2d robotPose) {
+  public double getDistanceFromTarget() {
     if (haveTargets) {
-      return PhotonUtils.getDistanceToPose(robotPose, layout.getTagPose(bestTarget.getFiducialId()).get().toPose2d());
+      return PhotonUtils.getDistanceToPose(
+          lastRobotPose, layout.getTagPose(bestTarget.getFiducialId()).get().toPose2d());
     } else {
-      return 0.0;
+      return lastDistance;
     }
   }
 
@@ -95,8 +105,10 @@ public class Vision extends SubsystemBase {
       haveTargets = result.hasTargets();
       if (haveTargets) {
         lastYaw = bestTarget.getYaw();
+        lastDistance = getDistanceFromTarget();
       }
       yawEntry.set(lastYaw);
+      distanceEntry.set(lastDistance);
     }
   }
 }
