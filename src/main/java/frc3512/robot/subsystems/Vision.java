@@ -7,14 +7,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanDoubleEntry;
-import frc3512.lib.vision.EstimatedRobotPose;
 import frc3512.lib.vision.PhotonPoseEstimator;
 import frc3512.lib.vision.PhotonPoseEstimator.PoseStrategy;
 import frc3512.robot.Constants;
 import java.io.IOException;
-import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -32,6 +31,8 @@ public class Vision extends SubsystemBase {
   private double lastYaw = 0.0;
   private double lastDistance = 0.0;
   private Pose2d lastRobotPose = new Pose2d();
+  private Pose2d globalPose = new Pose2d();
+  private double globalTimestamp = 0.0;
 
   private SpartanDoubleEntry yawEntry;
   private SpartanDoubleEntry distanceEntry;
@@ -92,9 +93,26 @@ public class Vision extends SubsystemBase {
     }
   }
 
-  public Optional<EstimatedRobotPose> estimateGlobalPose(Pose2d previousPose) {
-    estimator.setLastPose(previousPose);
-    return estimator.update();
+  public Pose2d estimateGlobalPose(Pose2d previousPose) {
+    if (hasTargets()) {
+      estimator.setLastPose(previousPose);
+      var camPose = estimator.update();
+
+      if (camPose.isPresent()) {
+        var pose = camPose.get().estimatedPose;
+        var timestamp = camPose.get().timestampSeconds;
+        globalPose = pose.toPose2d();
+        globalTimestamp = timestamp;
+      }
+    } else {
+      globalPose = lastRobotPose;
+      globalTimestamp = Timer.getFPGATimestamp() - result.getLatencyMillis();
+    }
+    return globalPose;
+  }
+
+  public double getGlobalTimestamp() {
+    return globalTimestamp;
   }
 
   @Override
