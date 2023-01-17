@@ -6,15 +6,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc3512.robot.commands.TeleopSwerve;
 import frc3512.robot.subsystems.Swerve;
+import frc3512.robot.subsystems.Vision;
 
 public class RobotContainer {
   // Auton Chooser
   private final SendableChooser<Command> m_autonChooser = new SendableChooser<Command>();
 
   // Robot subsystems
-  private Swerve m_swerve = new Swerve();
+  private Vision m_vision = new Vision();
+  private Swerve m_swerve = new Swerve(m_vision);
 
   // Xbox controllers
   private final CommandXboxController driver =
@@ -41,12 +42,10 @@ public class RobotContainer {
   /** Used for joystick/xbox axis actions. */
   private void configureAxisActions() {
     m_swerve.setDefaultCommand(
-        new TeleopSwerve(
-            m_swerve,
-            () -> -driver.getRawAxis(translationAxis),
+        m_swerve.driveWithJoysticks(
+            () -> driver.getRawAxis(translationAxis),
             () -> -driver.getRawAxis(strafeAxis),
-            () -> -driver.getRawAxis(rotationAxis),
-            () -> driver.rightStick().getAsBoolean()));
+            () -> driver.getRawAxis(rotationAxis)));
   }
 
   /** Register the autonomous modes to the chooser for the drivers to select. */
