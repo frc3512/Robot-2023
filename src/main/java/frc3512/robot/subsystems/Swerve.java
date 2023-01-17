@@ -1,6 +1,5 @@
 package frc3512.robot.subsystems;
 
-import com.ctre.phoenix.sensors.BasePigeonSimCollection;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.math.controller.PIDController;
@@ -12,20 +11,18 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.lib.logging.SpartanPose2dEntry;
+import frc3512.lib.sim.GyroSim;
 import frc3512.robot.Constants;
 
 public class Swerve extends SubsystemBase {
   private final WPI_Pigeon2 gyro;
-  private final BasePigeonSimCollection gyroSim;
-  double yawSim = 0.0;
-
+  private final GyroSim gyroSim;
   private final Vision vision;
 
   private SwerveDrivePoseEstimator swervePoseEstimator;
@@ -42,7 +39,7 @@ public class Swerve extends SubsystemBase {
     this.vision = vision;
 
     gyro = new WPI_Pigeon2(Constants.SwerveConstants.pigeonID);
-    gyroSim = gyro.getSimCollection();
+    gyroSim = new GyroSim(gyro);
     gyro.configFactoryDefault();
     zeroGyro();
 
@@ -123,23 +120,20 @@ public class Swerve extends SubsystemBase {
         : Rotation2d.fromDegrees(gyro.getYaw());
   }
 
-  public double getDistanceFromTarget(Pose2d targetPose) {
-    return vision.getRange(getPose(), targetPose);
-  }
-
   @Override
   public void periodic() {
+    swervePoseEstimator.update(getYaw(), getPositions());
+
     if (RobotBase.isReal()) {
       var camPose = vision.estimateGlobalPose(getPose());
 
-      if (camPose.get() != null) {
+      if (camPose != null && vision.hasTargets()) {
         var pose = camPose.get().estimatedPose.toPose2d();
         var timestamp = camPose.get().timestampSeconds;
         swervePoseEstimator.addVisionMeasurement(pose, timestamp);
       }
     }
 
-    swervePoseEstimator.update(getYaw(), getPositions());
     field.setRobotPose(getPose());
 
     mSwerveMods[0].periodic();
@@ -156,8 +150,6 @@ public class Swerve extends SubsystemBase {
 
     ChassisSpeeds chassisSpeeds =
         Constants.SwerveConstants.swerveKinematics.toChassisSpeeds(getStates());
-    yawSim += chassisSpeeds.omegaRadiansPerSecond * 0.02;
-
-    gyroSim.setRawHeading(-Units.radiansToDegrees(yawSim) - getYaw().getDegrees());
+    gyroSim.setYaw(chassisSpeeds.omegaRadiansPerSecond);
   }
 }

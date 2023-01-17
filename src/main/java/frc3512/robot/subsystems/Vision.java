@@ -27,10 +27,13 @@ public class Vision extends SubsystemBase {
 
   private PhotonPipelineResult result;
   private PhotonTrackedTarget bestTarget;
+
   private boolean haveTargets = false;
   private double lastYaw = 0.0;
+  private double lastDistance = 0.0;
 
   private SpartanDoubleEntry yawEntry;
+  private SpartanDoubleEntry distanceEntry;
 
   public Vision() {
     camera = new PhotonCamera(Constants.VisionConstants.cameraName);
@@ -51,11 +54,12 @@ public class Vision extends SubsystemBase {
     estimator =
         new PhotonPoseEstimator(
             layout,
-            PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+            PoseStrategy.CLOSEST_TO_LAST_POSE,
             camera,
             Constants.VisionConstants.robotToCam);
 
     yawEntry = new SpartanDoubleEntry("/Diagnostics/Vision/Yaw");
+    distanceEntry = new SpartanDoubleEntry("/Diagnostics/Vision/Distance");
   }
 
   public boolean hasTargets() {
@@ -70,16 +74,16 @@ public class Vision extends SubsystemBase {
     }
   }
 
-  public double getRange(Pose2d robotPose, Pose2d targetPose) {
+  public double getDistanceFromTarget(Pose2d robotPose) {
     if (haveTargets) {
-      return PhotonUtils.getDistanceToPose(robotPose, targetPose);
+      return PhotonUtils.getDistanceToPose(robotPose, layout.getTagPose(bestTarget.getFiducialId()).get().toPose2d());
     } else {
       return 0.0;
     }
   }
 
   public Optional<EstimatedRobotPose> estimateGlobalPose(Pose2d previousPose) {
-    estimator.setReferencePose(previousPose);
+    estimator.setLastPose(previousPose);
     return estimator.update();
   }
 

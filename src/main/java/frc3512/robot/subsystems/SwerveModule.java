@@ -8,8 +8,10 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.lib.motion.SpartanCANCoder;
 import frc3512.lib.motion.SpartanSparkMax;
+import frc3512.lib.sim.MotorSim;
 import frc3512.lib.util.CANSparkMaxUtil.Usage;
 import frc3512.lib.util.SwerveModuleConstants;
+import frc3512.lib.util.CANCoderUtil.CANCoderUsage;
 import frc3512.robot.Constants;
 
 public class SwerveModule {
@@ -31,6 +33,9 @@ public class SwerveModule {
   private final SpartanDoubleEntry integratedReading;
   private final SpartanDoubleEntry velocityReading;
 
+  private final MotorSim driveMotorSim = new MotorSim();
+  private final MotorSim angleMotorSim = new MotorSim();
+
   /**
    * Creates a new swerve module with NEO motors and a CTRE CANCoder.
    *
@@ -42,7 +47,7 @@ public class SwerveModule {
     angleOffset = moduleConstants.angleOffset;
 
     angleEncoder =
-        new SpartanCANCoder(moduleConstants.cancoderID, Constants.SwerveConstants.canCoderInvert);
+        new SpartanCANCoder(moduleConstants.cancoderID, Constants.SwerveConstants.canCoderInvert, CANCoderUsage.kMinimal);
 
     angleMotor =
         new SpartanSparkMax(
@@ -76,7 +81,7 @@ public class SwerveModule {
         Constants.SwerveConstants.angleKI,
         Constants.SwerveConstants.angleKD,
         Constants.SwerveConstants.angleKFF);
-    angleMotor.enableContinuousInput(0.0, 360.0);
+    angleMotor.enableContinuousInput(-180.0, 180.0);
     angleMotor.enableVoltageComp(Constants.GeneralConstants.voltageCompSwerve);
     angleMotor.burnFlash();
     resetAbsolute();
@@ -132,13 +137,13 @@ public class SwerveModule {
     lastAngle = angle;
 
     if (RobotBase.isSimulation()) {
-      driveMotor.updateSimVelocity(desiredState);
-      angleMotor.setCurrentAngle(angle.getDegrees());
+      driveMotorSim.updateSimVelocity(desiredState);
+      angleMotorSim.setCurrentAngle(angle.getDegrees());
     }
   }
 
   private Rotation2d getAngle() {
-    return Rotation2d.fromDegrees(angleMotor.getAngle());
+    return Rotation2d.fromDegrees(angleMotor.getPosition());
   }
 
   public Rotation2d getCanCoder() {

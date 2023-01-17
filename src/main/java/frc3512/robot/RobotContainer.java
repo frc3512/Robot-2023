@@ -45,10 +45,9 @@ public class RobotContainer {
     m_swerve.setDefaultCommand(
         new TeleopSwerve(
             m_swerve,
-            () -> -driver.getRawAxis(translationAxis),
+            () -> driver.getRawAxis(translationAxis),
             () -> -driver.getRawAxis(strafeAxis),
-            () -> driver.getRawAxis(rotationAxis),
-            () -> driver.rightStick().getAsBoolean()));
+            () -> driver.getRawAxis(rotationAxis)));
   }
 
   /** Register the autonomous modes to the chooser for the drivers to select. */
