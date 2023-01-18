@@ -6,7 +6,7 @@ import edu.wpi.first.networktables.BooleanTopic;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DataLog;
 
-/** Sets up a boolean value in NetworkTables with the option to be logged */
+/** Sets up a boolean value in NetworkTables that is also logged */
 public class SpartanBooleanEntry {
 
   private BooleanTopic topic;
@@ -14,7 +14,7 @@ public class SpartanBooleanEntry {
   private BooleanSubscriber sub;
   private BooleanLogEntry log;
   boolean defaultValue = false;
-  boolean logged = false;
+  boolean override = false;
   DataLog logInstance = SpartanLogManager.getCurrentLog();
 
   public SpartanBooleanEntry(String name) {
@@ -22,25 +22,28 @@ public class SpartanBooleanEntry {
   }
 
   public SpartanBooleanEntry(String name, boolean value) {
-    this(name, value, false);
+    this(name, value, SpartanLogManager.isTuningMode());
   }
 
-  public SpartanBooleanEntry(String name, boolean value, boolean logged) {
+  public SpartanBooleanEntry(String name, boolean value, boolean override) {
     this.defaultValue = value;
-    this.logged = logged;
+    this.override = override;
     topic = SpartanLogManager.getNTInstance().getBooleanTopic(name);
     log = new BooleanLogEntry(logInstance, name);
   }
 
   public void set(boolean value) {
     if (pub == null) pub = topic.publish();
-    pub.set(value);
-    if (SpartanLogManager.isCompetition() && logged) log.append(value);
+    if (override) {
+      pub.set(value);
+      log.append(value);
+    }
   }
 
   public boolean get() {
     if (sub == null) sub = topic.subscribe(defaultValue);
-    var currValue = sub.get();
+    var currValue = false;
+    currValue = sub.get();
     return currValue;
   }
 }

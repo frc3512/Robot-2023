@@ -16,7 +16,7 @@ public final class Constants {
   /** General robot constants */
   public static final class GeneralConstants {
     // Enable or disable competition mode
-    public static final boolean competitionMode = false;
+    public static final boolean tuningMode = false;
 
     // Joystick axis deadband for the swerve drive
     public static final double swerveDeadband = 0.1;

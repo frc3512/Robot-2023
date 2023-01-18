@@ -9,7 +9,7 @@ import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 
-/** Sets up a double array value in NetworkTables with the option to be logged */
+/** Sets up a double array value in NetworkTables that is also logged */
 public class SpartanPose2dEntry {
 
   private DoubleArrayTopic topic;
@@ -18,7 +18,7 @@ public class SpartanPose2dEntry {
   private DoubleArrayLogEntry log;
   private Pose2d pose = new Pose2d();
   double[] defaultValue = new double[] {};
-  boolean logged = false;
+  boolean override = false;
   DataLog logInstance = SpartanLogManager.getCurrentLog();
 
   public SpartanPose2dEntry(String name) {
@@ -26,12 +26,12 @@ public class SpartanPose2dEntry {
   }
 
   public SpartanPose2dEntry(String name, Pose2d value) {
-    this(name, value, false);
+    this(name, value, SpartanLogManager.isTuningMode());
   }
 
-  public SpartanPose2dEntry(String name, Pose2d value, boolean logged) {
+  public SpartanPose2dEntry(String name, Pose2d value, boolean override) {
     this.pose = value;
-    this.logged = logged;
+    this.override = override;
 
     double[] converted = new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
     this.defaultValue = converted;
@@ -44,8 +44,10 @@ public class SpartanPose2dEntry {
     if (pub == null) pub = topic.publish();
     double[] converted =
         new double[] {value.getX(), value.getY(), value.getRotation().getDegrees()};
-    pub.set(converted);
-    if (SpartanLogManager.isCompetition() && logged) log.append(converted);
+    if (override) {
+      pub.set(converted);
+      log.append(converted);
+    }
   }
 
   public Pose2d get() {

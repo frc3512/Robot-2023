@@ -14,12 +14,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.lib.logging.SpartanPose2dEntry;
+import frc3512.lib.sim.FieldSim;
 import frc3512.lib.sim.GyroSim;
 import frc3512.robot.Constants;
 import java.util.function.DoubleSupplier;
@@ -32,7 +31,7 @@ public class Swerve extends SubsystemBase {
   private SwerveDrivePoseEstimator swervePoseEstimator;
   private SwerveModule[] mSwerveMods;
 
-  private Field2d field;
+  private FieldSim field;
   private final SpartanDoubleEntry gyroYaw;
   private final SpartanPose2dEntry odometryPose;
 
@@ -64,8 +63,8 @@ public class Swerve extends SubsystemBase {
     swervePoseEstimator =
         new SwerveDrivePoseEstimator(
             Constants.SwerveConstants.swerveKinematics, getYaw(), getPositions(), new Pose2d());
-    field = new Field2d();
-    SmartDashboard.putData("Field", field);
+
+    field = new FieldSim();
     gyroYaw = new SpartanDoubleEntry("/Diagnostics/Swerve/Gyro/Yaw", 0.0, true);
     odometryPose = new SpartanPose2dEntry("/Diagnostics/Swerve/Odometry", new Pose2d(), true);
   }
@@ -164,7 +163,6 @@ public class Swerve extends SubsystemBase {
     }
 
     vision.setRobotPose(getPose());
-    field.setRobotPose(getPose());
 
     mSwerveMods[0].periodic();
     mSwerveMods[1].periodic();
@@ -181,5 +179,7 @@ public class Swerve extends SubsystemBase {
     ChassisSpeeds chassisSpeeds =
         Constants.SwerveConstants.swerveKinematics.toChassisSpeeds(getStates());
     gyroSim.setYaw(chassisSpeeds.omegaRadiansPerSecond);
+
+    field.setRobotPose(getPose());
   }
 }

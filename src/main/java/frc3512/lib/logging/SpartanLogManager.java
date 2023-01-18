@@ -3,36 +3,18 @@ package frc3512.lib.logging;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
+import frc3512.robot.Constants;
 
 /** Wrapper class around the DataLogManager for additional features. */
 public class SpartanLogManager {
 
-  private static boolean isCompetition = false;
   private static DataLog log = DataLogManager.getLog();
   private static NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
-
-  /**
-   * Set whether to enable competition mode. This disables logging to free up network bandwith.
-   *
-   * @param isCompeting Whether or not your robot is competing at an offical event.
-   */
-  public static void setCompetitionMode(boolean isCompeting) {
-    isCompetition = isCompeting;
-  }
 
   /** Start logging (if running on real hardware). */
   public static void startLogging() {
     DataLogManager.logNetworkTables(false);
     DataLogManager.start();
-  }
-
-  /**
-   * Log a specified string text into the messages" entry. Also prints out to standard output.
-   *
-   * @param message Message text.
-   */
-  public static void logMessage(String message) {
-    DataLogManager.log(message);
   }
 
   /**
@@ -54,11 +36,11 @@ public class SpartanLogManager {
   }
 
   /**
-   * Returns if the robot is set to run in competition mode. Disables logging if thats the case.
+   * Returns if the robot is set to run in tuning mode. Disables logging if thats the case.
    *
-   * @return Whether or not competition mode is enabled.
+   * @return Whether or not tuning mode is enabled.
    */
-  public static boolean isCompetition() {
-    return !isCompetition;
+  public static boolean isTuningMode() {
+    return Constants.GeneralConstants.tuningMode;
   }
 }
