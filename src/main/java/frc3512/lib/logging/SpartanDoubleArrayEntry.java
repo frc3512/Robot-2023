@@ -6,7 +6,7 @@ import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 
-/** Sets up a double array value in NetworkTables with the option to be logged */
+/** Sets up a double array value in NetworkTables that is also logged */
 public class SpartanDoubleArrayEntry {
 
   private DoubleArrayTopic topic;
@@ -14,7 +14,7 @@ public class SpartanDoubleArrayEntry {
   private DoubleArraySubscriber sub;
   private DoubleArrayLogEntry log;
   double[] defaultValue = new double[] {};
-  boolean logged = false;
+  boolean override = false;
   DataLog logInstance = SpartanLogManager.getCurrentLog();
 
   public SpartanDoubleArrayEntry(String name) {
@@ -22,20 +22,22 @@ public class SpartanDoubleArrayEntry {
   }
 
   public SpartanDoubleArrayEntry(String name, double[] value) {
-    this(name, value, false);
+    this(name, value, SpartanLogManager.isTuningMode());
   }
 
-  public SpartanDoubleArrayEntry(String name, double[] value, boolean logged) {
+  public SpartanDoubleArrayEntry(String name, double[] value, boolean override) {
     this.defaultValue = value;
-    this.logged = logged;
+    this.override = override;
     topic = SpartanLogManager.getNTInstance().getDoubleArrayTopic(name);
     log = new DoubleArrayLogEntry(logInstance, name);
   }
 
   public void set(double[] value) {
     if (pub == null) pub = topic.publish();
-    pub.set(value);
-    if (SpartanLogManager.isCompetition() && logged) log.append(value);
+    if (override) {
+      pub.set(value);
+      log.append(value);
+    }
   }
 
   public double[] get() {

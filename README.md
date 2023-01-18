@@ -22,7 +22,7 @@ TBD
 
 * `./gradlew build`
 
-This runs a roboRIO and desktop build and runs the desktop tests. This may take a while, so more specific builds (see below) are recommended instead.
+This builds code for the roboRIO and tests (if present), but doesn't deploy it to the robot.
 
 ### Deploy
 
@@ -58,11 +58,15 @@ The game for 2023 is called Charged Up, where teams are tasked with placing infl
 
 This years robot's unique features include:
 
-- TBD
+- Swerve drive with SDS MK4 L2 modules using CANCoders and NEOs
+- New vision camera system for use with AprilTags
 
 ## Goals of the year
 |Status|Goal|Additional Description|
 |------|----|----------------------|
+|Yes|Swerve Drive|Operational auton/teleop swerve code
+|Yes|AprilTags|Read and process AprilTags using PhotonVision
+|Yes|Pose Estimation|Add in pose estimation using AprilTags.
 |||
 |||
 |||

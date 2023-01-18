@@ -33,7 +33,6 @@ public class Robot extends TimedRobot {
     LiveWindow.disableAllTelemetry();
 
     // Enable logging
-    SpartanLogManager.setCompetitionMode(Constants.GeneralConstants.competitionMode);
     SpartanLogManager.startLogging();
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our

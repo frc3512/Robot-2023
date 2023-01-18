@@ -6,7 +6,7 @@ import edu.wpi.first.networktables.StringTopic;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.StringLogEntry;
 
-/** Sets up a string value in NetworkTables with the option to be logged */
+/** Sets up a string value in NetworkTables that is also logged */
 public class SpartanStringEntry {
 
   private StringTopic topic;
@@ -14,7 +14,7 @@ public class SpartanStringEntry {
   private StringSubscriber sub;
   private StringLogEntry log;
   String defaultValue = "";
-  boolean logged = false;
+  boolean override = false;
   DataLog logInstance = SpartanLogManager.getCurrentLog();
 
   public SpartanStringEntry(String name) {
@@ -22,20 +22,22 @@ public class SpartanStringEntry {
   }
 
   public SpartanStringEntry(String name, String value) {
-    this(name, value, false);
+    this(name, value, SpartanLogManager.isTuningMode());
   }
 
-  public SpartanStringEntry(String name, String value, boolean logged) {
+  public SpartanStringEntry(String name, String value, boolean override) {
     this.defaultValue = value;
-    this.logged = logged;
+    this.override = override;
     topic = SpartanLogManager.getNTInstance().getStringTopic(name);
     log = new StringLogEntry(logInstance, name);
   }
 
   public void set(String value) {
     if (pub == null) pub = topic.publish();
-    pub.set(value);
-    if (SpartanLogManager.isCompetition() && logged) log.append(value);
+    if (override) {
+      pub.set(value);
+      log.append(value);
+    }
   }
 
   public String get() {
