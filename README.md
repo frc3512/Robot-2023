@@ -1,8 +1,8 @@
 # FRC Team 3512's 2023 Robot
 
-Source code for the 2022 comp robot: TBD
+Source code for the 2023 comp robot: TBD
 
-Source code also for the 2022 practice robot: TBD
+Source code also for the 2023 practice robot: TBD
 
 ## Setup
 
