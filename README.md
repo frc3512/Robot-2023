@@ -59,6 +59,7 @@ The game for 2023 is called Charged Up, where teams are tasked with placing infl
 This years robot's unique features include:
 
 - Swerve drive with SDS MK4 L2 modules using CANCoders and NEOs
+- New vision camera system for use with AprilTags
 
 ## Goals of the year
 |Status|Goal|Additional Description|
