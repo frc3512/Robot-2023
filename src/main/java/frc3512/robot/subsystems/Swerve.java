@@ -157,7 +157,7 @@ public class Swerve extends SubsystemBase {
   public void periodic() {
     swervePoseEstimator.update(getYaw(), getPositions());
 
-    if (RobotBase.isReal()) {
+    if (RobotBase.isReal() && vision.hasTargets()) {
       swervePoseEstimator.addVisionMeasurement(
           vision.estimateGlobalPose(getPose()), vision.getGlobalTimestamp());
     }
