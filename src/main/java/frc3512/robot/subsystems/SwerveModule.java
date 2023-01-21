@@ -9,8 +9,6 @@ import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.lib.motion.SpartanCANCoder;
 import frc3512.lib.motion.SpartanSparkMax;
 import frc3512.lib.sim.MotorSim;
-import frc3512.lib.util.CANCoderUtil.CANCoderUsage;
-import frc3512.lib.util.CANSparkMaxUtil.Usage;
 import frc3512.lib.util.SwerveModuleConstants;
 import frc3512.robot.Constants;
 
@@ -47,21 +45,14 @@ public class SwerveModule {
     angleOffset = moduleConstants.angleOffset;
 
     angleEncoder =
-        new SpartanCANCoder(
-            moduleConstants.cancoderID,
-            Constants.SwerveConstants.canCoderInvert,
-            CANCoderUsage.kMinimal);
+        new SpartanCANCoder(moduleConstants.cancoderID, Constants.SwerveConstants.canCoderInvert);
 
     angleMotor =
-        new SpartanSparkMax(
-            moduleConstants.angleMotorID,
-            Constants.SwerveConstants.angleInvert,
-            Usage.kPositionOnly);
+        new SpartanSparkMax(moduleConstants.angleMotorID, Constants.SwerveConstants.angleInvert);
     configAngleMotor();
 
     driveMotor =
-        new SpartanSparkMax(
-            moduleConstants.driveMotorID, Constants.SwerveConstants.driveInvert, Usage.kAll);
+        new SpartanSparkMax(moduleConstants.driveMotorID, Constants.SwerveConstants.driveInvert);
     configDriveMotor();
 
     cancoderReading =

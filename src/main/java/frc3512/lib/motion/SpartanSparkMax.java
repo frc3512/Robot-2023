@@ -8,8 +8,6 @@ import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import frc3512.lib.util.CANSparkMaxUtil;
-import frc3512.lib.util.CANSparkMaxUtil.Usage;
 
 /* Wrapper class around the Spark Max motor controller.
  * Infers that you are using a NEO or NEO500 brushless motor.
@@ -21,7 +19,6 @@ public class SpartanSparkMax {
   private SparkMaxPIDController controller;
 
   boolean inverted;
-  Usage usage;
 
   /**
    * Creates a SpartanSparkMax.
@@ -29,15 +26,13 @@ public class SpartanSparkMax {
    * @param id CAN ID of the device
    * @param invert Whether to invert the motor or not.
    */
-  public SpartanSparkMax(int id, boolean invert, Usage usage) {
+  public SpartanSparkMax(int id, boolean invert) {
     this.inverted = invert;
-    this.usage = usage;
     motor = new CANSparkMax(id, MotorType.kBrushless);
     encoder = motor.getEncoder();
     controller = motor.getPIDController();
 
     motor.restoreFactoryDefaults();
-    CANSparkMaxUtil.setCANSparkMaxBusUsage(motor, usage);
     motor.setInverted(invert);
 
     REVPhysicsSim.getInstance().addSparkMax(motor, DCMotor.getNEO(1));
