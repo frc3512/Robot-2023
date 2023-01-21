@@ -93,7 +93,11 @@ public class Swerve extends SubsystemBase {
   }
 
   public void zeroGyro() {
-    gyro.setYaw(0.0);
+    setYaw(0.0);
+  }
+
+  public void setYaw(double degrees) {
+    gyro.setYaw(degrees);
   }
 
   public Pose2d getEstimatedPose() {

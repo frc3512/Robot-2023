@@ -13,8 +13,9 @@ import frc3512.robot.subsystems.Vision;
 
 public class Robot2023 {
   // Auton Chooser
-  private final SendableChooser<Command> autonChooser = new SendableChooser<Command>();;
-  
+  private final SendableChooser<Command> autonChooser = new SendableChooser<Command>();
+  ;
+
   // Robot subsystems
   private Vision m_vision = new Vision();
   private Swerve m_swerve = new Swerve(m_vision);
