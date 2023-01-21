@@ -22,7 +22,7 @@ public class SpartanDoubleEntry {
   }
 
   public SpartanDoubleEntry(String name, double value) {
-    this(name, value, false);
+    this(name, value, SpartanLogManager.isTuningMode());
   }
 
   public SpartanDoubleEntry(String name, double value, boolean override) {
