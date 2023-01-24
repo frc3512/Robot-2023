@@ -14,7 +14,7 @@ public class TestAuton extends SequentialCommandGroup {
   public TestAuton(Swerve swerve) {
     PathConstraints constraints = new PathConstraints(1.0, 4.0);
 
-    PathPlannerTrajectory driveBack = PathPlanner.loadPath("New Path", constraints);
+    PathPlannerTrajectory driveBack = PathPlanner.loadPath("Score 3 Far Zone", constraints);
 
     PPSwerveControllerCommand driveBackCommand =
         new PPSwerveControllerCommand(
