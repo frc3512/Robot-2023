@@ -7,14 +7,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanDoubleEntry;
-import frc3512.lib.vision.PhotonPoseEstimator;
-import frc3512.lib.vision.PhotonPoseEstimator.PoseStrategy;
 import frc3512.robot.Constants;
 import java.io.IOException;
+import java.util.Optional;
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -31,8 +32,6 @@ public class Vision extends SubsystemBase {
   private double lastYaw = 0.0;
   private double lastDistance = 0.0;
   private Pose2d lastRobotPose = new Pose2d();
-  private Pose2d globalPose = new Pose2d();
-  private double globalTimestamp = 0.0;
 
   private SpartanDoubleEntry yawEntry;
   private SpartanDoubleEntry distanceEntry;
@@ -56,7 +55,7 @@ public class Vision extends SubsystemBase {
     estimator =
         new PhotonPoseEstimator(
             layout,
-            PoseStrategy.CLOSEST_TO_LAST_POSE,
+            PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
             camera,
             Constants.VisionConstants.robotToCam);
 
@@ -93,26 +92,14 @@ public class Vision extends SubsystemBase {
     }
   }
 
-  public Pose2d estimateGlobalPose(Pose2d previousPose) {
-    if (hasTargets()) {
-      estimator.setLastPose(previousPose);
-      var camPose = estimator.update();
-
-      if (camPose.isPresent()) {
-        var pose = camPose.get().estimatedPose;
-        var timestamp = camPose.get().timestampSeconds;
-        globalPose = pose.toPose2d();
-        globalTimestamp = timestamp;
-      }
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+    estimator.setReferencePose(prevEstimatedRobotPose);
+    var result = estimator.update();
+    if (result.isPresent()) {
+      return result;
     } else {
-      globalPose = lastRobotPose;
-      globalTimestamp = Timer.getFPGATimestamp() - result.getLatencyMillis();
+      return Optional.ofNullable(null);
     }
-    return globalPose;
-  }
-
-  public double getGlobalTimestamp() {
-    return globalTimestamp;
   }
 
   @Override

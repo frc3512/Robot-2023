@@ -31,14 +31,14 @@ public class SpartanSparkMax {
    */
   public SpartanSparkMax(int id, boolean invert, Usage usage) {
     this.inverted = invert;
-    this.usage = usage;
     motor = new CANSparkMax(id, MotorType.kBrushless);
     encoder = motor.getEncoder();
     controller = motor.getPIDController();
 
     motor.restoreFactoryDefaults();
-    CANSparkMaxUtil.setCANSparkMaxBusUsage(motor, usage);
     motor.setInverted(invert);
+
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(motor, usage);
 
     REVPhysicsSim.getInstance().addSparkMax(motor, DCMotor.getNEO(1));
   }
