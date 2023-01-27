@@ -6,18 +6,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc3512.robot.auton.TestAuton;
+import frc3512.robot.auton.Autos;
 import frc3512.robot.commands.TeleopSwerve;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
 
 public class Robot2023 {
-  // Auton Chooser
-  private final SendableChooser<Command> autonChooser = new SendableChooser<Command>();
-
   // Robot subsystems
   private Vision m_vision = new Vision();
   private Swerve m_swerve = new Swerve(m_vision);
+
+  // Auton Chooser
+  private final SendableChooser<Command> autonChooser = new SendableChooser<Command>();
+
+  // Autons
+  private final Autos autos = new Autos(m_swerve);
 
   // Driver Control
   private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -48,7 +51,7 @@ public class Robot2023 {
   /** Used for registering autons. */
   public void registerAutons() {
     autonChooser.setDefaultOption("No-op", new InstantCommand());
-    autonChooser.addOption("TestAuton", new TestAuton(m_swerve));
+    autonChooser.setDefaultOption("Score 2 Far Zone", autos.score2FarZone());
 
     SmartDashboard.putData("Auton Chooser", autonChooser);
   }
