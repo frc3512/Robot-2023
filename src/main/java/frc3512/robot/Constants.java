@@ -92,6 +92,26 @@ public final class Constants {
   public static final class AutonConstants {
     public static final double maxVelocity = 1.0;
     public static final double maxAcceleration = 4.0;
+  public static final class ElevatorConstants {
+    public static final double kDt = 0.02;
+
+    public static final int EncoderA = 0;
+    public static final int EncoderB = 1;
+    public static final int MotorAID = 0;
+    public static final int MotorBID = 1;
+
+    public static final double distancePerpulse = 0.0;
+  }
+
+  public static final class IntakeConstants {
+    public static final int MotorID = 0;
+  }
+
+  /** Constants revolving around the swerve subsystem */
+  public static final class SwerveConstants {
+    /* Gyro Constants */
+    public static final int pigeonID = 6;
+    public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
     public static final PathConstraints constraints =
         new PathConstraints(maxVelocity, maxAcceleration);
