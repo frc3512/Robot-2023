@@ -88,10 +88,6 @@ public final class Constants {
             new Rotation3d(0.0, 0.0, 0.0));
   }
 
-  /** Constants revolving around auton modes. */
-  public static final class AutonConstants {
-    public static final double maxVelocity = 1.0;
-    public static final double maxAcceleration = 4.0;
   public static final class ElevatorConstants {
     //public static final double kDt = 0.02;
 
@@ -107,11 +103,11 @@ public final class Constants {
     public static final int MotorID = 21;
   }
 
-  /** Constants revolving around the swerve subsystem */
-  public static final class SwerveConstants {
-    /* Gyro Constants */
-    public static final int pigeonID = 6;
-    public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
+  /** Constants revolving around auton modes. */
+  public static final class AutonConstants {
+
+    public static final double maxVelocity = 1.0;
+    public static final double maxAcceleration = 4.0;
 
     public static final PathConstraints constraints =
         new PathConstraints(maxVelocity, maxAcceleration);
