@@ -6,10 +6,10 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class AutoDrop {
     private final static CommandXboxController xbox =
-        new CommandXboxController(Constants.OperatorConstants.xboxController2Port);
+        new CommandXboxController(Constants.OperatorConstants.appendageControllerPort);
     
     private final static Joystick logitech = 
-        new Joystick(Constants.OperatorConstants.logitechController2Port); 
+        new Joystick(Constants.OperatorConstants.appendageControllerPort); 
 
     public static String getInput(String outtakeLevel) {
         final double Ypos = xbox.getLeftY();
