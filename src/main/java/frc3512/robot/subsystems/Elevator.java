@@ -8,7 +8,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc3512.lib.util.CANSparkMaxUtil;
 import frc3512.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
