@@ -1,43 +1,33 @@
 package frc3512.robot.auton;
 
-import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.auto.PIDConstants;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc3512.lib.swerve.SpartanSwerveAutonBuilder;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc3512.robot.Constants;
 import frc3512.robot.subsystems.Swerve;
-import java.util.HashMap;
 
 public final class Autos {
 
-  private SpartanSwerveAutonBuilder autonBuilder;
-  private PathConstraints constraints;
-  private HashMap<String, Command> eventMap;
+  private final Swerve swerve;
+  private final SendableChooser<Command> autonChooser;
 
   public Autos(Swerve swerve) {
-    eventMap = new HashMap<>();
-    configureMarkers();
+    this.swerve = swerve;
 
-    constraints = new PathConstraints(1.0, 4.0);
+    autonChooser = new SendableChooser<Command>();
+    autonChooser.setDefaultOption("No-op", new InstantCommand());
 
-    autonBuilder =
-        new SpartanSwerveAutonBuilder(
-            Constants.SwerveConstants.swerveKinematics,
-            new PIDConstants(0.5, 0.0, 0.0),
-            new PIDConstants(0.5, 0.0, 0.0),
-            new PIDConstants(0.5, 0.0, 0.0),
-            swerve::getPose,
-            swerve::resetOdometry,
-            swerve::setModuleStates,
-            swerve::setYaw,
-            eventMap,
-            swerve);
+    SmartDashboard.putData("Auton Chooser", autonChooser);
   }
 
-  private void configureMarkers() {}
+  public Command getSelected() {
+    return autonChooser.getSelected();
+  }
 
   public Command score2FarZone() {
-    return autonBuilder.fullAuto(PathPlanner.loadPath("Score 2 Far Zone", constraints));
+    return swerve.followTrajectory(
+        PathPlanner.loadPath("Score 2 Far Zone", Constants.AutonConstants.constraints), true);
   }
 }

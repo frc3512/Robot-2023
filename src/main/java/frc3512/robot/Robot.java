@@ -35,7 +35,6 @@ public class Robot extends TimedRobot {
 
     m_robot.configureAxisActions();
     m_robot.configureButtonBindings();
-    m_robot.registerAutons();
   }
 
   /**

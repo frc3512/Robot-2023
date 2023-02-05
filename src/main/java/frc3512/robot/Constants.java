@@ -1,5 +1,6 @@
 package frc3512.robot;
 
+import com.pathplanner.lib.PathConstraints;
 import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -21,17 +22,17 @@ public final class Constants {
     // Joystick axis deadband for the swerve drive
     public static final double swerveDeadband = 0.1;
 
-    // Value to voltage compensate the motors for on the swerve drive
-    public static final double voltageCompSwerve = 12.0;
+    // Value to voltage compensate the motors for
+    public static final double voltageComp = 12.0;
   }
 
   /** Constants revolving around joysticks */
   public static class OperatorConstants {
-    // 1st Xbox controller port
-    public static final int xboxController1Port = 0;
+    // Driver controller port
+    public static final int driverControllerPort = 0;
 
-    // 2nd Xbox controller port
-    public static final int xboxController2Port = 1;
+    // Appendage controller port
+    public static final int appendageControllerPort = 1;
   }
 
   /** Constants revolving around the vision subsystem. */
@@ -44,6 +45,19 @@ public final class Constants {
         new Transform3d(
             new Translation3d(0.0, Units.inchesToMeters(1.5), Units.inchesToMeters(39.0)),
             new Rotation3d(0.0, 0.0, 0.0));
+  }
+
+  /** Constants revolving around auton modes. */
+  public static final class AutonConstants {
+    public static final double maxVelocity = 1.0;
+    public static final double maxAcceleration = 4.0;
+
+    public static final PathConstraints constraints =
+        new PathConstraints(maxVelocity, maxAcceleration);
+
+    public static final double xControllerP = 1.0;
+    public static final double yControllerP = 1.0;
+    public static final double thetaControllerP = 1.0;
   }
 
   /** Constants revolving around the swerve subsystem */
@@ -72,8 +86,8 @@ public final class Constants {
             new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
 
     /* Swerve Current Limiting */
-    public static final int angleContinuousCurrentLimit = 20;
-    public static final int driveContinuousCurrentLimit = 50;
+    public static final int angleContinuousCurrentLimit = 25;
+    public static final int driveContinuousCurrentLimit = 35;
 
     /* Angle Motor PID Values */
     public static final double angleKP = 0.01;
@@ -88,13 +102,12 @@ public final class Constants {
     public static final double driveKFF = 0.0;
 
     /* Drive Motor Characterization Values */
-    public static final double driveKS = 0.667;
-    public static final double driveKV = 2.44;
-    public static final double driveKA = 0.27;
+    public static final double driveKS = 0.11937;
+    public static final double driveKV = 2.6335;
+    public static final double driveKA = 0.46034;
 
     /* Drive Motor Conversion Factors */
-    public static final double driveConversionPositionFactor =
-        (wheelDiameter * Math.PI) / driveGearRatio;
+    public static final double driveConversionPositionFactor = wheelCircumference / driveGearRatio;
     public static final double driveConversionVelocityFactor = driveConversionPositionFactor / 60.0;
     public static final double angleConversionFactor = 360.0 / angleGearRatio;
 
@@ -103,11 +116,11 @@ public final class Constants {
     public static final double maxAngularVelocity = 11.5;
 
     /* Neutral Modes */
-    public static final IdleMode angleNeutralMode = IdleMode.kBrake;
+    public static final IdleMode angleNeutralMode = IdleMode.kCoast;
     public static final IdleMode driveNeutralMode = IdleMode.kBrake;
 
     /* Motor Inverts */
-    public static final boolean driveInvert = true;
+    public static final boolean driveInvert = false;
     public static final boolean angleInvert = false;
 
     /* Angle Encoder Invert */
