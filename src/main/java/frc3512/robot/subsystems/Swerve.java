@@ -6,6 +6,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,13 +24,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanDoubleArrayEntry;
 import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.lib.sim.GyroSim;
-import frc3512.lib.swerve.SwerveDrivePoseEstimator;
+import frc3512.lib.util.PhotonCameraWrapper;
 import frc3512.robot.Constants;
+
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
+
+import org.photonvision.EstimatedRobotPose;
 
 public class Swerve extends SubsystemBase {
   private final WPI_Pigeon2 gyro;
   private final GyroSim gyroSim;
+  private final PhotonCameraWrapper camera;
 
   private SwerveDrivePoseEstimator poseEstimator;
   private SwerveModule[] mSwerveMods;
@@ -46,6 +53,7 @@ public class Swerve extends SubsystemBase {
 
   /** Subsystem class for the swerve drive. */
   public Swerve() {
+    camera = new PhotonCameraWrapper();
     gyro = new WPI_Pigeon2(Constants.SwerveConstants.pigeonID);
     gyroSim = new GyroSim(gyro);
     gyro.configFactoryDefault();
@@ -188,6 +196,13 @@ public class Swerve extends SubsystemBase {
   @Override
   public void periodic() {
     poseEstimator.update(getYaw(), getPositions());
+
+    Optional<EstimatedRobotPose> result = camera.getEstimatedGlobalPose(getPose());
+
+    if (result.isPresent()) {
+      EstimatedRobotPose camPose = result.get();
+      poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), Timer.getFPGATimestamp() - camPose.timestampSeconds);
+    }
 
     moduleAbsolutePositions.set(
         new double[] {

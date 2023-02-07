@@ -1,10 +1,10 @@
 package frc3512.robot.subsystems;
 
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import frc3512.lib.sim.MotorSim;
 import frc3512.lib.util.CANCoderUtil;
 import frc3512.lib.util.CANCoderUtil.CANCoderUsage;
@@ -33,7 +34,7 @@ public class SwerveModule {
 
   private RelativeEncoder driveEncoder;
   private RelativeEncoder integratedAngleEncoder;
-  private CANCoder angleEncoder;
+  private WPI_CANCoder angleEncoder;
 
   private final SparkMaxPIDController driveController;
   private final SparkMaxPIDController angleController;
@@ -58,7 +59,7 @@ public class SwerveModule {
     angleOffset = moduleConstants.angleOffset;
 
     /* Angle Encoder Config */
-    angleEncoder = new CANCoder(moduleConstants.cancoderID);
+    angleEncoder = new WPI_CANCoder(moduleConstants.cancoderID);
     configAngleEncoder();
 
     /* Angle Motor Config */
@@ -82,6 +83,7 @@ public class SwerveModule {
     config.sensorDirection = Constants.SwerveConstants.canCoderInvert;
     config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
     config.sensorTimeBase = SensorTimeBase.PerSecond;
+    config.sensorCoefficient = 0.087890625;
 
     angleEncoder.configFactoryDefault();
     angleEncoder.configAllSettings(config);
@@ -102,8 +104,10 @@ public class SwerveModule {
     angleController.setFF(Constants.SwerveConstants.angleKFF);
     angleController.setPositionPIDWrappingMinInput(-180.0);
     angleController.setPositionPIDWrappingMaxInput(180.0);
+    angleController.setPositionPIDWrappingEnabled(true);
     angleMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     angleMotor.burnFlash();
+    Timer.delay(0.1);
     resetAbsolute();
   }
 
