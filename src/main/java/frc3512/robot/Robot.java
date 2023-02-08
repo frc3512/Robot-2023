@@ -4,11 +4,11 @@
 
 package frc3512.robot;
 
+import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc3512.lib.logging.SpartanLogManager;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,8 +18,22 @@ import frc3512.lib.logging.SpartanLogManager;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
+  private static Robot instance;
   private Robot2023 m_robot = new Robot2023();
+
+  /** Robot constructor */
+  public Robot() {
+    instance = this;
+  }
+
+  /**
+   * Robot getInstance(), should have been implemented in TimedRobot but isnt.
+   *
+   * @return Robot instance.
+   */
+  public static Robot getInstance() {
+    return instance;
+  }
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -29,9 +43,6 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Disable joystick warnings
     DriverStation.silenceJoystickConnectionWarning(true);
-
-    // Enable logging
-    SpartanLogManager.startLogging();
 
     m_robot.configureAxisActions();
     m_robot.configureButtonBindings();
@@ -106,5 +117,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    REVPhysicsSim.getInstance().run();
+  }
 }
