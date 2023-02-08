@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import frc3512.lib.sim.MotorSim;
 import frc3512.lib.util.CANCoderUtil;
 import frc3512.lib.util.CANCoderUtil.CANCoderUsage;
@@ -88,6 +87,8 @@ public class SwerveModule {
     angleEncoder.configFactoryDefault();
     angleEncoder.configAllSettings(config);
     CANCoderUtil.setCANCoderBusUsage(angleEncoder, CANCoderUsage.kMinimal);
+
+    angleEncoder.setPositionToAbsolute();
   }
 
   private void configAngleMotor() {
@@ -107,11 +108,10 @@ public class SwerveModule {
     angleController.setPositionPIDWrappingEnabled(true);
     angleMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     angleMotor.burnFlash();
-    Timer.delay(0.1);
-    resetAbsolute();
+    integratedAngleEncoder.setPosition(0.0);
   }
 
-  private void configDriveMotor() {
+  public void configDriveMotor() {
     driveMotor.restoreFactoryDefaults();
     CANSparkMaxUtil.setCANSparkMaxBusUsage(driveMotor, Usage.kAll);
     driveMotor.setSmartCurrentLimit(Constants.SwerveConstants.driveContinuousCurrentLimit);
@@ -132,7 +132,7 @@ public class SwerveModule {
     driveEncoder.setPosition(0.0);
   }
 
-  private void resetAbsolute() {
+  public void resetAbsolute() {
     double absolutePosition = getCanCoder().getDegrees() - angleOffset.getDegrees();
     angleEncoder.setPosition(absolutePosition);
   }

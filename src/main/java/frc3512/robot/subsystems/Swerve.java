@@ -67,6 +67,9 @@ public class Swerve extends SubsystemBase {
           new SwerveModule(3, Constants.SwerveConstants.Mod3.constants)
         };
 
+    Timer.delay(1.0);
+    resetModuleZeros();
+
     poseEstimator =
         new SwerveDrivePoseEstimator(
             Constants.SwerveConstants.swerveKinematics, getYaw(), getPositions(), new Pose2d());
@@ -152,6 +155,12 @@ public class Swerve extends SubsystemBase {
 
     for (SwerveModule mod : mSwerveMods) {
       mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+    }
+  }
+
+  public void resetModuleZeros() {
+    for (SwerveModule mod : mSwerveMods) {
+      mod.resetAbsolute();
     }
   }
 
