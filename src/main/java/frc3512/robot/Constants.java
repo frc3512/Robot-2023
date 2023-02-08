@@ -97,10 +97,10 @@ public final class Constants {
 
     public static final int EncoderA = 0;
     public static final int EncoderB = 1;
-    public static final int MotorAID = 0;
-    public static final int MotorBID = 1;
+    public static final int MotorAID = 20;
+    public static final int MotorBID = 21;
 
-    public static final double distancePerpulse = 0.0;
+    public static final double distancePerpulse = 0.01;
   }
 
   public static final class IntakeConstants {
