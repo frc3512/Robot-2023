@@ -1,41 +1,59 @@
 package frc3512.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.revrobotics.REVPhysicsSim;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc3512.lib.logging.SpartanDoubleArrayEntry;
 import frc3512.lib.logging.SpartanDoubleEntry;
-import frc3512.lib.logging.SpartanPose2dEntry;
 import frc3512.lib.sim.GyroSim;
+import frc3512.lib.util.PhotonCameraWrapper;
 import frc3512.robot.Constants;
+
+import java.util.Optional;
+import java.util.function.DoubleSupplier;
+
+import org.photonvision.EstimatedRobotPose;
 
 public class Swerve extends SubsystemBase {
   private final WPI_Pigeon2 gyro;
   private final GyroSim gyroSim;
-  private final Vision vision;
+  private final PhotonCameraWrapper camera;
 
   private SwerveDrivePoseEstimator poseEstimator;
-  private SwerveDriveOdometry odometry;
   private SwerveModule[] mSwerveMods;
+
+  private SlewRateLimiter translationLimiter = new SlewRateLimiter(3.0);
+  private SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.0);
+  private SlewRateLimiter rotationLimiter = new SlewRateLimiter(3.0);
 
   private Field2d field;
   private final SpartanDoubleEntry gyroYaw;
-  private final SpartanPose2dEntry odometryPose;
+  private final SpartanDoubleArrayEntry moduleIntegratedPositions;
+  private final SpartanDoubleArrayEntry moduleAbsolutePositions;
+  private final SpartanDoubleArrayEntry moduleDriveVelocities;
+  private final SpartanDoubleArrayEntry moduleDrivePositions;
 
   /** Subsystem class for the swerve drive. */
-  public Swerve(Vision vision) {
-    this.vision = vision;
-
+  public Swerve() {
+    camera = new PhotonCameraWrapper();
     gyro = new WPI_Pigeon2(Constants.SwerveConstants.pigeonID);
     gyroSim = new GyroSim(gyro);
     gyro.configFactoryDefault();
@@ -49,9 +67,8 @@ public class Swerve extends SubsystemBase {
           new SwerveModule(3, Constants.SwerveConstants.Mod3.constants)
         };
 
-    odometry =
-        new SwerveDriveOdometry(
-            Constants.SwerveConstants.swerveKinematics, getYaw(), getPositions());
+    Timer.delay(1.0);
+    resetModuleZeros();
 
     poseEstimator =
         new SwerveDrivePoseEstimator(
@@ -59,8 +76,62 @@ public class Swerve extends SubsystemBase {
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
-    gyroYaw = new SpartanDoubleEntry("/Diagnostics/Swerve/Gyro/Yaw", 0.0);
-    odometryPose = new SpartanPose2dEntry("/Diagnostics/Swerve/Odometry", new Pose2d());
+
+    gyroYaw = new SpartanDoubleEntry("/Diagnostics/Swerve/Gyro/Yaw");
+    moduleIntegratedPositions =
+        new SpartanDoubleArrayEntry("/Diagnostics/Swerve/Modules/Integrated Positions");
+    moduleAbsolutePositions =
+        new SpartanDoubleArrayEntry("/Diagnostics/Swerve/Modules/Absolute Positions");
+    moduleDriveVelocities =
+        new SpartanDoubleArrayEntry("/Diagnostics/Swerve/Modules/Drive Velocity");
+    moduleDrivePositions =
+        new SpartanDoubleArrayEntry("/Diagnostics/Swerve/Modules/Drive Positions");
+  }
+
+  public Command drive(
+      DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup) {
+    return run(() -> {
+          double translationVal =
+              translationLimiter.calculate(
+                  MathUtil.applyDeadband(
+                      translationSup.getAsDouble(), Constants.GeneralConstants.swerveDeadband));
+          double strafeVal =
+              strafeLimiter.calculate(
+                  MathUtil.applyDeadband(
+                      strafeSup.getAsDouble(), Constants.GeneralConstants.swerveDeadband));
+          double rotationVal =
+              rotationLimiter.calculate(
+                  MathUtil.applyDeadband(
+                      rotationSup.getAsDouble(), Constants.GeneralConstants.swerveDeadband));
+
+          drive(
+              new Translation2d(translationVal, strafeVal)
+                  .times(Constants.SwerveConstants.maxSpeed),
+              rotationVal * Constants.SwerveConstants.maxAngularVelocity,
+              true,
+              true);
+        })
+        .withName("TeleopSwerve");
+  }
+
+  public Command followTrajectory(PathPlannerTrajectory trajectory, boolean firstPath) {
+    return Commands.sequence(
+        run(
+            () -> {
+              if (firstPath) {
+                this.resetOdometry(trajectory.getInitialHolonomicPose());
+              }
+            }),
+        new PPSwerveControllerCommand(
+            trajectory,
+            this::getPose,
+            Constants.SwerveConstants.swerveKinematics,
+            new PIDController(Constants.AutonConstants.xControllerP, 0, 0),
+            new PIDController(Constants.AutonConstants.yControllerP, 0, 0),
+            new PIDController(Constants.AutonConstants.thetaControllerP, 0, 0),
+            this::setModuleStates,
+            this),
+        this.drive(() -> 0.0, () -> 0.0, () -> 0.0));
   }
 
   public void drive(
@@ -87,25 +158,26 @@ public class Swerve extends SubsystemBase {
     }
   }
 
+  public void resetModuleZeros() {
+    for (SwerveModule mod : mSwerveMods) {
+      mod.resetAbsolute();
+    }
+  }
+
   public void resetOdometry(Pose2d pose) {
     poseEstimator.resetPosition(getYaw(), getPositions(), pose);
-    odometry.resetPosition(getYaw(), getPositions(), pose);
   }
 
   public void zeroGyro() {
-    setYaw(0.0);
+    gyro.reset();
   }
 
   public void setYaw(double degrees) {
     gyro.setYaw(degrees);
   }
 
-  public Pose2d getEstimatedPose() {
-    return poseEstimator.getEstimatedPosition();
-  }
-
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   }
 
   public SwerveModuleState[] getStates() {
@@ -133,28 +205,45 @@ public class Swerve extends SubsystemBase {
   @Override
   public void periodic() {
     poseEstimator.update(getYaw(), getPositions());
-    odometry.update(getYaw(), getPositions());
 
-    /* BROKEN, BUG FIX NEEDED
-    if (RobotBase.isReal()) {
-      var result = vision.getEstimatedGlobalPose(getEstimatedPose());
-      if (result.isPresent()) {
-        poseEstimator.addVisionMeasurement(
-            result.get().estimatedPose.toPose2d(),
-            Timer.getFPGATimestamp() - result.get().timestampSeconds);
-      }
+    Optional<EstimatedRobotPose> result = camera.getEstimatedGlobalPose(getPose());
+
+    if (result.isPresent()) {
+      EstimatedRobotPose camPose = result.get();
+      poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), Timer.getFPGATimestamp() - camPose.timestampSeconds);
     }
-    */
 
-    vision.setRobotPose(getEstimatedPose());
-    field.setRobotPose(getPose());
+    moduleAbsolutePositions.set(
+        new double[] {
+          mSwerveMods[0].getCanCoder().getDegrees(),
+          mSwerveMods[1].getCanCoder().getDegrees(),
+          mSwerveMods[2].getCanCoder().getDegrees(),
+          mSwerveMods[3].getCanCoder().getDegrees()
+        });
+    moduleIntegratedPositions.set(
+        new double[] {
+          mSwerveMods[0].getAnglePosition().getDegrees(),
+          mSwerveMods[1].getAnglePosition().getDegrees(),
+          mSwerveMods[2].getAnglePosition().getDegrees(),
+          mSwerveMods[3].getAnglePosition().getDegrees()
+        });
+    moduleDriveVelocities.set(
+        new double[] {
+          mSwerveMods[0].getDriveVelocity(),
+          mSwerveMods[1].getDriveVelocity(),
+          mSwerveMods[2].getDriveVelocity(),
+          mSwerveMods[3].getDriveVelocity()
+        });
+    moduleDrivePositions.set(
+        new double[] {
+          mSwerveMods[0].getDrivePosition(),
+          mSwerveMods[1].getDrivePosition(),
+          mSwerveMods[2].getDrivePosition(),
+          mSwerveMods[3].getDrivePosition()
+        });
 
-    mSwerveMods[0].periodic();
-    mSwerveMods[1].periodic();
-    mSwerveMods[2].periodic();
-    mSwerveMods[3].periodic();
     gyroYaw.set(getYaw().getDegrees());
-    odometryPose.set(getPose());
+    field.setRobotPose(getPose());
   }
 
   @Override
