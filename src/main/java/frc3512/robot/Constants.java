@@ -47,8 +47,7 @@ public final class Constants {
     public static final PathConstraints constraints =
         new PathConstraints(maxVelocity, maxAcceleration);
 
-    public static final double xControllerP = 1.0;
-    public static final double yControllerP = 1.0;
+    public static final double xyControllerP = 1.0;
     public static final double thetaControllerP = 1.0;
   }
 }

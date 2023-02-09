@@ -1,14 +1,12 @@
 package frc3512.robot.subsystems;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.swervelib.SwerveDrive;
 import frc3512.lib.swervelib.SwerveModule.Verbosity;
@@ -49,27 +47,20 @@ public class Swerve extends SubsystemBase {
         .withName("TeleopSwerve");
   }
 
-  public Command followTrajectory(PathPlannerTrajectory trajectory, boolean firstPath) {
-    return Commands.sequence(
-        run(
-            () -> {
-              if (firstPath) {
-                swerve.resetOdometry(trajectory.getInitialHolonomicPose());
-              }
-            }),
-        new PPSwerveControllerCommand(
-            trajectory,
-            swerve::getPose,
-            new PIDController(Constants.AutonConstants.xControllerP, 0, 0),
-            new PIDController(Constants.AutonConstants.yControllerP, 0, 0),
-            new PIDController(Constants.AutonConstants.thetaControllerP, 0, 0),
-            swerve::set,
-            this),
-        this.drive(() -> 0.0, () -> 0.0, () -> 0.0));
+  public void setChassisSpeeds(ChassisSpeeds speeds) {
+    swerve.set(speeds);
   }
 
   public void zeroGyro() {
     swerve.zeroGyro();
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    swerve.resetOdometry(pose);
+  }
+
+  public Pose2d getPose() {
+    return swerve.getPose();
   }
 
   @Override

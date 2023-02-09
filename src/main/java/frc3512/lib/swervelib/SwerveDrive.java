@@ -2,6 +2,7 @@ package frc3512.lib.swervelib;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -25,6 +26,7 @@ import frc3512.lib.swervelib.SwerveModule.Verbosity;
 import frc3512.lib.swervelib.SwerveMotor.ModuleMotorType;
 import frc3512.lib.swervelib.kinematics.SwerveDriveKinematics2;
 import frc3512.lib.swervelib.kinematics.SwerveModuleState2;
+import frc3512.robot.Constants;
 import frc3512.robot.Robot;
 import java.io.Closeable;
 
@@ -126,9 +128,9 @@ public class SwerveDrive extends RobotDriveBase implements Sendable, AutoCloseab
     m_driverMaxSpeedMPS = driverMaxSpeedMetersPerSecond;
     m_driverMaxAngularVelocity = driverMaxAngularVelocityRadiansPerSecond;
     m_driveAccellerationMetersPerSecondSquared = driverMaxDriveAccelerationMetersPerSecond;
-    m_xLimiter = new SlewRateLimiter(driverMaxDriveAccelerationMetersPerSecond);
-    m_yLimiter = new SlewRateLimiter(driverMaxDriveAccelerationMetersPerSecond);
-    m_turningLimiter = new SlewRateLimiter(driverMaxAngularAccelerationRadiansPerSecond);
+    m_xLimiter = new SlewRateLimiter(3.0);
+    m_yLimiter = new SlewRateLimiter(3.0);
+    m_turningLimiter = new SlewRateLimiter(3.0);
     m_physicalMaxSpeedMPS = physicalMaxSpeedMPS;
 
     m_pigeonIMU = pigeon;
@@ -291,18 +293,6 @@ public class SwerveDrive extends RobotDriveBase implements Sendable, AutoCloseab
   }
 
   /**
-   * Algebraically apply a deadband using a piece wise function.
-   *
-   * @param value value to apply deadband to.
-   * @param complex Use algebra to determine deadband by starting the value at 0 past deadband.
-   * @return Value with deadband applied.
-   */
-  private double applyDeadband(double value, boolean complex) {
-    value = Math.abs(value) > m_deadband ? value : 0;
-    return complex ? ((1 / (1 - m_deadband)) * (Math.abs(value) - .2)) * Math.signum(value) : value;
-  }
-
-  /**
    * Drive swerve based off controller input.
    *
    * @param forward The speed (-1 to 1) in which the Y axis should go.
@@ -312,9 +302,9 @@ public class SwerveDrive extends RobotDriveBase implements Sendable, AutoCloseab
    */
   public void drive(double forward, double strafe, double turn, boolean fieldRelative) {
     // 2. Apply deadband/Dead-Zone
-    forward = applyDeadband(forward, true);
-    strafe = applyDeadband(strafe, true);
-    turn = applyDeadband(turn, true);
+    forward = MathUtil.applyDeadband(forward, Constants.GeneralConstants.swerveDeadband);
+    strafe = MathUtil.applyDeadband(strafe, Constants.GeneralConstants.swerveDeadband);
+    turn = MathUtil.applyDeadband(turn, Constants.GeneralConstants.swerveDeadband);
 
     // 3. Make the driving smoother
     forward = m_xLimiter.calculate(forward) * m_driverMaxSpeedMPS;
