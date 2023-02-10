@@ -4,11 +4,16 @@
 
 package frc3512.robot;
 
+import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc3512.lib.logging.SpartanLogManager;
+import frc3512.lib.swervelib.parser.SwerveParser;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,8 +23,23 @@ import frc3512.lib.logging.SpartanLogManager;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
+  private static Robot instance;
   private Robot2023 m_robot = new Robot2023();
+  private Timer disabledTimer;
+
+  /** Robot constructor */
+  public Robot() {
+    instance = this;
+  }
+
+  /**
+   * Robot getInstance(), should have been implemented in TimedRobot but isnt.
+   *
+   * @return Robot instance.
+   */
+  public static Robot getInstance() {
+    return instance;
+  }
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -30,11 +50,13 @@ public class Robot extends TimedRobot {
     // Disable joystick warnings
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    // Enable logging
-    SpartanLogManager.startLogging();
-
     m_robot.configureAxisActions();
     m_robot.configureButtonBindings();
+
+    // Create a timer to disable motor brake a few seconds after disable.  This will let the robot
+    // stop
+    // immediately when disabled, but then also let it be pushed more
+    disabledTimer = new Timer();
   }
 
   /**
@@ -55,14 +77,24 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_robot.setMotorBrake(true);
+    disabledTimer.reset();
+    disabledTimer.start();
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    if (disabledTimer.hasElapsed(Constants.GeneralConstants.wheelLockTime)) {
+      m_robot.setMotorBrake(false);
+      disabledTimer.stop();
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_robot.setMotorBrake(true);
     m_autonomousCommand = m_robot.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -94,6 +126,12 @@ public class Robot extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+
+    try {
+      new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve"));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /** This function is called periodically during test mode. */
@@ -106,5 +144,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    REVPhysicsSim.getInstance().run();
+  }
 }
