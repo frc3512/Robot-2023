@@ -6,17 +6,20 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.swervelib.SwerveDrive;
 import frc3512.lib.swervelib.parser.SwerveParser;
 import frc3512.robot.Constants;
 import java.io.File;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
+import org.photonvision.EstimatedRobotPose;
 
 public class Swerve extends SubsystemBase {
 
-  // private final Vision vision;
+  private final Vision vision;
   private final SwerveDrive swerve;
 
   private SlewRateLimiter translationLimiter = new SlewRateLimiter(3.0);
@@ -24,8 +27,8 @@ public class Swerve extends SubsystemBase {
   private SlewRateLimiter rotationLimiter = new SlewRateLimiter(3.0);
 
   /** Subsystem class for the swerve drive. */
-  public Swerve() {
-    // this.vision = vision;
+  public Swerve(Vision vision) {
+    this.vision = vision;
 
     try {
       swerve =
@@ -90,7 +93,6 @@ public class Swerve extends SubsystemBase {
   public void periodic() {
     swerve.updateOdometry();
 
-    /*
     if (RobotBase.isReal()) {
       Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(swerve.getPose());
 
@@ -99,6 +101,5 @@ public class Swerve extends SubsystemBase {
         swerve.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
       }
     }
-    */
   }
 }
