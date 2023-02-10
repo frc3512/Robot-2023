@@ -31,10 +31,14 @@ public class Vision extends SubsystemBase {
   private ArrayList<GlobalMeasurement> measurements = new ArrayList<>();
   private PhotonTrackedTarget bestTarget;
   private GlobalMeasurement bestMeasurement;
+  private Pose2d robotPose = new Pose2d();
+  private boolean hasTarget = false;
 
   private SpartanPose2dEntry tagPoseEntry;
   private SpartanDoubleEntry timestampEntry;
   private SpartanDoubleEntry ambiguityEntry;
+  private SpartanDoubleEntry distanceEntry;
+  private SpartanDoubleEntry yawEntry;
 
   public Vision() {
     photonCamera = new PhotonCamera(Constants.VisionConstants.cameraName);
@@ -53,9 +57,15 @@ public class Vision extends SubsystemBase {
             photonCamera,
             Constants.VisionConstants.robotToCam);
 
+    distanceEntry = new SpartanDoubleEntry("/Diagnostics/Vision/Tag Distance");
+    yawEntry = new SpartanDoubleEntry("/Diagnostics/Vision/Tag Yaw");
     tagPoseEntry = new SpartanPose2dEntry("/Diagnostics/Vision/Tag Pose");
     timestampEntry = new SpartanDoubleEntry("/Diagnostics/Vision/Timestamp");
     ambiguityEntry = new SpartanDoubleEntry("/Diagnostics/Vision/Tag Ambiguity");
+  }
+
+  public void setRobotPose(Pose2d pose) {
+    this.robotPose = pose;
   }
 
   public List<GlobalMeasurement> getMeasurements() {
@@ -68,6 +78,10 @@ public class Vision extends SubsystemBase {
 
   public GlobalMeasurement getBestMeasurement() {
     return bestMeasurement;
+  }
+
+  public boolean hasTarget() {
+    return hasTarget;
   }
 
   /**
@@ -85,13 +99,17 @@ public class Vision extends SubsystemBase {
     PhotonPipelineResult result = photonCamera.getLatestResult();
 
     if (!result.hasTargets()) {
+      hasTarget = false;
       measurements.clear();
       bestTarget = null;
       bestMeasurement = null;
       return;
     }
 
+    hasTarget = true;
+
     bestTarget = result.getBestTarget();
+
     Transform3d cameraToTarget = bestTarget.getBestCameraToTarget();
 
     Optional<Pose3d> feducialPos = atfl.getTagPose(bestTarget.getFiducialId());
@@ -113,11 +131,15 @@ public class Vision extends SubsystemBase {
               new Pose2d(
                   bestPose.getX(), bestPose.getY(), new Rotation2d(bestPose.getRotation().getZ())),
               result.getTimestampSeconds(),
-              bestTarget.getPoseAmbiguity());
+              bestTarget.getPoseAmbiguity(),
+              bestTarget.getYaw(),
+              PhotonUtils.getDistanceToPose(robotPose, feducialPos.get().toPose2d()));
     }
 
     tagPoseEntry.set(bestMeasurement.pose);
+    yawEntry.set(bestMeasurement.yaw);
     timestampEntry.set(bestMeasurement.timestampSeconds);
     ambiguityEntry.set(bestMeasurement.ambiguity);
+    distanceEntry.set(bestMeasurement.distance);
   }
 }

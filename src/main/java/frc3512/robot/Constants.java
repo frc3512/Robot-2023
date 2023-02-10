@@ -16,6 +16,14 @@ public final class Constants {
 
     // Joystick axis deadband for the swerve drive
     public static final double swerveDeadband = 0.1;
+
+    // Hold time on motor brakes when disabled
+    public static final double wheelLockTime = 10;
+
+    public static final double robotMass = (148 - 20.3) * 0.453592;
+    public static final double chassisMass = robotMass;
+    public static final Translation3d chassisCG = new Translation3d(0, 0, Units.inchesToMeters(8));
+    public static final double loopTime = 0.13;
   }
 
   /** Constants revolving around joysticks */

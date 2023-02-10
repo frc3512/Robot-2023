@@ -1,4 +1,4 @@
-package frc3512.lib.swervelib.kinematics;
+package frc3512.lib.swervelib.math;
 
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
@@ -6,26 +6,23 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import java.util.Arrays;
 import java.util.Collections;
 import org.ejml.simple.SimpleMatrix;
-
-// Taken from https://github.com/FRC2539/javabot-2023/tree/main/src/main/java/frc/lib/swerve
-// and
-// https://github.com/first95/FRC2022/tree/feature/secondOrderKinematics/SwervyBot/src/main/java/frc/lib
 
 /**
  * Clone of WPI SwerveKinematics, which implements second order kinematics when calculating modules
  * states from chassis speed.
  *
- * <p>Taken from https://github.com/FRC2539/javabot-2023/tree/main/src/main/java/frc/lib/swerve
+ * <p>
  *
- * <p>https://github.com/first95/FRC2022/tree/feature/secondOrderKinematics/SwervyBot/src/main/java/frc/lib
- * Makes use of {@link SwerveDriveKinematics2} to add the angular velocity that is required of the
+ * <p>Makes use of {@link SwerveModuleState2} to add the angular velocity that is required of the
  * module as an output.
  */
-public class SwerveDriveKinematics2 extends edu.wpi.first.math.kinematics.SwerveDriveKinematics {
+public class SwerveKinematics2 extends SwerveDriveKinematics {
 
   private final SimpleMatrix m_inverseKinematics;
   private final SimpleMatrix m_forwardKinematics;
@@ -38,14 +35,13 @@ public class SwerveDriveKinematics2 extends edu.wpi.first.math.kinematics.Swerve
 
   /**
    * Constructs a swerve drive kinematics object. This takes in a variable number of wheel locations
-   * as {@link Translation2d}s. The order in which you pass in the wheel locations is the same order
-   * that you will receive the module states when performing inverse kinematics. It is also expected
-   * that you pass in the module states in the same order when calling the forward kinematics
-   * methods.
+   * as Translation2ds. The order in which you pass in the wheel locations is the same order that
+   * you will receive the module states when performing inverse kinematics. It is also expected that
+   * you pass in the module states in the same order when calling the forward kinematics methods.
    *
    * @param wheelsMeters The locations of the wheels relative to the physical center of the robot.
    */
-  public SwerveDriveKinematics2(Translation2d... wheelsMeters) {
+  public SwerveKinematics2(Translation2d... wheelsMeters) {
     super(wheelsMeters);
     if (wheelsMeters.length < 2) {
       throw new IllegalArgumentException("A swerve drive requires at least two modules");
@@ -86,7 +82,7 @@ public class SwerveDriveKinematics2 extends edu.wpi.first.math.kinematics.Swerve
       SwerveModuleState2[] moduleStates, double attainableMaxSpeedMetersPerSecond) {
     double realMaxSpeed = Collections.max(Arrays.asList(moduleStates)).speedMetersPerSecond;
     if (realMaxSpeed > attainableMaxSpeedMetersPerSecond) {
-      for (SwerveModuleState2 moduleState : moduleStates) {
+      for (SwerveModuleState moduleState : moduleStates) {
         moduleState.speedMetersPerSecond =
             moduleState.speedMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond;
       }
@@ -132,7 +128,7 @@ public class SwerveDriveKinematics2 extends edu.wpi.first.math.kinematics.Swerve
             / attainableMaxRotationalVelocityRadiansPerSecond;
     double k = Math.max(translationalK, rotationalK);
     double scale = Math.min(k * attainableMaxModuleSpeedMetersPerSecond / realMaxSpeed, 1);
-    for (SwerveModuleState2 moduleState : moduleStates) {
+    for (SwerveModuleState moduleState : moduleStates) {
       moduleState.speedMetersPerSecond *= scale;
     }
   }
@@ -233,7 +229,7 @@ public class SwerveDriveKinematics2 extends edu.wpi.first.math.kinematics.Swerve
 
       var omegaVector = trigThetaAngle.mult(accelVector);
 
-      double omega = omegaVector.get(1, 0) / speed;
+      double omega = (omegaVector.get(1, 0) / speed) - chassisSpeeds.omegaRadiansPerSecond;
       m_moduleStates[i] = new SwerveModuleState2(speed, angle, omega);
     }
 

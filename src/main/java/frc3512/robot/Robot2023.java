@@ -28,6 +28,10 @@ public class Robot2023 {
   private final CommandJoystick appendage =
       new CommandJoystick(Constants.OperatorConstants.appendageControllerPort);
 
+  public void setMotorBrake(boolean brake) {
+    m_swerve.setMotorBrake(brake);
+  }
+
   /** Used for defining button actions. */
   public void configureButtonBindings() {
 
@@ -40,8 +44,8 @@ public class Robot2023 {
     m_swerve.setDefaultCommand(
         m_swerve.drive(
             () -> -driver.getRawAxis(translationAxis),
-            () -> -driver.getRawAxis(strafeAxis),
-            () -> -driver.getRawAxis(rotationAxis)));
+            () -> driver.getRawAxis(strafeAxis),
+            () -> driver.getRawAxis(rotationAxis)));
   }
 
   /**
