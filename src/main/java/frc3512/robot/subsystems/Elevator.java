@@ -62,12 +62,6 @@ public class Elevator extends SubsystemBase {
             m_elevatorMotorS.set(elevator.getAsDouble());
         });
     }
-    public void testing(DoubleSupplier elevator) {
-        this.run(() -> {
-            m_elevatorMotorM.set(elevator.getAsDouble());
-            m_elevatorMotorS.set(elevator.getAsDouble());
-        });
-    }
 
     @Override
     public void periodic() {
@@ -78,8 +72,6 @@ public class Elevator extends SubsystemBase {
 
         SmartDashboard.putBoolean("Forward Limit Switch", m_forwardLimit.isPressed());
         SmartDashboard.putBoolean("Reverse Limit Switch", m_reverseLimit.isPressed());
-        // update the magnet
-        // update the elevator_limit
         SmartDashboard.putNumber("Absolute Encoder Position", absoluteEncoder.getPosition());
         SmartDashboard.putNumber("Absolute Encoder Velocity", absoluteEncoder.getVelocity());
     }
