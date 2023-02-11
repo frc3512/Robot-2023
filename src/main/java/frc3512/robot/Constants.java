@@ -91,7 +91,7 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    //public static final double kDt = 0.02;
+    // public static final double kDt = 0.02;
 
     public static final int EncoderA = 0;
     public static final int EncoderB = 1;
