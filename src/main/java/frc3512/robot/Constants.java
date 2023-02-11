@@ -58,6 +58,8 @@ public final class Constants {
     // Joystick axis deadband for the swerve drive
     public static final double swerveDeadband = 0.1;
 
+    public static final double voltageComp = 12.0;
+
     // Hold time on motor brakes when disabled
     public static final double wheelLockTime = 10;
 
@@ -110,7 +112,7 @@ public final class Constants {
     public static final double maxAcceleration = 4.0;
 
     public static final PathConstraints constraints =
-        new PathConstraints(maxVelocity, maxAcceleration);
+        new PathConstraints(AutonConstants.maxVelocity, AutonConstants.maxAcceleration);
 
     public static final double xyControllerP = 1.0;
     public static final double thetaControllerP = 1.0;

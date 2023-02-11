@@ -17,7 +17,7 @@ public class Intake extends SubsystemBase{
     public Intake() {
         CANSparkMaxUtil.setCANSparkMaxBusUsage(m_intakeMotor, Usage.kMinimal);
         m_intakeMotor.setSmartCurrentLimit(80);
-        m_intakeMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageCompSwerve);
+        m_intakeMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
         m_intakeMotor.burnFlash();
     }
 
