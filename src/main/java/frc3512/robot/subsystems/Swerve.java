@@ -92,7 +92,6 @@ public class Swerve extends SubsystemBase {
   @Override
   public void periodic() {
     swerve.updateOdometry();
-    vision.setRobotPose(getPose());
 
     if (RobotBase.isReal()) {
       Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(swerve.getPose());
