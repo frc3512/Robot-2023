@@ -52,6 +52,8 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putBoolean("Forward Limit Enabled", m_forwardLimit.isLimitSwitchEnabled());
         SmartDashboard.putBoolean("Reverse Limit Enabled", m_reverseLimit.isLimitSwitchEnabled());
 
+        m_elevatorMotorS.follow(m_elevatorMotorM);
+
         m_elevator = root.append(new MechanismLigament2d("elevator", kElevatorMinimumLength, 90));
         SmartDashboard.putData("Mech2d", mech);
     }
@@ -59,7 +61,6 @@ public class Elevator extends SubsystemBase {
     public Command moveElevator(DoubleSupplier elevator) {
         return this.run(() -> {
             m_elevatorMotorM.set(elevator.getAsDouble());
-            m_elevatorMotorS.set(elevator.getAsDouble());
         });
     }
 
