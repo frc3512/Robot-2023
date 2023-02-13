@@ -48,22 +48,27 @@ public final class Autos {
   }
 
   public Command balanceMidZone() {
-    return autonBuilder.fullAuto(PathPlanner.loadPath("Balance Mid Zone", Constants.AutonConstants.constraints));
+    return autonBuilder.fullAuto(
+        PathPlanner.loadPath("Balance Mid Zone", Constants.AutonConstants.constraints));
   }
 
   public Command score2MoneyZone() {
-    return autonBuilder.fullAuto(PathPlanner.loadPath("Score 2 Money Zone", Constants.AutonConstants.constraints));
+    return autonBuilder.fullAuto(
+        PathPlanner.loadPath("Score 2 Money Zone", Constants.AutonConstants.constraints));
   }
 
   public Command score3MoneyZone() {
-    return autonBuilder.fullAuto(PathPlanner.loadPath("Score 3 Money Zone", Constants.AutonConstants.constraints));
+    return autonBuilder.fullAuto(
+        PathPlanner.loadPath("Score 3 Money Zone", Constants.AutonConstants.constraints));
   }
 
   public Command score2FarZone() {
-    return autonBuilder.fullAuto(PathPlanner.loadPathGroup("Score 2 Far Zone", Constants.AutonConstants.constraints));
+    return autonBuilder.fullAuto(
+        PathPlanner.loadPathGroup("Score 2 Far Zone", Constants.AutonConstants.constraints));
   }
 
   public Command score3FarZone() {
-    return autonBuilder.fullAuto(PathPlanner.loadPathGroup("Score 3 Far Zone", Constants.AutonConstants.constraints));
+    return autonBuilder.fullAuto(
+        PathPlanner.loadPathGroup("Score 3 Far Zone", Constants.AutonConstants.constraints));
   }
 }
