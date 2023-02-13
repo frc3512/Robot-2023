@@ -1,13 +1,54 @@
 package frc3512.robot;
 
 import com.pathplanner.lib.PathConstraints;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import java.util.List;
 
 /** Constants for the robot project */
 public final class Constants {
+
+  /* Field related constants */
+  public static final class FieldConstants {
+    // List of possible scoring locations as Pose2d objects
+    public static final List<Pose2d> scoringPositions =
+        List.of(
+            new Pose2d(
+                new Translation2d(0.555, 7.436),
+                Rotation2d.fromRadians(Math.PI)), // Red loading double station
+            new Pose2d(new Translation2d(0.555, 6.146), Rotation2d.fromRadians(Math.PI)),
+            new Pose2d(
+                new Translation2d(15.03, 5.061),
+                Rotation2d.fromDegrees(0.0)), // Red node scoring locations
+            new Pose2d(new Translation2d(15.03, 4.405), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(15.03, 3.846), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(15.03, 3.298), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(15.03, 2.74), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(15.03, 2.2), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(15.03, 1.62), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(15.03, 1.06), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(15.03, 0.52), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(
+                new Translation2d(15.64, 7.430),
+                Rotation2d.fromDegrees(0.0)), // Blue loading double substation
+            new Pose2d(new Translation2d(15.64, 6.16), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(
+                new Translation2d(1.598, 4.996),
+                Rotation2d.fromRadians(-Math.PI)), // Blue node scoring locations
+            new Pose2d(new Translation2d(1.598, 4.373), Rotation2d.fromRadians(-Math.PI)),
+            new Pose2d(new Translation2d(1.598, 3.85), Rotation2d.fromRadians(-Math.PI)),
+            new Pose2d(new Translation2d(1.598, 3.3), Rotation2d.fromRadians(-Math.PI)),
+            new Pose2d(new Translation2d(1.598, 2.75), Rotation2d.fromRadians(-Math.PI)),
+            new Pose2d(new Translation2d(1.598, 2.2), Rotation2d.fromRadians(-Math.PI)),
+            new Pose2d(new Translation2d(1.598, 1.63), Rotation2d.fromRadians(-Math.PI)),
+            new Pose2d(new Translation2d(1.598, 1.05), Rotation2d.fromRadians(-Math.PI)),
+            new Pose2d(new Translation2d(1.598, 0.5), Rotation2d.fromRadians(-Math.PI)));
+  }
 
   /** General robot constants */
   public static final class GeneralConstants {
