@@ -11,12 +11,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc3512.robot.auton.Autos;
 import frc3512.robot.subsystems.Superstructure;
 import frc3512.robot.subsystems.Swerve;
-import frc3512.robot.subsystems.Vision;
 
 public class Robot2023 {
   // Robot subsystems
-  private Vision m_vision = new Vision();
-  private Swerve m_swerve = new Swerve(m_vision);
+  // private Vision m_vision = new Vision();
+  private Swerve m_swerve = new Swerve();
   private Superstructure m_superstructure = new Superstructure(m_swerve);
 
   // Autons
