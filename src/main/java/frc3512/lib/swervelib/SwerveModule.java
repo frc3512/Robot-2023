@@ -122,6 +122,8 @@ public class SwerveModule {
     absoluteEncoderEntry =
         new SpartanDoubleEntry(
             "/Diagnostics/Swerve/Module #" + moduleNumber + "/Absolute Encoder Reading");
+
+    absoluteEncoderEntry.set(getCANCoder());
   }
 
   /** Synchronize the integrated angle encoder with the absolute encoder. */
