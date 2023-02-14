@@ -46,15 +46,15 @@ public class Elevator extends SubsystemBase {
     leftElevatorMotor.setSmartCurrentLimit(40);
     rightElevatorMotor.setSmartCurrentLimit(40);
 
-    rightElevatorMotor.follow(leftElevatorMotor);
+    leftElevatorMotor.follow(rightElevatorMotor);
 
     m_forwardLimit =
-        leftElevatorMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+        leftElevatorMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_reverseLimit =
-        rightElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+        rightElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
-    m_forwardLimit.enableLimitSwitch(true);
-    m_reverseLimit.enableLimitSwitch(true);
+    m_forwardLimit.enableLimitSwitch(false);
+    m_reverseLimit.enableLimitSwitch(false);
 
     leftElevatorMotor.burnFlash();
     rightElevatorMotor.burnFlash();
@@ -74,7 +74,7 @@ public class Elevator extends SubsystemBase {
   public Command moveElevator(DoubleSupplier elevator) {
     return this.run(
         () -> {
-          leftElevatorMotor.set(elevator.getAsDouble());
+          rightElevatorMotor.set(elevator.getAsDouble());
         });
   }
 
