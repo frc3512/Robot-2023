@@ -5,79 +5,90 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxLimitSwitch;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc3512.lib.logging.SpartanBooleanEntry;
+import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.robot.Constants;
-import frc3512.robot.Constants.ElevatorConstants;
 import java.util.function.DoubleSupplier;
 
 public class Elevator extends SubsystemBase {
-  private static final double kMetersPerPulse = Constants.ElevatorConstants.distancePerpulse;
-  private static final double kElevatorMinimumLength = 0.5;
-
-  private final CANSparkMax m_elevatorMotorM;
-  private final CANSparkMax m_elevatorMotorS;
-  private final Encoder m_elevatorEncoder;
-  private final AbsoluteEncoder absoluteEncoder;
+  private final CANSparkMax leftElevatorMotor;
+  private final CANSparkMax rightElevatorMotor;
+  private final AbsoluteEncoder elevatorEncoder;
 
   private SparkMaxLimitSwitch m_forwardLimit;
   private SparkMaxLimitSwitch m_reverseLimit;
 
   private MechanismLigament2d m_elevator;
-
   Mechanism2d mech = new Mechanism2d(3, 3);
-  MechanismRoot2d root = mech.getRoot("climber", 2, 0);
+  MechanismRoot2d root = mech.getRoot("Elevator", 2, 0);
+
+  private SpartanDoubleEntry velocityEntry, positionEntry;
+  private SpartanBooleanEntry forwardLimitEntry, reverseLimitEntry;
 
   public Elevator() {
-    m_elevatorMotorM =
+    leftElevatorMotor =
         new CANSparkMax(
-            Constants.ElevatorConstants.MotorBID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    m_elevatorMotorS =
+            Constants.ElevatorConstants.leftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    rightElevatorMotor =
         new CANSparkMax(
-            Constants.ElevatorConstants.MotorAID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    m_elevatorMotorM.restoreFactoryDefaults();
-    m_elevatorMotorS.restoreFactoryDefaults();
-    m_elevatorEncoder = new Encoder(ElevatorConstants.EncoderA, ElevatorConstants.EncoderB);
-    m_elevatorEncoder.setDistancePerPulse(kMetersPerPulse);
-    absoluteEncoder = m_elevatorMotorM.getAbsoluteEncoder(Type.kDutyCycle);
+            Constants.ElevatorConstants.rightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+    leftElevatorMotor.restoreFactoryDefaults();
+    rightElevatorMotor.restoreFactoryDefaults();
+    elevatorEncoder = leftElevatorMotor.getAbsoluteEncoder(Type.kDutyCycle);
+
+    leftElevatorMotor.setSmartCurrentLimit(40);
+    rightElevatorMotor.setSmartCurrentLimit(40);
+
+    rightElevatorMotor.follow(leftElevatorMotor);
 
     m_forwardLimit =
-        m_elevatorMotorM.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+        leftElevatorMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
     m_reverseLimit =
-        m_elevatorMotorM.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+        rightElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
 
-    m_forwardLimit.enableLimitSwitch(false);
-    m_reverseLimit.enableLimitSwitch(false);
-    SmartDashboard.putBoolean("Forward Limit Enabled", m_forwardLimit.isLimitSwitchEnabled());
-    SmartDashboard.putBoolean("Reverse Limit Enabled", m_reverseLimit.isLimitSwitchEnabled());
+    m_forwardLimit.enableLimitSwitch(true);
+    m_reverseLimit.enableLimitSwitch(true);
 
-        m_elevatorMotorS.follow(m_elevatorMotorM);
+    leftElevatorMotor.burnFlash();
+    rightElevatorMotor.burnFlash();
 
-        m_elevator = root.append(new MechanismLigament2d("elevator", kElevatorMinimumLength, 90));
-        SmartDashboard.putData("Mech2d", mech);
-    }
+    velocityEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Velocity");
+    positionEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Position");
+    forwardLimitEntry = new SpartanBooleanEntry("/Diagnostics/Elevator/Forward Limit Reached");
+    reverseLimitEntry = new SpartanBooleanEntry("/Diagnostics/Elevator/Reverse Limit Reached");
 
-    public Command moveElevator(DoubleSupplier elevator) {
-        return this.run(() -> {
-            m_elevatorMotorM.set(elevator.getAsDouble());
+    m_elevator =
+        root.append(
+            new MechanismLigament2d(
+                "Elevator", Constants.ElevatorConstants.simElevatorMinimumLength, 90));
+    SmartDashboard.putData("Elevator Scoring Mechanism", mech);
+  }
+
+  public Command moveElevator(DoubleSupplier elevator) {
+    return this.run(
+        () -> {
+          leftElevatorMotor.set(elevator.getAsDouble());
         });
   }
 
   @Override
   public void periodic() {
-    m_elevator.setLength(kElevatorMinimumLength + m_elevatorEncoder.getDistance());
+    velocityEntry.set(elevatorEncoder.getVelocity());
+    positionEntry.set(elevatorEncoder.getPosition());
+    forwardLimitEntry.set(m_forwardLimit.isPressed());
+    reverseLimitEntry.set(m_reverseLimit.isPressed());
+  }
 
-    m_forwardLimit.enableLimitSwitch(SmartDashboard.getBoolean("Forward Limit Enabled", false));
-    m_reverseLimit.enableLimitSwitch(SmartDashboard.getBoolean("Reverse Limit Enabled", false));
-
-        SmartDashboard.putBoolean("Forward Limit Switch", m_forwardLimit.isPressed());
-        SmartDashboard.putBoolean("Reverse Limit Switch", m_reverseLimit.isPressed());
-        SmartDashboard.putNumber("Absolute Encoder Position", absoluteEncoder.getPosition());
-        SmartDashboard.putNumber("Absolute Encoder Velocity", absoluteEncoder.getVelocity());
-    }
+  @Override
+  public void simulationPeriodic() {
+    m_elevator.setLength(
+        Constants.ElevatorConstants.simElevatorMinimumLength + elevatorEncoder.getPosition());
+  }
 }

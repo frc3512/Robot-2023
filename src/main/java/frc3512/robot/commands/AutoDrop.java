@@ -1,20 +1,12 @@
 package frc3512.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc3512.robot.Constants;
 
 public class AutoDrop {
-    private final static CommandXboxController xbox =
-        new CommandXboxController(Constants.OperatorConstants.appendageControllerPort);
-    
-    private final static Joystick logitech = 
-        new Joystick(Constants.OperatorConstants.appendageControllerPort); 
-
-
-  public static String getInput(String outtakeLevel) {
-    final double Ypos = xbox.getLeftY();
-    final double Xpos = xbox.getLeftX();
+  public static String getInput(CommandXboxController xboxController, String outtakeLevel) {
+    final double Ypos = xboxController.getLeftY();
+    final double Xpos = xboxController.getLeftX();
     String result = "";
 
     if (outtakeLevel == "L1") {
@@ -47,31 +39,32 @@ public class AutoDrop {
     return result;
   }
 
-  public static String getJoystick() {
-    double rawDirection = logitech.getRawAxis(5);
+  public static String getJoystick(CommandJoystick joystick) {
+    var rawJoystick = joystick.getHID();
+    double rawDirection = rawJoystick.getRawAxis(5);
     String direction = "";
     String result = "";
     String level = "";
     String intake = "";
     int outtake = 0;
 
-    if (logitech.getRawButtonPressed(11)) {
+    if (rawJoystick.getRawButtonPressed(11)) {
       level = "L1";
-    } else if (logitech.getRawButtonPressed(9)) {
+    } else if (rawJoystick.getRawButtonPressed(9)) {
       level = "L2";
-    } else if (logitech.getRawButtonPressed(7)) {
+    } else if (rawJoystick.getRawButtonPressed(7)) {
       level = "L3";
     } else {
       level = "";
     }
 
-    if (logitech.getRawButtonPressed(3)) {
+    if (rawJoystick.getRawButtonPressed(3)) {
       intake = "Cube Ground";
-    } else if (logitech.getRawButtonPressed(4)) {
+    } else if (rawJoystick.getRawButtonPressed(4)) {
       intake = "Cone Ground";
-    } else if (logitech.getRawButtonPressed(5)) {
+    } else if (rawJoystick.getRawButtonPressed(5)) {
       intake = "Cube HP";
-    } else if (logitech.getRawButtonPressed(6)) {
+    } else if (rawJoystick.getRawButtonPressed(6)) {
       intake = "Cone HP";
     } else {
       intake = "";
@@ -85,7 +78,7 @@ public class AutoDrop {
       direction = "";
     }
 
-    if (logitech.getRawButton(1)) {
+    if (rawJoystick.getRawButton(1)) {
       outtake = 1;
     } else {
       outtake = 0;

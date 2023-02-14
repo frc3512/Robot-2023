@@ -90,19 +90,17 @@ public final class Constants {
             new Rotation3d(0.0, 0.0, 0.0));
   }
 
+  /** Constants revolving around the elevator subsystem. */
   public static final class ElevatorConstants {
-    // public static final double kDt = 0.02;
+    public static final int leftMotorID = 17;
+    public static final int rightMotorID = 18;
 
-    public static final int EncoderA = 0;
-    public static final int EncoderB = 1;
-    public static final int MotorAID = 17;
-    public static final int MotorBID = 18;
-
-    public static final double distancePerpulse = 0.01;
+    public static final double simElevatorMinimumLength = 0.5;
   }
 
+  /** Constants revolving around the intake subsystem. */
   public static final class IntakeConstants {
-    public static final int MotorID = 21;
+    public static final int intakeMotorID = 21;
   }
 
   /** Constants revolving around auton modes. */
