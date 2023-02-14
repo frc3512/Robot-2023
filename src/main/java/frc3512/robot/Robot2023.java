@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc3512.robot.auton.Autos;
+import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Superstructure;
 import frc3512.robot.subsystems.Swerve;
 
@@ -16,6 +17,7 @@ public class Robot2023 {
   // Robot subsystems
   // private Vision m_vision = new Vision();
   private Swerve m_swerve = new Swerve();
+  private Elevator m_elevator = new Elevator();
   private Superstructure m_superstructure = new Superstructure(m_swerve);
 
   // Autons
@@ -57,6 +59,8 @@ public class Robot2023 {
             () -> -driver.getRawAxis(translationAxis),
             () -> -driver.getRawAxis(strafeAxis),
             () -> -driver.getRawAxis(rotationAxis)));
+
+    m_elevator.setDefaultCommand(m_elevator.moveElevator(() -> appendage.getRawAxis(0)));
   }
 
   /**

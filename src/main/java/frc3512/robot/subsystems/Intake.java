@@ -9,7 +9,10 @@ import frc3512.robot.Constants;
 
 public class Intake extends SubsystemBase {
   public enum CurrentGamePiece {
-    NONE, CONE, CUBE, INVALID
+    NONE,
+    CONE,
+    CUBE,
+    INVALID
   }
 
   CANSparkMax intakeMotor;
