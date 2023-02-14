@@ -5,6 +5,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -20,9 +22,6 @@ public class Elevator extends SubsystemBase {
   private final CANSparkMax leftElevatorMotor;
   private final CANSparkMax rightElevatorMotor;
   private final AbsoluteEncoder elevatorEncoder;
-
-  private SparkMaxLimitSwitch m_forwardLimit;
-  private SparkMaxLimitSwitch m_reverseLimit;
 
   private MechanismLigament2d m_elevator;
   Mechanism2d mech = new Mechanism2d(3, 3);
@@ -43,25 +42,18 @@ public class Elevator extends SubsystemBase {
     rightElevatorMotor.restoreFactoryDefaults();
     elevatorEncoder = leftElevatorMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
-    leftElevatorMotor.setSmartCurrentLimit(40);
-    rightElevatorMotor.setSmartCurrentLimit(40);
+    leftElevatorMotor.setIdleMode(IdleMode.kBrake);
+    rightElevatorMotor.setIdleMode(IdleMode.kBrake);
+    leftElevatorMotor.setSmartCurrentLimit(80);
+    rightElevatorMotor.setSmartCurrentLimit(80);
 
-    leftElevatorMotor.follow(rightElevatorMotor);
-
-    m_forwardLimit =
-        leftElevatorMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_reverseLimit =
-        rightElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-
-    m_forwardLimit.enableLimitSwitch(false);
-    m_reverseLimit.enableLimitSwitch(false);
+    rightElevatorMotor.follow(leftElevatorMotor, true);
 
     leftElevatorMotor.burnFlash();
     rightElevatorMotor.burnFlash();
 
     velocityEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Velocity");
     positionEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Position");
-    forwardLimitEntry = new SpartanBooleanEntry("/Diagnostics/Elevator/Forward Limit Reached");
     reverseLimitEntry = new SpartanBooleanEntry("/Diagnostics/Elevator/Reverse Limit Reached");
 
     m_elevator =
@@ -74,7 +66,7 @@ public class Elevator extends SubsystemBase {
   public Command moveElevator(DoubleSupplier elevator) {
     return this.run(
         () -> {
-          rightElevatorMotor.set(elevator.getAsDouble());
+          leftElevatorMotor.set(elevator.getAsDouble() * 0.5);
         });
   }
 
@@ -82,8 +74,6 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     velocityEntry.set(elevatorEncoder.getVelocity());
     positionEntry.set(elevatorEncoder.getPosition());
-    forwardLimitEntry.set(m_forwardLimit.isPressed());
-    reverseLimitEntry.set(m_reverseLimit.isPressed());
   }
 
   @Override

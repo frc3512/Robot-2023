@@ -1,5 +1,6 @@
 package frc3512.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -50,7 +51,7 @@ public class Robot2023 {
             () -> driver.getRawAxis(rotationAxis)));
     m_elevator.setDefaultCommand(
       m_elevator.moveElevator(
-        () -> appendage.getRawAxis(1)));
+        () -> MathUtil.applyDeadband(appendage.getRawAxis(1), .01)));
   }
 
   /**
