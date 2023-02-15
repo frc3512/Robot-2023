@@ -66,7 +66,7 @@ public class Elevator extends SubsystemBase {
   public Command moveElevator(DoubleSupplier elevator) {
     return this.run(
         () -> {
-          leftElevatorMotor.set(elevator.getAsDouble() * 0.5);
+          leftElevatorMotor.set(elevator.getAsDouble() * 0.3);
         });
   }
 
