@@ -50,8 +50,7 @@ public class Robot2023 {
             () -> driver.getRawAxis(strafeAxis),
             () -> driver.getRawAxis(rotationAxis)));
     m_elevator.setDefaultCommand(
-      m_elevator.moveElevator(
-        () -> MathUtil.applyDeadband(appendage.getRawAxis(1), .01)));
+        m_elevator.moveElevator(() -> MathUtil.applyDeadband(appendage.getRawAxis(1), .01)));
   }
 
   /**
