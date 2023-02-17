@@ -95,7 +95,17 @@ public final class Constants {
     public static final int leftMotorID = 17;
     public static final int rightMotorID = 18;
 
-    public static final double simElevatorMinimumLength = 0.5;
+    public static final double maxVelocity = 1.75;
+    public static final double maxAcceleration = 0.75;
+
+    public static final double pGain = 1.0;
+    public static final double iGain = 0.0;
+    public static final double dGain = 0.0;
+
+    public static final double sVolts = 1.0;
+    public static final double gVolts = 1.0;
+    public static final double vVoltSecondPerMeter = 1.0;
+    public static final double aVoltSecondsSquaredPerMeter = 1.0;
   }
 
   /** Constants revolving around the arm subsystem. */

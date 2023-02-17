@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanDoubleEntry;
@@ -16,9 +17,13 @@ import frc3512.robot.Constants;
 import java.util.function.DoubleSupplier;
 
 public class Arm extends SubsystemBase {
-  private final CANSparkMax leftArmMotor;
-  private final CANSparkMax rightArmMotor;
-  private final AbsoluteEncoder armEncoder;
+  private final CANSparkMax leftArmMotor =
+      new CANSparkMax(Constants.ArmConstants.leftMotorID, MotorType.kBrushless);
+  private final CANSparkMax rightArmMotor =
+      new CANSparkMax(Constants.ArmConstants.rightMotorID, MotorType.kBrushless);
+  private final MotorControllerGroup armGroup =
+      new MotorControllerGroup(leftArmMotor, rightArmMotor);
+  private final AbsoluteEncoder armEncoder = leftArmMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
   private boolean isClosedLoop;
   private final ProfiledPIDController controller =
@@ -35,28 +40,25 @@ public class Arm extends SubsystemBase {
           Constants.ArmConstants.vVoltSecondPerRad,
               Constants.ArmConstants.aVoltSecondSquaredPerRad);
 
-  private final SpartanDoubleEntry velocityEntry, positionEntry;
+  private final SpartanDoubleEntry velocityEntry =
+      new SpartanDoubleEntry("/Diagnostics/Arm/Velocity");
+  private final SpartanDoubleEntry positionEntry =
+      new SpartanDoubleEntry("/Diagnostics/Arm/Position");
 
   public Arm() {
-    leftArmMotor = new CANSparkMax(Constants.ArmConstants.leftMotorID, MotorType.kBrushless);
-    rightArmMotor = new CANSparkMax(Constants.ArmConstants.rightMotorID, MotorType.kBrushless);
-    armEncoder = leftArmMotor.getAbsoluteEncoder(Type.kDutyCycle);
-
     leftArmMotor.restoreFactoryDefaults();
     rightArmMotor.restoreFactoryDefaults();
 
     leftArmMotor.setSmartCurrentLimit(80);
     rightArmMotor.setSmartCurrentLimit(80);
+    leftArmMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
+    rightArmMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     leftArmMotor.setIdleMode(IdleMode.kBrake);
     rightArmMotor.setIdleMode(IdleMode.kBrake);
-
-    rightArmMotor.follow(leftArmMotor, true);
+    rightArmMotor.setInverted(true);
 
     leftArmMotor.burnFlash();
     rightArmMotor.burnFlash();
-
-    velocityEntry = new SpartanDoubleEntry("/Diagnostics/Arm/Velocity");
-    positionEntry = new SpartanDoubleEntry("/Diagnostics/Arm/Position");
 
     disable();
   }
@@ -84,7 +86,7 @@ public class Arm extends SubsystemBase {
       double output =
           controller.calculate(getAngle(), controller.getSetpoint())
               + feedforward.calculate(getAngle(), getAngle());
-      leftArmMotor.setVoltage(output);
+      armGroup.setVoltage(output);
     }
   }
 
@@ -95,7 +97,13 @@ public class Arm extends SubsystemBase {
   public Command runArm(DoubleSupplier joystickValue) {
     return run(
         () -> {
-          leftArmMotor.set(joystickValue.getAsDouble() * 0.8);
+          if (joystickValue.getAsDouble() == 180) {
+            armGroup.set(0.3);
+          } else if (joystickValue.getAsDouble() == 0) {
+            armGroup.set(-0.3);
+          } else {
+            armGroup.set(0.0);
+          }
         });
   }
 

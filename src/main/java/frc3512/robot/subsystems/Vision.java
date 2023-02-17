@@ -24,7 +24,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
-  public PhotonCamera photonCamera;
+  public PhotonCamera photonCamera = new PhotonCamera(Constants.VisionConstants.cameraName);
   public PhotonPoseEstimator photonPoseEstimator;
   public AprilTagFieldLayout atfl;
 
@@ -33,13 +33,14 @@ public class Vision extends SubsystemBase {
   private GlobalMeasurement bestMeasurement;
   private boolean hasTarget = false;
 
-  private SpartanPose2dEntry tagPoseEntry;
-  private SpartanDoubleEntry timestampEntry;
-  private SpartanDoubleEntry ambiguityEntry;
+  private final SpartanPose2dEntry tagPoseEntry =
+      new SpartanPose2dEntry("/Diagnostics/Vision/Tag Pose");
+  private final SpartanDoubleEntry timestampEntry =
+      new SpartanDoubleEntry("/Diagnostics/Vision/Timestamp");
+  private final SpartanDoubleEntry ambiguityEntry =
+      new SpartanDoubleEntry("/Diagnostics/Vision/Tag Ambiguity");
 
   public Vision() {
-    photonCamera = new PhotonCamera(Constants.VisionConstants.cameraName);
-
     try {
       atfl = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
     } catch (IOException e) {
@@ -53,10 +54,6 @@ public class Vision extends SubsystemBase {
             PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
             photonCamera,
             Constants.VisionConstants.robotToCam);
-
-    tagPoseEntry = new SpartanPose2dEntry("/Diagnostics/Vision/Tag Pose");
-    timestampEntry = new SpartanDoubleEntry("/Diagnostics/Vision/Timestamp");
-    ambiguityEntry = new SpartanDoubleEntry("/Diagnostics/Vision/Tag Ambiguity");
   }
 
   public List<GlobalMeasurement> getMeasurements() {
