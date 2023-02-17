@@ -34,9 +34,9 @@ This runs a roboRIO build if needed, copies the resulting binary to a roboRIO at
 
 * `./gradlew simulateJava`
 
-## Logging
+## Telemetry
 
-Logs are created using WPILib's DataLog framework, with the ability to convert to CSV using the DataLog tool or can be viewed using tools such as AdvantageScope.
+Telemetry values are sent using NT4, with the ability for them to be disabled during competitions to ensure the maximum amount of network bandwitdth. When tuning, they can be viewed in the standard dashboard program like Shuffleboard or opened up in specific viewing programs like AdvantageScope.
 
 ## Simulation GUI
 
@@ -60,6 +60,9 @@ This years robot's unique features include:
 
 - Swerve drive with SDS MK4 L2 modules using CANCoders and NEOs
 - New vision camera system for use with AprilTags
+- Elevator using NEOs and a REV Through Bore encoder set to absolute mode
+- Arm using NEOs and a REV Through Bore encoder set to absolute mode
+- Intake similar to the 2023 Everybot to pick up cones/cubes
 
 ## Goals of the year
 |Status|Goal|Additional Description|
@@ -67,9 +70,10 @@ This years robot's unique features include:
 |Yes|Swerve Drive|Operational auton/teleop swerve code
 |Yes|AprilTags|Read and process AprilTags using PhotonVision
 |Yes|Pose Estimation|Add in pose estimation using AprilTags.
-|||
-|||
-|||
+|Yes|Pose based Alignment|Use pose estimation to drive onto a certain point on the field.
+|No|Manual and Automated Elevator|Elevator subsystem with both manual and automated control.
+|No|Manual and Automated Arm|Arm subsystem with both manual and automated control.
+|No|AutoDrop|Sequence for automatically scoring onto the correct node.
 
 ## Roster
 
