@@ -35,7 +35,7 @@ public class Elevator extends SubsystemBase {
     leftElevatorMotor.setIdleMode(IdleMode.kBrake);
     rightElevatorMotor.setIdleMode(IdleMode.kBrake);
     leftElevatorMotor.setSmartCurrentLimit(80);
-    rightElevatorMotor.setSmartCurrentLimit(80);
+    rightElevatorMotor.setSmartCurrentLimit(80); 
 
     rightElevatorMotor.follow(leftElevatorMotor, true);
 
