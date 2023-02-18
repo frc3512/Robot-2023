@@ -1,8 +1,8 @@
 # FRC Team 3512's 2023 Robot
 
-Source code for the 2023 comp robot: TBD
+Source code for the 2023 comp robot: Thanatos
 
-Source code also for the 2023 practice robot: TBD
+Source code also for the 2023 practice robot: Atlas
 
 ## Setup
 
@@ -11,10 +11,6 @@ https://github.com/wpilibsuite/allwpilib/releases). Make sure the toolchain
 is
 placed in `~/wpilib/2022/roborio` (Linux) or
 `C:\Users\Public\wpilib\2022\roborio` (Windows).
-
-## Documentation
-
-TBD
 
 ## Build options
 
@@ -33,6 +29,11 @@ This runs a roboRIO build if needed, copies the resulting binary to a roboRIO at
 ### Simulation GUI
 
 * `./gradlew simulateJava`
+Runs the simulation GUI for testing robot code without the real hardware.
+
+### Format code
+* `./gradlew spotlessApply`
+Beautifies your code to make it easier to read. Required for builds/GitHub CLI to pass.
 
 ## Telemetry
 

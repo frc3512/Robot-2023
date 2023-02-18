@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc3512.robot.auton.Autos;
 import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
@@ -21,10 +20,7 @@ public class Robot2023 {
   private Elevator elevator = new Elevator();
   private Arm arm = new Arm();
   private Intake intake = new Intake();
-  private Superstructure superstructure = new Superstructure(swerve);
-
-  // Autons
-  private final Autos autos = new Autos(swerve);
+  private Superstructure superstructure = new Superstructure(swerve, elevator, arm, intake);
 
   // Driver Control
   private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -71,6 +67,6 @@ public class Robot2023 {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autos.getSelected();
+    return superstructure.getAuton();
   }
 }

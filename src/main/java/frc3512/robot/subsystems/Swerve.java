@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc3512.lib.swervelib.SwerveDrive;
-import frc3512.lib.swervelib.parser.SwerveParser;
 import frc3512.robot.Constants;
 import java.io.File;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import org.photonvision.EstimatedRobotPose;
+import swervelib.SwerveDrive;
+import swervelib.parser.SwerveParser;
 
 public class Swerve extends SubsystemBase {
 
@@ -74,7 +74,7 @@ public class Swerve extends SubsystemBase {
   }
 
   public void setMotorBrake(boolean brake) {
-    swerve.setMotorBrake(brake);
+    swerve.setMotorIdleMode(brake);
   }
 
   public void zeroGyro() {
@@ -83,6 +83,10 @@ public class Swerve extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     swerve.resetOdometry(pose);
+  }
+
+  public void lock() {
+    swerve.lockPose();
   }
 
   public Pose2d getPose() {
@@ -94,11 +98,12 @@ public class Swerve extends SubsystemBase {
     swerve.updateOdometry();
 
     if (RobotBase.isReal()) {
-      Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(swerve.getPose());
+      Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(getPose());
 
       if (result.isPresent()) {
         EstimatedRobotPose camPose = result.get();
-        swerve.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+        swerve.addVisionMeasurement(
+            camPose.estimatedPose.toPose2d(), camPose.timestampSeconds, true);
       }
     }
   }

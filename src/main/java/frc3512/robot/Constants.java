@@ -121,8 +121,6 @@ public final class Constants {
 
     public static final double maxVelocityRadPerSecond = 3;
     public static final double maxAccelerationRadPerSecSquared = 10;
-
-    public static final double armOffsetRads = 0.0;
   }
 
   /** Constants revolving around the intake subsystem. */
@@ -140,6 +138,6 @@ public final class Constants {
         new PathConstraints(AutonConstants.maxVelocity, AutonConstants.maxAcceleration);
 
     public static final double xyControllerP = 1.0;
-    public static final double thetaControllerP = 1.0;
+    public static final double thetaControllerP = 0.8;
   }
 }
