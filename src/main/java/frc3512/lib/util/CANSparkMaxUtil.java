@@ -24,13 +24,35 @@ public class CANSparkMaxUtil {
    * @param usage The status frame feedack to enable. kAll is the default when a CANSparkMax is
    *     constructed.
    * @param enableFollowing Whether to enable motor following.
+   * @param alternateEncoder The status frame for information from an quadrature encoder from the
+   *     Data Port. kAll is the default when a CANSparkMax is constructed.
+   * @param absoluteEncoder The status frame for information from a Duty Cycle encoder from the Data
+   *     Port. kAll is the default when a CANSparkMax is constructed.
    */
   public static void setCANSparkMaxBusUsage(
-      CANSparkMax motor, Usage usage, boolean enableFollowing) {
+      CANSparkMax motor,
+      Usage usage,
+      boolean enableFollowing,
+      boolean alternateEncoder,
+      boolean absoluteEncoder) {
     if (enableFollowing) {
       motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 10);
     } else {
       motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 500);
+    }
+
+    if (alternateEncoder) {
+      motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus4, 20);
+    } else {
+      motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus4, 500);
+    }
+
+    if (absoluteEncoder) {
+      motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus5, 20);
+      motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus6, 20);
+    } else {
+      motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus5, 500);
+      motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus6, 500);
     }
 
     if (usage == Usage.kAll) {
@@ -63,8 +85,12 @@ public class CANSparkMaxUtil {
    * @param motor The motor to adjust the status frame periods on.
    * @param usage The status frame feedack to enable. kAll is the default when a CANSparkMax is
    *     constructed.
+   * @param alternateEncoder The status frame for information from an quadrature encoder from the
+   *     Data Port. kAll is the default when a CANSparkMax is constructed.
+   * @param absoluteEncoder The status frame for information from a Duty Cycle encoder from the Data
+   *     Port. kAll is the default when a CANSparkMax is constructed.
    */
   public static void setCANSparkMaxBusUsage(CANSparkMax motor, Usage usage) {
-    setCANSparkMaxBusUsage(motor, usage, false);
+    setCANSparkMaxBusUsage(motor, usage, false, false, false);
   }
 }

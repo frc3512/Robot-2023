@@ -7,12 +7,15 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanDoubleEntry;
+import frc3512.lib.util.CANSparkMaxUtil;
+import frc3512.lib.util.CANSparkMaxUtil.Usage;
 import frc3512.robot.Constants;
 import java.util.function.DoubleSupplier;
 
@@ -40,14 +43,17 @@ public class Arm extends SubsystemBase {
           Constants.ArmConstants.vVoltSecondPerRad,
               Constants.ArmConstants.aVoltSecondSquaredPerRad);
 
-  private final SpartanDoubleEntry velocityEntry =
-      new SpartanDoubleEntry("/Diagnostics/Arm/Velocity");
+  private final SlewRateLimiter limiter = new SlewRateLimiter(2.0);
+
   private final SpartanDoubleEntry positionEntry =
       new SpartanDoubleEntry("/Diagnostics/Arm/Position");
 
   public Arm() {
     leftArmMotor.restoreFactoryDefaults();
     rightArmMotor.restoreFactoryDefaults();
+
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(leftArmMotor, Usage.kMinimal, false, false, true);
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(rightArmMotor, Usage.kMinimal);
 
     leftArmMotor.setSmartCurrentLimit(80);
     rightArmMotor.setSmartCurrentLimit(80);
@@ -91,18 +97,18 @@ public class Arm extends SubsystemBase {
   }
 
   public double getAngle() {
-    return armEncoder.getPosition() + Constants.ArmConstants.armOffsetRads;
+    return armEncoder.getPosition();
   }
 
   public Command runArm(DoubleSupplier joystickValue) {
     return run(
         () -> {
           if (joystickValue.getAsDouble() == 180) {
-            armGroup.set(0.3);
+            armGroup.set(limiter.calculate(0.3));
           } else if (joystickValue.getAsDouble() == 0) {
-            armGroup.set(-0.3);
+            armGroup.set(limiter.calculate(-0.3));
           } else {
-            armGroup.set(0.0);
+            armGroup.set(limiter.calculate(0.0));
           }
         });
   }
@@ -110,7 +116,6 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     controllerPeriodic();
-    velocityEntry.set(armEncoder.getVelocity());
-    positionEntry.set(armEncoder.getPosition());
+    positionEntry.set(getAngle());
   }
 }

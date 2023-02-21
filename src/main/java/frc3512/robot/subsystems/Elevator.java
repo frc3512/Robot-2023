@@ -5,58 +5,74 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.revrobotics.SparkMaxLimitSwitch;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanBooleanEntry;
 import frc3512.lib.logging.SpartanDoubleEntry;
+import frc3512.lib.util.CANSparkMaxUtil;
+import frc3512.lib.util.CANSparkMaxUtil.Usage;
 import frc3512.robot.Constants;
 import java.util.function.DoubleSupplier;
 
 public class Elevator extends SubsystemBase {
-  private final CANSparkMax leftElevatorMotor;
-  private final CANSparkMax rightElevatorMotor;
-  private final AbsoluteEncoder elevatorEncoder;
+  private final CANSparkMax leftElevatorMotor =
+      new CANSparkMax(
+          Constants.ElevatorConstants.leftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private final CANSparkMax rightElevatorMotor =
+      new CANSparkMax(
+          Constants.ElevatorConstants.rightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private final AbsoluteEncoder elevatorEncoder =
+      rightElevatorMotor.getAbsoluteEncoder(Type.kDutyCycle);
+  private final SparkMaxLimitSwitch limitSwitch =
+      leftElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
-  private SpartanDoubleEntry velocityEntry, positionEntry;
-  private SpartanBooleanEntry reverseLimitEntry;
+  private final SlewRateLimiter limiter = new SlewRateLimiter(2.0);
+
+  private SpartanDoubleEntry positionEntry =
+      new SpartanDoubleEntry("/Diagnostics/Elevator/Position");
+  private SpartanBooleanEntry reverseLimitEntry =
+      new SpartanBooleanEntry("/Diagnostics/Elevator/Reverse Limit Reached");
 
   public Elevator() {
-    leftElevatorMotor =
-        new CANSparkMax(
-            Constants.ElevatorConstants.leftMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    rightElevatorMotor =
-        new CANSparkMax(
-            Constants.ElevatorConstants.rightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
-
     leftElevatorMotor.restoreFactoryDefaults();
     rightElevatorMotor.restoreFactoryDefaults();
-    elevatorEncoder = leftElevatorMotor.getAbsoluteEncoder(Type.kDutyCycle);
+
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(leftElevatorMotor, Usage.kMinimal, true, false, true);
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(rightElevatorMotor, Usage.kAll, true, false, false);
 
     leftElevatorMotor.setIdleMode(IdleMode.kBrake);
     rightElevatorMotor.setIdleMode(IdleMode.kBrake);
     leftElevatorMotor.setSmartCurrentLimit(80);
-    rightElevatorMotor.setSmartCurrentLimit(80); 
+    rightElevatorMotor.setSmartCurrentLimit(80);
+    leftElevatorMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
+    rightElevatorMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
 
     rightElevatorMotor.follow(leftElevatorMotor, true);
 
     leftElevatorMotor.burnFlash();
     rightElevatorMotor.burnFlash();
-
-    velocityEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Velocity");
-    positionEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Position");
-    reverseLimitEntry = new SpartanBooleanEntry("/Diagnostics/Elevator/Reverse Limit Reached");
   }
 
   public Command moveElevator(DoubleSupplier elevator) {
     return run(
         () -> {
-          leftElevatorMotor.set((elevator.getAsDouble() - 0.3) * 0.3);
+          if (!limitSwitch.isPressed()) {
+            leftElevatorMotor.set(limiter.calculate(elevator.getAsDouble() * 0.5));
+          } else {
+            leftElevatorMotor.set(0.0);
+          }
         });
+  }
+
+  public double getPosition() {
+    return elevatorEncoder.getPosition();
   }
 
   @Override
   public void periodic() {
-    velocityEntry.set(elevatorEncoder.getVelocity());
-    positionEntry.set(elevatorEncoder.getPosition());
+    positionEntry.set(getPosition());
+    reverseLimitEntry.set(limitSwitch.isPressed());
   }
 }
