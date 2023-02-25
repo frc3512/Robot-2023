@@ -7,8 +7,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc3512.lib.logging.SpartanDoubleArrayEntry;
 import frc3512.lib.logging.SpartanDoubleEntry;
-import frc3512.lib.logging.SpartanPose2dEntry;
 import frc3512.lib.util.GlobalMeasurement;
 import frc3512.robot.Constants;
 import java.io.IOException;
@@ -33,8 +33,8 @@ public class Vision extends SubsystemBase {
   private GlobalMeasurement bestMeasurement;
   private boolean hasTarget = false;
 
-  private final SpartanPose2dEntry tagPoseEntry =
-      new SpartanPose2dEntry("/Diagnostics/Vision/Tag Pose");
+  private final SpartanDoubleArrayEntry tagPoseEntry =
+      new SpartanDoubleArrayEntry("/Diagnostics/Vision/Tag Pose");
   private final SpartanDoubleEntry timestampEntry =
       new SpartanDoubleEntry("/Diagnostics/Vision/Timestamp");
   private final SpartanDoubleEntry ambiguityEntry =
@@ -122,7 +122,12 @@ public class Vision extends SubsystemBase {
               bestTarget.getPoseAmbiguity());
     }
 
-    tagPoseEntry.set(bestMeasurement.pose);
+    tagPoseEntry.set(
+        new double[] {
+          bestMeasurement.pose.getX(),
+          bestMeasurement.pose.getY(),
+          bestMeasurement.pose.getRotation().getDegrees()
+        });
     timestampEntry.set(bestMeasurement.timestampSeconds);
     ambiguityEntry.set(bestMeasurement.ambiguity);
   }

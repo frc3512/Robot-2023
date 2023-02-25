@@ -50,8 +50,8 @@ public class Robot extends TimedRobot {
     // Disable joystick warnings
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    m_robot.configureAxisActions();
     m_robot.configureButtonBindings();
+    m_robot.configureAxisActions();
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot
     // stop
