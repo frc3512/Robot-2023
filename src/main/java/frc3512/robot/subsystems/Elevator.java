@@ -1,10 +1,10 @@
 package frc3512.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,10 +23,9 @@ public class Elevator extends SubsystemBase {
   private final CANSparkMax rightElevatorMotor =
       new CANSparkMax(
           Constants.ElevatorConstants.rightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private final AbsoluteEncoder elevatorEncoder =
-      rightElevatorMotor.getAbsoluteEncoder(Type.kDutyCycle);
   private final SparkMaxLimitSwitch limitSwitch =
       leftElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
+  private final RelativeEncoder elevatorEncoder;
 
   private final SlewRateLimiter limiter = new SlewRateLimiter(2.0);
 
@@ -49,6 +48,9 @@ public class Elevator extends SubsystemBase {
     leftElevatorMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     rightElevatorMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
 
+    elevatorEncoder =
+        rightElevatorMotor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
+
     rightElevatorMotor.follow(leftElevatorMotor, true);
     limitSwitch.enableLimitSwitch(true);
 
@@ -57,10 +59,17 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command moveElevator(DoubleSupplier elevator) {
-    return run(
-        () -> {
-          leftElevatorMotor.set(limiter.calculate(elevator.getAsDouble() * 0.4));
-        });
+    if (elevatorEncoder.getPosition() < 9.5) {
+      return run(
+          () -> {
+            leftElevatorMotor.set(limiter.calculate(elevator.getAsDouble() * 0.4));
+          });
+    } else {
+      return run(
+          () -> {
+            leftElevatorMotor.set(0.0);
+          });
+    }
   }
 
   public double getPosition() {
