@@ -24,8 +24,9 @@ public class Elevator extends SubsystemBase {
       new CANSparkMax(
           Constants.ElevatorConstants.rightMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final SparkMaxLimitSwitch limitSwitch =
-      leftElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
-  private final RelativeEncoder elevatorEncoder;
+      leftElevatorMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+  private final RelativeEncoder elevatorEncoder =
+      rightElevatorMotor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
 
   private final SlewRateLimiter limiter = new SlewRateLimiter(2.0);
 
@@ -48,28 +49,23 @@ public class Elevator extends SubsystemBase {
     leftElevatorMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     rightElevatorMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
 
-    elevatorEncoder =
-        rightElevatorMotor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
-
     rightElevatorMotor.follow(leftElevatorMotor, true);
-    limitSwitch.enableLimitSwitch(true);
 
     leftElevatorMotor.burnFlash();
     rightElevatorMotor.burnFlash();
+
+    elevatorEncoder.setPosition(0.0);
   }
 
   public Command moveElevator(DoubleSupplier elevator) {
-    if (elevatorEncoder.getPosition() < 9.5) {
-      return run(
-          () -> {
+    return run(
+        () -> {
+          if (elevatorEncoder.getPosition() < 9.0) {
             leftElevatorMotor.set(limiter.calculate(elevator.getAsDouble() * 0.4));
-          });
-    } else {
-      return run(
-          () -> {
+          } else {
             leftElevatorMotor.set(0.0);
-          });
-    }
+          }
+        });
   }
 
   public double getPosition() {
