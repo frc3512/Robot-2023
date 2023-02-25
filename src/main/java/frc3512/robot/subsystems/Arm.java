@@ -9,8 +9,10 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc3512.lib.logging.SpartanBooleanEntry;
 import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.robot.Constants;
 import java.util.function.DoubleSupplier;
@@ -20,6 +22,8 @@ public class Arm extends SubsystemBase {
       new CANSparkMax(Constants.ArmConstants.leftMotorID, MotorType.kBrushless);
   private final CANSparkMax rightArmMotor =
       new CANSparkMax(Constants.ArmConstants.rightMotorID, MotorType.kBrushless);
+  private final MotorControllerGroup armGroup =
+      new MotorControllerGroup(leftArmMotor, rightArmMotor);
   private final AbsoluteEncoder armEncoder = leftArmMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
   private boolean isClosedLoop;
@@ -35,6 +39,9 @@ public class Arm extends SubsystemBase {
 
   private final SpartanDoubleEntry positionEntry =
       new SpartanDoubleEntry("/Diagnostics/Arm/Position");
+  private SpartanDoubleEntry currGoalEntry =
+      new SpartanDoubleEntry("/Diagnostics/Arm/Current Goal");
+  private SpartanBooleanEntry goalEntry = new SpartanBooleanEntry("/Diagnostics/Arm/Goal Reached");
 
   public Arm() {
     leftArmMotor.restoreFactoryDefaults();
@@ -49,12 +56,12 @@ public class Arm extends SubsystemBase {
     rightArmMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     leftArmMotor.setIdleMode(IdleMode.kBrake);
     rightArmMotor.setIdleMode(IdleMode.kBrake);
-    rightArmMotor.follow(leftArmMotor, true);
+    rightArmMotor.setInverted(true);
 
     leftArmMotor.burnFlash();
     rightArmMotor.burnFlash();
 
-    disable();
+    enable();
   }
 
   public void enable() {
@@ -67,19 +74,33 @@ public class Arm extends SubsystemBase {
     controller.setGoal(new State());
   }
 
+  public CommandBase setGoal(TrapezoidProfile.State state) {
+    return runOnce(
+            () -> {
+              controller.setGoal(state);
+            })
+        .andThen(run(() -> armGroup.setVoltage(controller.calculate(getAngle()))))
+        .until(() -> controller.atGoal())
+        .finallyDo(interrupted -> armGroup.set(0.0));
+  }
+
+  public CommandBase runArm(DoubleSupplier joystickValue) {
+    return run(
+        () -> {
+          if (!isClosedLoop) {
+            if (joystickValue.getAsDouble() == 180) {
+              armGroup.set(limiter.calculate(0.5));
+            } else if (joystickValue.getAsDouble() == 0) {
+              armGroup.set(limiter.calculate(-0.5));
+            } else {
+              armGroup.set(limiter.calculate(0.0));
+            }
+          }
+        });
+  }
+
   public boolean isClosedLoopEnabled() {
     return isClosedLoop;
-  }
-
-  public Command setGoal(TrapezoidProfile.State state) {
-    return runOnce(() -> controller.setGoal(state));
-  }
-
-  public void controllerPeriodic() {
-    if (isClosedLoop) {
-      double output = controller.calculate(getAngle(), controller.getSetpoint());
-      leftArmMotor.setVoltage(output);
-    }
   }
 
   public double getAngle() {
@@ -90,24 +111,10 @@ public class Arm extends SubsystemBase {
     }
   }
 
-  public Command runArm(DoubleSupplier joystickValue) {
-    return run(
-        () -> {
-          if (!isClosedLoop) {
-            if (joystickValue.getAsDouble() == 180 && getAngle() > 0.05) {
-              leftArmMotor.set(limiter.calculate(0.5));
-            } else if (joystickValue.getAsDouble() == 0 && getAngle() < 1.0) {
-              leftArmMotor.set(limiter.calculate(-0.5));
-            } else {
-              leftArmMotor.set(limiter.calculate(0.0));
-            }
-          }
-        });
-  }
-
   @Override
   public void periodic() {
-    controllerPeriodic();
     positionEntry.set(getAngle());
+    currGoalEntry.set(controller.getGoal().position);
+    goalEntry.set(controller.atGoal());
   }
 }

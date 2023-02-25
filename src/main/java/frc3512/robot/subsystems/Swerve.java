@@ -29,7 +29,6 @@ public class Swerve extends SubsystemBase {
   /** Subsystem class for the swerve drive. */
   public Swerve(Vision vision) {
     this.vision = vision;
-
     try {
       swerve =
           new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve")).createSwerveDrive();

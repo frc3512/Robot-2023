@@ -94,13 +94,15 @@ public final class Constants {
   public static final class ElevatorConstants {
     public static final int leftMotorID = 17;
     public static final int rightMotorID = 18;
+    public static final int encoderA = 0;
+    public static final int encoderB = 1;
+
+    public static final double pGain = 10.0;
+    public static final double iGain = 0.0;
+    public static final double dGain = 0.0;
 
     public static final double maxVelocityMeterPerSecond = 1.75;
     public static final double maxAccelerationMeterPerSecondSquared = 0.75;
-
-    public static final double pGain = 0.0;
-    public static final double iGain = 0.0;
-    public static final double dGain = 0.0;
   }
 
   /** Constants revolving around the arm subsystem. */
@@ -108,12 +110,12 @@ public final class Constants {
     public static final int leftMotorID = 19;
     public static final int rightMotorID = 20;
 
-    public static final double pGain = 0.0;
+    public static final double pGain = 1.0;
     public static final double iGain = 0.0;
     public static final double dGain = 0.0;
 
-    public static final double maxVelocityRadPerSecond = 3;
-    public static final double maxAccelerationRadPerSecSquared = 10;
+    public static final double maxVelocityRadPerSecond = 1.75;
+    public static final double maxAccelerationRadPerSecSquared = 0.75;
   }
 
   /** Constants revolving around the intake subsystem. */

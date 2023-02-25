@@ -41,6 +41,8 @@ public class Vision extends SubsystemBase {
       new SpartanDoubleEntry("/Diagnostics/Vision/Tag Ambiguity");
 
   public Vision() {
+    PhotonCamera.setVersionCheckEnabled(false);
+
     try {
       atfl = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
     } catch (IOException e) {
