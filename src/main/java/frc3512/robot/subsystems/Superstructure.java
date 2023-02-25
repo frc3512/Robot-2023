@@ -2,6 +2,8 @@ package frc3512.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc3512.robot.Constants;
 import frc3512.robot.auton.Autos;
 import frc3512.robot.commands.DriveToPose;
 
@@ -28,7 +30,22 @@ public class Superstructure {
     return autos.getSelected();
   }
 
-  public Command driveToPose(Pose2d pose) {
-    return new DriveToPose(swerve, pose);
+  public Command driveToClosetPose() {
+    return new DriveToPose(swerve, findClosestPose());
+  }
+
+  public Command disableAutoControl() {
+    return Commands.runOnce(() -> arm.disable(), arm);
+  }
+
+  private Pose2d findClosestPose() {
+    Pose2d closestPose = Constants.FieldConstants.scoringPositions.get(0);
+    for (Pose2d pose : Constants.FieldConstants.scoringPositions) {
+      if (closestPose.relativeTo(swerve.getPose()).getTranslation().getNorm()
+          > pose.relativeTo(swerve.getPose()).getTranslation().getNorm()) {
+        closestPose = pose;
+      }
+    }
+    return new Pose2d();
   }
 }

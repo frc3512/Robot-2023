@@ -10,7 +10,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanDoubleEntry;
@@ -24,16 +23,14 @@ public class Arm extends SubsystemBase {
       new CANSparkMax(Constants.ArmConstants.leftMotorID, MotorType.kBrushless);
   private final CANSparkMax rightArmMotor =
       new CANSparkMax(Constants.ArmConstants.rightMotorID, MotorType.kBrushless);
-  private final MotorControllerGroup armGroup =
-      new MotorControllerGroup(leftArmMotor, rightArmMotor);
   private final AbsoluteEncoder armEncoder = leftArmMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
   private boolean isClosedLoop;
   private final ProfiledPIDController controller =
       new ProfiledPIDController(
           Constants.ArmConstants.pGain,
-          0.0,
-          0.0,
+          Constants.ArmConstants.iGain,
+          Constants.ArmConstants.dGain,
           new TrapezoidProfile.Constraints(
               Constants.ArmConstants.maxVelocityRadPerSecond,
               Constants.ArmConstants.maxAccelerationRadPerSecSquared));
@@ -43,7 +40,7 @@ public class Arm extends SubsystemBase {
           Constants.ArmConstants.vVoltSecondPerRad,
               Constants.ArmConstants.aVoltSecondSquaredPerRad);
 
-  private final SlewRateLimiter limiter = new SlewRateLimiter(2.0);
+  private final SlewRateLimiter limiter = new SlewRateLimiter(4.0);
 
   private final SpartanDoubleEntry positionEntry =
       new SpartanDoubleEntry("/Diagnostics/Arm/Position");
@@ -52,16 +49,18 @@ public class Arm extends SubsystemBase {
     leftArmMotor.restoreFactoryDefaults();
     rightArmMotor.restoreFactoryDefaults();
 
-    CANSparkMaxUtil.setCANSparkMaxBusUsage(leftArmMotor, Usage.kMinimal, false, false, true);
-    CANSparkMaxUtil.setCANSparkMaxBusUsage(rightArmMotor, Usage.kMinimal);
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(leftArmMotor, Usage.kAll, true, false, true);
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(rightArmMotor, Usage.kMinimal, true, false, false);
 
-    leftArmMotor.setSmartCurrentLimit(80);
-    rightArmMotor.setSmartCurrentLimit(80);
+    leftArmMotor.setSmartCurrentLimit(40);
+    rightArmMotor.setSmartCurrentLimit(40);
     leftArmMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     rightArmMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     leftArmMotor.setIdleMode(IdleMode.kBrake);
     rightArmMotor.setIdleMode(IdleMode.kBrake);
-    rightArmMotor.setInverted(true);
+    rightArmMotor.follow(leftArmMotor, true);
+
+    armEncoder.setPositionConversionFactor(Math.PI * 2.0);
 
     leftArmMotor.burnFlash();
     rightArmMotor.burnFlash();
@@ -92,7 +91,7 @@ public class Arm extends SubsystemBase {
       double output =
           controller.calculate(getAngle(), controller.getSetpoint())
               + feedforward.calculate(getAngle(), getAngle());
-      armGroup.setVoltage(output);
+      leftArmMotor.setVoltage(output);
     }
   }
 
@@ -103,12 +102,14 @@ public class Arm extends SubsystemBase {
   public Command runArm(DoubleSupplier joystickValue) {
     return run(
         () -> {
-          if (joystickValue.getAsDouble() == 180) {
-            armGroup.set(limiter.calculate(0.3));
-          } else if (joystickValue.getAsDouble() == 0) {
-            armGroup.set(limiter.calculate(-0.3));
-          } else {
-            armGroup.set(limiter.calculate(0.0));
+          if (!isClosedLoop) {
+            if (joystickValue.getAsDouble() == 180) {
+              leftArmMotor.set(limiter.calculate(0.3));
+            } else if (joystickValue.getAsDouble() == 0) {
+              leftArmMotor.set(limiter.calculate(-0.3));
+            } else {
+              leftArmMotor.set(limiter.calculate(0.0));
+            }
           }
         });
   }

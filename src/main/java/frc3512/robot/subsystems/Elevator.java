@@ -26,7 +26,7 @@ public class Elevator extends SubsystemBase {
   private final AbsoluteEncoder elevatorEncoder =
       rightElevatorMotor.getAbsoluteEncoder(Type.kDutyCycle);
   private final SparkMaxLimitSwitch limitSwitch =
-      leftElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+      leftElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed);
 
   private final SlewRateLimiter limiter = new SlewRateLimiter(2.0);
 
@@ -50,6 +50,7 @@ public class Elevator extends SubsystemBase {
     rightElevatorMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
 
     rightElevatorMotor.follow(leftElevatorMotor, true);
+    limitSwitch.enableLimitSwitch(true);
 
     leftElevatorMotor.burnFlash();
     rightElevatorMotor.burnFlash();
@@ -58,11 +59,7 @@ public class Elevator extends SubsystemBase {
   public Command moveElevator(DoubleSupplier elevator) {
     return run(
         () -> {
-          if (!limitSwitch.isPressed()) {
-            leftElevatorMotor.set(limiter.calculate(elevator.getAsDouble() * 0.5));
-          } else {
-            leftElevatorMotor.set(0.0);
-          }
+          leftElevatorMotor.set(limiter.calculate(elevator.getAsDouble() * 0.4));
         });
   }
 

@@ -39,7 +39,7 @@ public final class Autos {
             swerve::getPose,
             swerve::resetOdometry,
             new PIDConstants(Constants.AutonConstants.xyControllerP, 0.0, 0.0),
-            new PIDConstants(Constants.AutonConstants.thetaControllerP, 0.0, 0.01),
+            new PIDConstants(Constants.AutonConstants.thetaControllerP, 0.0, 0.0),
             swerve::setChassisSpeeds,
             eventMap,
             true,

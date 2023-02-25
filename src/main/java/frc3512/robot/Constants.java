@@ -98,14 +98,9 @@ public final class Constants {
     public static final double maxVelocity = 1.75;
     public static final double maxAcceleration = 0.75;
 
-    public static final double pGain = 1.0;
+    public static final double pGain = 0.0;
     public static final double iGain = 0.0;
     public static final double dGain = 0.0;
-
-    public static final double sVolts = 1.0;
-    public static final double gVolts = 1.0;
-    public static final double vVoltSecondPerMeter = 1.0;
-    public static final double aVoltSecondsSquaredPerMeter = 1.0;
   }
 
   /** Constants revolving around the arm subsystem. */
@@ -113,11 +108,14 @@ public final class Constants {
     public static final int leftMotorID = 19;
     public static final int rightMotorID = 20;
 
-    public static final double pGain = 1.0;
-    public static final double sVolts = 1.0;
-    public static final double gVolts = 1.0;
-    public static final double vVoltSecondPerRad = 0.5;
-    public static final double aVoltSecondSquaredPerRad = 0.1;
+    public static final double pGain = 0.0;
+    public static final double iGain = 0.0;
+    public static final double dGain = 0.0;
+
+    public static final double sVolts = 0.0;
+    public static final double gVolts = 0.0;
+    public static final double vVoltSecondPerRad = 0.0;
+    public static final double aVoltSecondSquaredPerRad = 0.0;
 
     public static final double maxVelocityRadPerSecond = 3;
     public static final double maxAccelerationRadPerSecSquared = 10;
@@ -126,18 +124,20 @@ public final class Constants {
   /** Constants revolving around the intake subsystem. */
   public static final class IntakeConstants {
     public static final int intakeMotorID = 21;
+
+    public static final double intakeCurrentThreshold = 40.0;
   }
 
   /** Constants revolving around auton modes. */
   public static final class AutonConstants {
 
-    public static final double maxVelocity = 1.0;
-    public static final double maxAcceleration = 4.0;
+    public static final double maxVelocity = 3.0;
+    public static final double maxAcceleration = 3.0;
 
     public static final PathConstraints constraints =
         new PathConstraints(AutonConstants.maxVelocity, AutonConstants.maxAcceleration);
 
-    public static final double xyControllerP = 1.0;
-    public static final double thetaControllerP = 0.8;
+    public static final double xyControllerP = 1.5;
+    public static final double thetaControllerP = 1.5;
   }
 }
