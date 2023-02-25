@@ -95,8 +95,8 @@ public final class Constants {
     public static final int leftMotorID = 17;
     public static final int rightMotorID = 18;
 
-    public static final double maxVelocity = 1.75;
-    public static final double maxAcceleration = 0.75;
+    public static final double maxVelocityMeterPerSecond = 1.75;
+    public static final double maxAccelerationMeterPerSecondSquared = 0.75;
 
     public static final double pGain = 0.0;
     public static final double iGain = 0.0;
@@ -111,11 +111,6 @@ public final class Constants {
     public static final double pGain = 0.0;
     public static final double iGain = 0.0;
     public static final double dGain = 0.0;
-
-    public static final double sVolts = 0.0;
-    public static final double gVolts = 0.0;
-    public static final double vVoltSecondPerRad = 0.0;
-    public static final double aVoltSecondSquaredPerRad = 0.0;
 
     public static final double maxVelocityRadPerSecond = 3;
     public static final double maxAccelerationRadPerSecSquared = 10;
