@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc3512.robot.subsystems.Arm;
+import frc3512.robot.subsystems.blinkin;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
 import frc3512.robot.subsystems.Superstructure;
@@ -21,6 +22,7 @@ public class Robot2023 {
   private Arm arm = new Arm();
   private Intake intake = new Intake();
   private Superstructure superstructure = new Superstructure(swerve, elevator, arm, intake);
+  public static final blinkin m_blinkin = new blinkin(0);
 
   // Driver Control
   private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -39,10 +41,11 @@ public class Robot2023 {
 
   /** Used for defining button actions. */
   public void configureButtonBindings() {
-
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
 
     appendage.button(1).whileTrue(intake.stopIntake());
+    appendage.button(5).onTrue(new InstantCommand(() -> m_blinkin.set(0.91)));
+    appendage.button(6).onTrue(new InstantCommand(() -> m_blinkin.solid_orange()));
     appendage.button(5).whileTrue(intake.intakeGamePiece());
     appendage.button(6).whileTrue(intake.outtakeGamePiece());
   }
