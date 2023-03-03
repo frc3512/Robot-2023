@@ -29,7 +29,7 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 1071,
+          "height": 811,
           "series": [
             {
               "color": [
@@ -38,7 +38,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/Diagnostics/Elevator/Position"
+              "id": "NT:/Diagnostics/Arm/Current Goal"
             },
             {
               "color": [
@@ -47,7 +47,57 @@
                 0.32156863808631897,
                 1.0
               ],
+              "id": "NT:/Diagnostics/Arm/Position"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": 826,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
               "id": "NT:/Diagnostics/Elevator/Current Goal"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/Diagnostics/Elevator/Position"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/Diagnostics/Elevator/Left Output"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/Diagnostics/Elevator/Right Output"
             }
           ]
         }

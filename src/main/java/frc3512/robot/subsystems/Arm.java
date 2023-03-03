@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -47,19 +48,20 @@ public class Arm extends SubsystemBase {
     leftArmMotor.restoreFactoryDefaults();
     rightArmMotor.restoreFactoryDefaults();
 
-    armEncoder.setPositionConversionFactor(Math.PI * 2.0);
-    armEncoder.setInverted(true);
-
-    leftArmMotor.setSmartCurrentLimit(40);
-    rightArmMotor.setSmartCurrentLimit(40);
-    leftArmMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
-    rightArmMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
+    leftArmMotor.setSmartCurrentLimit(Constants.ArmConstants.currentLimit);
+    rightArmMotor.setSmartCurrentLimit(Constants.ArmConstants.currentLimit);
     leftArmMotor.setIdleMode(IdleMode.kBrake);
     rightArmMotor.setIdleMode(IdleMode.kBrake);
     rightArmMotor.setInverted(true);
 
+    armEncoder.setPositionConversionFactor(Constants.ArmConstants.positionConversionFactor);
+    armEncoder.setInverted(true);
+    armEncoder.setZeroOffset(Constants.ArmConstants.armOffset);
+
     leftArmMotor.burnFlash();
     rightArmMotor.burnFlash();
+
+    armGroup.set(0.0);
 
     enable();
   }
@@ -77,9 +79,15 @@ public class Arm extends SubsystemBase {
   public CommandBase setGoal(TrapezoidProfile.State state) {
     return runOnce(
             () -> {
-              controller.setGoal(state);
+              controller.setGoal(
+                  new TrapezoidProfile.State(
+                      MathUtil.clamp(
+                          state.position,
+                          Constants.ArmConstants.minAngle,
+                          Constants.ArmConstants.maxAngle),
+                      state.velocity));
             })
-        .andThen(run(() -> armGroup.setVoltage(controller.calculate(getAngle()))))
+        .andThen(run(() -> armGroup.setVoltage(controller.calculate(getAngle(), controller.getGoal()))))
         .until(() -> controller.atGoal())
         .finallyDo(interrupted -> armGroup.set(0.0));
   }
@@ -87,11 +95,11 @@ public class Arm extends SubsystemBase {
   public CommandBase runArm(DoubleSupplier joystickValue) {
     return run(
         () -> {
-          if (!isClosedLoop) {
+          if (!isClosedLoopEnabled()) {
             if (joystickValue.getAsDouble() == 180) {
-              armGroup.set(limiter.calculate(0.5));
+              armGroup.set(limiter.calculate(Constants.ArmConstants.teleopSpeed));
             } else if (joystickValue.getAsDouble() == 0) {
-              armGroup.set(limiter.calculate(-0.5));
+              armGroup.set(limiter.calculate(-Constants.ArmConstants.teleopSpeed));
             } else {
               armGroup.set(limiter.calculate(0.0));
             }
@@ -104,11 +112,7 @@ public class Arm extends SubsystemBase {
   }
 
   public double getAngle() {
-    if (armEncoder.getPosition() > 6.0) {
-      return 0.0;
-    } else {
-      return armEncoder.getPosition();
-    }
+    return armEncoder.getPosition();
   }
 
   @Override

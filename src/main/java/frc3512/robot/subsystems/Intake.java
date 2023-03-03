@@ -20,7 +20,7 @@ public class Intake extends SubsystemBase {
     intakeMotor.restoreFactoryDefaults();
 
     CANSparkMaxUtil.setCANSparkMaxBusUsage(intakeMotor, Usage.kMinimal);
-    intakeMotor.setSmartCurrentLimit(40);
+    intakeMotor.setSmartCurrentLimit(Constants.IntakeConstants.currentLimit);
     intakeMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
 
     intakeMotor.burnFlash();
@@ -29,14 +29,14 @@ public class Intake extends SubsystemBase {
   public Command intakeGamePiece() {
     return run(
         () -> {
-          intakeMotor.set(0.5);
+          intakeMotor.set(Constants.IntakeConstants.motorSpeed);
         });
   }
 
   public Command outtakeGamePiece() {
     return run(
         () -> {
-          intakeMotor.set(-0.5);
+          intakeMotor.set(-Constants.IntakeConstants.motorSpeed);
         });
   }
 

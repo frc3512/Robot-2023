@@ -58,7 +58,7 @@ public final class Constants {
     // Joystick axis deadband for the swerve drive
     public static final double swerveDeadband = 0.1;
 
-    public static final double voltageComp = 12.0;
+    public static final double voltageComp = 10.0;
 
     // Hold time on motor brakes when disabled
     public static final double wheelLockTime = 10;
@@ -97,12 +97,22 @@ public final class Constants {
     public static final int encoderA = 0;
     public static final int encoderB = 1;
 
-    public static final double pGain = 10.0;
+    public static final int currentLimit = 70;
+    public static final double teleopSpeedMultiplier = 0.4;
+
+    public static final double pGain = 45.0;
     public static final double iGain = 0.0;
     public static final double dGain = 0.0;
 
-    public static final double maxVelocityMeterPerSecond = 1.75;
+    public static final int averageSampleSize = 10;
+    public static final double distancePerPulse =
+        (Math.PI * 2.0 * Units.inchesToMeters(1.751)) / 8192;
+
+    public static final double maxVelocityMeterPerSecond = 3.0;
     public static final double maxAccelerationMeterPerSecondSquared = 0.75;
+
+    public static final double minHeight = 0.0;
+    public static final double maxHeight = 0.29;
   }
 
   /** Constants revolving around the arm subsystem. */
@@ -110,18 +120,30 @@ public final class Constants {
     public static final int leftMotorID = 19;
     public static final int rightMotorID = 20;
 
-    public static final double pGain = 1.0;
+    public static final int currentLimit = 40;
+    public static final double teleopSpeed = 0.5;
+
+    public static final double pGain = 1.555;
     public static final double iGain = 0.0;
     public static final double dGain = 0.0;
 
-    public static final double maxVelocityRadPerSecond = 1.75;
+    public static final double positionConversionFactor = (Math.PI * 2.0);
+    public static final double armOffset = 5.66;
+
+    public static final double maxVelocityRadPerSecond = 2.0;
     public static final double maxAccelerationRadPerSecSquared = 0.75;
+
+    public static final double minAngle = 0.09;
+    public static final double maxAngle = 1.34;
   }
 
   /** Constants revolving around the intake subsystem. */
   public static final class IntakeConstants {
     public static final int intakeMotorID = 21;
 
+    public static final int currentLimit = 40;
+
+    public static final double motorSpeed = 0.5;
     public static final double intakeCurrentThreshold = 40.0;
   }
 

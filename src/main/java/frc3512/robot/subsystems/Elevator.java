@@ -4,13 +4,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.SparkMaxLimitSwitch;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanBooleanEntry;
@@ -30,7 +31,7 @@ public class Elevator extends SubsystemBase {
   private final SparkMaxLimitSwitch limitSwitch =
       leftElevatorMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
   private final Encoder elevatorEncoder =
-      new Encoder(Constants.ElevatorConstants.encoderA, Constants.ElevatorConstants.encoderB);
+      new Encoder(Constants.ElevatorConstants.encoderA, Constants.ElevatorConstants.encoderB, true);
 
   private boolean isClosedLoop;
   private final ProfiledPIDController controller =
@@ -52,6 +53,8 @@ public class Elevator extends SubsystemBase {
       new SpartanBooleanEntry("/Diagnostics/Elevator/Goal Reached");
   private SpartanBooleanEntry reverseLimitEntry =
       new SpartanBooleanEntry("/Diagnostics/Elevator/Bottom Limit");
+  private SpartanDoubleEntry leftOutputEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Left Output");
+  private SpartanDoubleEntry rightOutputEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Right Output");
 
   public Elevator() {
     leftElevatorMotor.restoreFactoryDefaults();
@@ -59,14 +62,15 @@ public class Elevator extends SubsystemBase {
 
     leftElevatorMotor.setIdleMode(IdleMode.kBrake);
     rightElevatorMotor.setIdleMode(IdleMode.kBrake);
-    leftElevatorMotor.setSmartCurrentLimit(80);
-    rightElevatorMotor.setSmartCurrentLimit(80);
+    leftElevatorMotor.setSmartCurrentLimit(Constants.ElevatorConstants.currentLimit);
+    rightElevatorMotor.setSmartCurrentLimit(Constants.ElevatorConstants.currentLimit);
     leftElevatorMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     rightElevatorMotor.enableVoltageCompensation(Constants.GeneralConstants.voltageComp);
     rightElevatorMotor.setInverted(true);
+    elevatorGroup.setInverted(true);
 
-    elevatorEncoder.setDistancePerPulse((Math.PI * 2.0 * Units.inchesToMeters(1.5)) / 8192);
-    elevatorEncoder.setReverseDirection(true);
+    elevatorEncoder.setDistancePerPulse(Constants.ElevatorConstants.distancePerPulse);
+    elevatorEncoder.setSamplesToAverage(Constants.ElevatorConstants.averageSampleSize);
 
     leftElevatorMotor.burnFlash();
     rightElevatorMotor.burnFlash();
@@ -87,21 +91,29 @@ public class Elevator extends SubsystemBase {
     controller.setGoal(new State());
   }
 
-  public CommandBase setGoal(TrapezoidProfile.State state) {
+  public Command setGoal(TrapezoidProfile.State state) {
     return runOnce(
             () -> {
-              controller.setGoal(state);
-            })
-        .andThen(run(() -> elevatorGroup.setVoltage(controller.calculate(getPosition()))))
-        .until(() -> controller.atGoal())
-        .finallyDo(interrupted -> elevatorGroup.set(0.0));
+              controller.setGoal(
+                  new TrapezoidProfile.State(
+                      MathUtil.clamp(
+                          state.position,
+                          Constants.ElevatorConstants.minHeight,
+                          Constants.ElevatorConstants.maxHeight),
+                      state.velocity));
+            });
   }
 
   public CommandBase moveElevator(DoubleSupplier elevator) {
     return run(
         () -> {
-          if (!isClosedLoop) {
-            elevatorGroup.set(limiter.calculate(elevator.getAsDouble() * 0.4));
+          if (!isClosedLoopEnabled()) {
+            elevatorGroup.set(
+                limiter.calculate(
+                    elevator.getAsDouble()));
+          } else {
+            elevatorGroup.setVoltage(
+                        controller.calculate(getPosition(), controller.getGoal()));
           }
         });
   }
@@ -120,5 +132,7 @@ public class Elevator extends SubsystemBase {
     currGoalEntry.set(controller.getGoal().position);
     goalEntry.set(controller.atGoal());
     reverseLimitEntry.set(limitSwitch.isPressed());
+    leftOutputEntry.set(leftElevatorMotor.getAppliedOutput());
+    rightOutputEntry.set(rightElevatorMotor.getAppliedOutput());
   }
 }

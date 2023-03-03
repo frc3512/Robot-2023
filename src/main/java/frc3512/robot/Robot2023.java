@@ -1,5 +1,6 @@
 package frc3512.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,8 +47,16 @@ public class Robot2023 {
     appendage.button(5).whileTrue(intake.intakeGamePiece());
     appendage.button(6).whileTrue(intake.outtakeGamePiece());
 
-    appendage.button(7).onTrue(elevator.setGoal(new State(0.1, 0.0)));
-    appendage.button(9).onTrue(elevator.setGoal(new State(0.0, 0.0)));
+    appendage.button(2).onTrue(superstructure.enableManualControl());
+    appendage
+        .button(7)
+        .onTrue(superstructure.goToScoreSetpoint(new State(0.0, 0.0), new State(0.05, 0.0)));
+    appendage
+        .button(8)
+        .onTrue(superstructure.goToScoreSetpoint(new State(0.10, 0.0), new State(0.05, 0.0)));
+    appendage
+        .button(9)
+        .onTrue(superstructure.goToScoreSetpoint(new State(0.20, 0.0), new State(0.05, 0.0)));    
   }
 
   /** Used for joystick/xbox axis actions. */
@@ -57,6 +66,11 @@ public class Robot2023 {
             () -> -driver.getRawAxis(translationAxis),
             () -> -driver.getRawAxis(strafeAxis),
             () -> -driver.getRawAxis(rotationAxis)));
+
+    elevator.setDefaultCommand(
+        elevator.moveElevator(() -> MathUtil.applyDeadband(-appendage.getRawAxis(1), 0.01)));
+
+    arm.setDefaultCommand(arm.runArm(() -> appendage.getHID().getPOV()));
   }
 
   /**
