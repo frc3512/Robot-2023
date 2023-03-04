@@ -1,90 +1,56 @@
 package frc3512.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc3512.robot.subsystems.Arm;
+import frc3512.robot.subsystems.Elevator;
+import frc3512.robot.subsystems.Intake;
 
 public class AutoDrop {
-  public static String getInput(CommandXboxController xboxController, String outtakeLevel) {
-    final double Ypos = xboxController.getLeftY();
-    final double Xpos = xboxController.getLeftX();
-    String result = "";
+  private Intake intake = new Intake();
+  private Arm arm = new Arm();
+  private Elevator elevator = new Elevator();
 
-    if (outtakeLevel == "L1") {
-      if (Xpos > 0.5) {
-        result = "Hybrid Right";
-      } else if (Xpos < -0.5) {
-        result = "Hybrid Left";
-      } else if (Ypos < -0.5) {
-        result = "Hybrid Middle";
-      }
-    } else if (outtakeLevel == "L2") {
-      if (Xpos > 0.5) {
-        result = "Cone Right L2";
-      } else if (Xpos < -0.5) {
-        result = "Cone Left L2";
-      } else if (Ypos < -0.5) {
-        result = "Cube L2";
-      }
-    } else if (outtakeLevel == "L3") {
-      if (Xpos > 0.5) {
-        result = "Cone Right L3";
-      } else if (Xpos < -0.5) {
-        result = "Cone Left L3";
-      } else if (Ypos < -0.5) {
-        result = "Cube L3";
-      }
-    } else {
-      result = null;
+  public Command automaticIntake(int gamePiece) {
+    double speed;
+    if (gamePiece == 0) {
+      speed = 0.65;
+    } else if (gamePiece == 1) {
+      speed = -0.65;
     }
-    return result;
+    return (
+        // arm to the horizontal potition
+        arm.setGoal(0.0, 0.0)
+      ).andThen(
+        // elevator to the ground position
+        elevator.setGoal(new TrapezoidProfile.State(0.0, 0.0))
+      ).andThen(
+        // intake the game piece, 0 is cube, 1 is cone
+        intake.customIntake(speed)
+      );
   }
 
-  public static String getJoystick(CommandJoystick joystick) {
-    var rawJoystick = joystick.getHID();
-    double rawDirection = rawJoystick.getRawAxis(5);
-    String direction = "";
-    String result = "";
-    String level = "";
-    String intake = "";
-    int outtake = 0;
-
-    if (rawJoystick.getRawButtonPressed(11)) {
-      level = "L1";
-    } else if (rawJoystick.getRawButtonPressed(9)) {
-      level = "L2";
-    } else if (rawJoystick.getRawButtonPressed(7)) {
-      level = "L3";
-    } else {
-      level = "";
+  public void automaticScoring(double height, int station, int gamePiece) {
+    if (station == 0) {
+      // go to the right station
+    } else if (station == 1) {
+      // go to the middle station
+    } else if (station == 2) {
+      // go to the left station
     }
 
-    if (rawJoystick.getRawButtonPressed(3)) {
-      intake = "Cube Ground";
-    } else if (rawJoystick.getRawButtonPressed(4)) {
-      intake = "Cone Ground";
-    } else if (rawJoystick.getRawButtonPressed(5)) {
-      intake = "Cube HP";
-    } else if (rawJoystick.getRawButtonPressed(6)) {
-      intake = "Cone HP";
-    } else {
-      intake = "";
-    }
+    // drive elevator to the height
 
-    if (rawDirection > 0.5) {
-      direction = "right";
-    } else if (rawDirection < -0.5) {
-      direction = "left";
-    } else {
-      direction = "";
+    if (gamePiece == 0) {
+      intake.outtakeCube();
+    } else if (gamePiece == 1) {
+      intake.outtakeCone();
     }
+  }
 
-    if (rawJoystick.getRawButton(1)) {
-      outtake = 1;
-    } else {
-      outtake = 0;
-    }
-
-    result = level + " " + intake + " " + outtake + " " + direction;
-    return result;
+  public Command scoreGamePiece(double level) {
+    return Commands.sequence(elevator.setGoal(new TrapezoidProfile.State(level, 0.0)), arm.setGoal());
   }
 }
