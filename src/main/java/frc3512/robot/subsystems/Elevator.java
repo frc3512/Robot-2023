@@ -53,8 +53,10 @@ public class Elevator extends SubsystemBase {
       new SpartanBooleanEntry("/Diagnostics/Elevator/Goal Reached");
   private SpartanBooleanEntry reverseLimitEntry =
       new SpartanBooleanEntry("/Diagnostics/Elevator/Bottom Limit");
-  private SpartanDoubleEntry leftOutputEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Left Output");
-  private SpartanDoubleEntry rightOutputEntry = new SpartanDoubleEntry("/Diagnostics/Elevator/Right Output");
+  private SpartanDoubleEntry leftOutputEntry =
+      new SpartanDoubleEntry("/Diagnostics/Elevator/Left Output");
+  private SpartanDoubleEntry rightOutputEntry =
+      new SpartanDoubleEntry("/Diagnostics/Elevator/Right Output");
 
   public Elevator() {
     leftElevatorMotor.restoreFactoryDefaults();
@@ -93,27 +95,24 @@ public class Elevator extends SubsystemBase {
 
   public Command setGoal(TrapezoidProfile.State state) {
     return runOnce(
-            () -> {
-              controller.setGoal(
-                  new TrapezoidProfile.State(
-                      MathUtil.clamp(
-                          state.position,
-                          Constants.ElevatorConstants.minHeight,
-                          Constants.ElevatorConstants.maxHeight),
-                      state.velocity));
-            });
+        () -> {
+          controller.setGoal(
+              new TrapezoidProfile.State(
+                  MathUtil.clamp(
+                      state.position,
+                      Constants.ElevatorConstants.minHeight,
+                      Constants.ElevatorConstants.maxHeight),
+                  state.velocity));
+        });
   }
 
   public CommandBase moveElevator(DoubleSupplier elevator) {
     return run(
         () -> {
           if (!isClosedLoopEnabled()) {
-            elevatorGroup.set(
-                limiter.calculate(
-                    elevator.getAsDouble()));
+            elevatorGroup.set(limiter.calculate(elevator.getAsDouble()));
           } else {
-            elevatorGroup.setVoltage(
-                        controller.calculate(getPosition(), controller.getGoal()));
+            elevatorGroup.setVoltage(controller.calculate(getPosition(), controller.getGoal()));
           }
         });
   }

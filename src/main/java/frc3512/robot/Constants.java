@@ -123,15 +123,15 @@ public final class Constants {
     public static final int currentLimit = 40;
     public static final double teleopSpeed = 0.5;
 
-    public static final double pGain = 1.555;
+    public static final double pGain = 10.7;
     public static final double iGain = 0.0;
     public static final double dGain = 0.0;
 
     public static final double positionConversionFactor = (Math.PI * 2.0);
     public static final double armOffset = 5.66;
 
-    public static final double maxVelocityRadPerSecond = 2.0;
-    public static final double maxAccelerationRadPerSecSquared = 0.75;
+    public static final double maxVelocityRadPerSecond = 3.5;
+    public static final double maxAccelerationRadPerSecSquared = 2.75;
 
     public static final double minAngle = 0.09;
     public static final double maxAngle = 1.34;

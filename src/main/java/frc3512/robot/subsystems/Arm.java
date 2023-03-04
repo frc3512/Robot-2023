@@ -53,6 +53,7 @@ public class Arm extends SubsystemBase {
     leftArmMotor.setIdleMode(IdleMode.kBrake);
     rightArmMotor.setIdleMode(IdleMode.kBrake);
     rightArmMotor.setInverted(true);
+    armGroup.setInverted(true);
 
     armEncoder.setPositionConversionFactor(Constants.ArmConstants.positionConversionFactor);
     armEncoder.setInverted(true);
@@ -78,18 +79,15 @@ public class Arm extends SubsystemBase {
 
   public CommandBase setGoal(TrapezoidProfile.State state) {
     return runOnce(
-            () -> {
-              controller.setGoal(
-                  new TrapezoidProfile.State(
-                      MathUtil.clamp(
-                          state.position,
-                          Constants.ArmConstants.minAngle,
-                          Constants.ArmConstants.maxAngle),
-                      state.velocity));
-            })
-        .andThen(run(() -> armGroup.setVoltage(controller.calculate(getAngle(), controller.getGoal()))))
-        .until(() -> controller.atGoal())
-        .finallyDo(interrupted -> armGroup.set(0.0));
+        () -> {
+          controller.setGoal(
+              new TrapezoidProfile.State(
+                  MathUtil.clamp(
+                      state.position,
+                      Constants.ArmConstants.minAngle,
+                      Constants.ArmConstants.maxAngle),
+                  state.velocity));
+        });
   }
 
   public CommandBase runArm(DoubleSupplier joystickValue) {
@@ -103,6 +101,8 @@ public class Arm extends SubsystemBase {
             } else {
               armGroup.set(limiter.calculate(0.0));
             }
+          } else {
+            armGroup.setVoltage(controller.calculate(getAngle(), controller.getGoal()));
           }
         });
   }

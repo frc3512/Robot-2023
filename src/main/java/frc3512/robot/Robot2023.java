@@ -11,6 +11,7 @@ import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
 import frc3512.robot.subsystems.Superstructure;
+import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
 
@@ -44,19 +45,15 @@ public class Robot2023 {
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
 
     appendage.button(1).whileTrue(intake.stopIntake());
-    appendage.button(5).whileTrue(intake.intakeGamePiece());
-    appendage.button(6).whileTrue(intake.outtakeGamePiece());
-
     appendage.button(2).onTrue(superstructure.enableManualControl());
-    appendage
-        .button(7)
-        .onTrue(superstructure.goToScoreSetpoint(new State(0.0, 0.0), new State(0.05, 0.0)));
+    appendage.button(3).whileTrue(intake.intakeGamePiece());
+    appendage.button(4).whileTrue(intake.outtakeGamePiece());
+    appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.STOW));
+    appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.INTAKE));
+
     appendage
         .button(8)
-        .onTrue(superstructure.goToScoreSetpoint(new State(0.10, 0.0), new State(0.05, 0.0)));
-    appendage
-        .button(9)
-        .onTrue(superstructure.goToScoreSetpoint(new State(0.20, 0.0), new State(0.05, 0.0)));    
+        .onTrue(superstructure.goToScoreSetpoint(new State(0.10, 0.0), new State(0.75, 0.0)));
   }
 
   /** Used for joystick/xbox axis actions. */
