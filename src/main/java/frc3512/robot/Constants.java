@@ -112,7 +112,7 @@ public final class Constants {
     public static final double maxAccelerationMeterPerSecondSquared = 0.75;
 
     public static final double minHeight = 0.0;
-    public static final double maxHeight = 0.29;
+    public static final double maxHeight = 0.35;
   }
 
   /** Constants revolving around the arm subsystem. */
@@ -133,7 +133,7 @@ public final class Constants {
     public static final double maxVelocityRadPerSecond = 3.5;
     public static final double maxAccelerationRadPerSecSquared = 2.75;
 
-    public static final double minAngle = 0.09;
+    public static final double minAngle = 0.70;
     public static final double maxAngle = 1.34;
   }
 

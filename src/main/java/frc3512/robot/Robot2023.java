@@ -1,7 +1,6 @@
 package frc3512.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -50,10 +49,12 @@ public class Robot2023 {
     appendage.button(4).whileTrue(intake.outtakeGamePiece());
     appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.STOW));
     appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.INTAKE));
-
-    appendage
-        .button(8)
-        .onTrue(superstructure.goToScoreSetpoint(new State(0.10, 0.0), new State(0.75, 0.0)));
+    appendage.button(7).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
+    appendage.button(8).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
+    appendage.button(9).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    appendage.button(10).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    appendage.button(11).onTrue(superstructure.goToPreset(ScoringEnum.SINGLE_PLAYER_STATION));
+    appendage.button(12).onTrue(superstructure.goToPreset(ScoringEnum.DOUBLE_PLAYER_STATION));
   }
 
   /** Used for joystick/xbox axis actions. */

@@ -5,11 +5,12 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.robot.Constants;
 import frc3512.robot.auton.Autos;
 import frc3512.robot.commands.DriveToPose;
 
-public class Superstructure {
+public class Superstructure extends SubsystemBase {
   // Subsystems
   private final Swerve swerve;
   private final Elevator elevator;
@@ -49,7 +50,20 @@ public class Superstructure {
       return goToScoreSetpoint(new State(0.0, 0.0), new State(0.08, 0.0));
     } else if (scoringPose == ScoringEnum.STOW) {
       return goToScoreSetpoint(new State(0.0, 0.0), new State(1.23, 0.0));
+    } else if (scoringPose == ScoringEnum.SCORE_CONE_L2) {
+      return goToScoreSetpoint(new State(0.20, 0.0), new State(0.19, 0.0));
+    } else if (scoringPose == ScoringEnum.SCORE_CONE_L3) {
+      return goToScoreSetpoint(new State(0.35, 0.0), new State(0.08, 0.0));
+    } else if (scoringPose == ScoringEnum.SCORE_CUBE_L2) {
+      return goToScoreSetpoint(new State(0.10, 0.0), new State(0.50, 0.0));
+    } else if (scoringPose == ScoringEnum.SCORE_CUBE_L3) {
+      return goToScoreSetpoint(new State(0.35, 0.0), new State(0.15, 0.0));
+    } else if (scoringPose == ScoringEnum.SINGLE_PLAYER_STATION) {
+      return goToScoreSetpoint(new State(0.0, 0.0), new State(0.70, 0.0));
+    } else if (scoringPose == ScoringEnum.DOUBLE_PLAYER_STATION) {
+      return goToScoreSetpoint(new State(0.35, 0.0), new State(0.08, 0.0));
     } else {
+      // Default choice: Stowed
       return goToScoreSetpoint(new State(0.0, 0.0), new State(1.23, 0.0));
     }
   }
@@ -64,6 +78,16 @@ public class Superstructure {
         () -> {
           elevator.disable();
           arm.disable();
+        },
+        arm,
+        elevator);
+  }
+
+  public Command enableAutoControl() {
+    return Commands.runOnce(
+        () -> {
+          elevator.enable();
+          arm.enable();
         },
         arm,
         elevator);

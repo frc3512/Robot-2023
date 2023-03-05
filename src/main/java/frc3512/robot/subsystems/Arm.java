@@ -70,6 +70,7 @@ public class Arm extends SubsystemBase {
   public void enable() {
     isClosedLoop = true;
     controller.reset(getAngle());
+    controller.setGoal(new State(1.23, 0.0));
   }
 
   public void disable() {
