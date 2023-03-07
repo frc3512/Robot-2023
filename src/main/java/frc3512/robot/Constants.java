@@ -128,7 +128,7 @@ public final class Constants {
     public static final double dGain = 0.0;
 
     public static final double positionConversionFactor = (Math.PI * 2.0);
-    public static final double armOffset = 5.66;
+    public static final double armOffset = 0.0;
 
     public static final double maxVelocityRadPerSecond = 3.5;
     public static final double maxAccelerationRadPerSecSquared = 2.75;
