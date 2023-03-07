@@ -28,6 +28,7 @@ public class Arm extends SubsystemBase {
   private final AbsoluteEncoder armEncoder = leftArmMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
   private boolean isClosedLoop;
+  private TrapezoidProfile.State goal;
   private final ProfiledPIDController controller =
       new ProfiledPIDController(
           Constants.ArmConstants.pGain,
@@ -70,7 +71,7 @@ public class Arm extends SubsystemBase {
   public void enable() {
     isClosedLoop = true;
     controller.reset(getAngle());
-    controller.setGoal(new State(1.23, 0.0));
+    goal = new State(1.23, 0.0);
   }
 
   public void disable() {
@@ -81,13 +82,7 @@ public class Arm extends SubsystemBase {
   public CommandBase setGoal(TrapezoidProfile.State state) {
     return runOnce(
         () -> {
-          controller.setGoal(
-              new TrapezoidProfile.State(
-                  MathUtil.clamp(
-                      state.position,
-                      Constants.ArmConstants.minAngle,
-                      Constants.ArmConstants.maxAngle),
-                  state.velocity));
+          goal = state;
         });
   }
 
@@ -95,17 +90,33 @@ public class Arm extends SubsystemBase {
     return run(
         () -> {
           if (!isClosedLoopEnabled()) {
-            if (joystickValue.getAsDouble() == 180) {
+            if (joystickValue.getAsDouble() == 0) {
               armGroup.set(limiter.calculate(Constants.ArmConstants.teleopSpeed));
-            } else if (joystickValue.getAsDouble() == 0) {
+            } else if (joystickValue.getAsDouble() == 180) {
               armGroup.set(limiter.calculate(-Constants.ArmConstants.teleopSpeed));
             } else {
               armGroup.set(limiter.calculate(0.0));
             }
-          } else {
-            armGroup.setVoltage(controller.calculate(getAngle(), controller.getGoal()));
           }
         });
+  }
+
+  public void controllerPeriodic() {
+    if (isClosedLoopEnabled()) {
+      if (goal != null) {
+        controller.setGoal(
+            new TrapezoidProfile.State(
+                MathUtil.clamp(
+                    goal.position,
+                    Constants.ArmConstants.minAngle,
+                    Constants.ArmConstants.maxAngle),
+                goal.velocity));
+      } else {
+        controller.setGoal(new State(1.23, 0.0));
+      }
+
+      armGroup.setVoltage(controller.calculate(getAngle(), controller.getGoal()));
+    }
   }
 
   public boolean isClosedLoopEnabled() {
@@ -118,6 +129,7 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
+    controllerPeriodic();
     positionEntry.set(getAngle());
     currGoalEntry.set(controller.getGoal().position);
     goalEntry.set(controller.atGoal());

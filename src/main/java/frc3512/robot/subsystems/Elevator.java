@@ -34,6 +34,7 @@ public class Elevator extends SubsystemBase {
       new Encoder(Constants.ElevatorConstants.encoderA, Constants.ElevatorConstants.encoderB, true);
 
   private boolean isClosedLoop;
+  private TrapezoidProfile.State goal;
   private final ProfiledPIDController controller =
       new ProfiledPIDController(
           Constants.ElevatorConstants.pGain,
@@ -96,25 +97,35 @@ public class Elevator extends SubsystemBase {
   public Command setGoal(TrapezoidProfile.State state) {
     return runOnce(
         () -> {
-          controller.setGoal(
-              new TrapezoidProfile.State(
-                  MathUtil.clamp(
-                      state.position,
-                      Constants.ElevatorConstants.minHeight,
-                      Constants.ElevatorConstants.maxHeight),
-                  state.velocity));
+          goal = state;
         });
   }
 
-  public CommandBase moveElevator(DoubleSupplier elevator) {
+  public CommandBase runElevator(DoubleSupplier elevator) {
     return run(
         () -> {
           if (!isClosedLoopEnabled()) {
             elevatorGroup.set(limiter.calculate(elevator.getAsDouble()));
-          } else {
-            elevatorGroup.setVoltage(controller.calculate(getPosition(), controller.getGoal()));
           }
         });
+  }
+
+  public void controllerPeriodic() {
+    if (isClosedLoopEnabled()) {
+      if (goal != null) {
+        controller.setGoal(
+            new TrapezoidProfile.State(
+                MathUtil.clamp(
+                    goal.position,
+                    Constants.ElevatorConstants.minHeight,
+                    Constants.ElevatorConstants.maxHeight),
+                goal.velocity));
+      } else {
+        controller.setGoal(new State());
+      }
+
+      elevatorGroup.setVoltage(controller.calculate(getPosition(), controller.getGoal()));
+    }
   }
 
   public boolean isClosedLoopEnabled() {
@@ -127,6 +138,7 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    controllerPeriodic();
     positionEntry.set(getPosition());
     currGoalEntry.set(controller.getGoal().position);
     goalEntry.set(controller.atGoal());

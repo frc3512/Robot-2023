@@ -100,7 +100,7 @@ public final class Constants {
     public static final int currentLimit = 70;
     public static final double teleopSpeedMultiplier = 0.4;
 
-    public static final double pGain = 45.0;
+    public static final double pGain = 85.0;
     public static final double iGain = 0.0;
     public static final double dGain = 0.0;
 
@@ -133,7 +133,7 @@ public final class Constants {
     public static final double maxVelocityRadPerSecond = 3.5;
     public static final double maxAccelerationRadPerSecSquared = 2.75;
 
-    public static final double minAngle = 0.70;
+    public static final double minAngle = 0.05;
     public static final double maxAngle = 1.34;
   }
 

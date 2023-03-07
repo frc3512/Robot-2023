@@ -11,6 +11,9 @@ import frc3512.robot.Constants;
 import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
+import frc3512.robot.subsystems.Superstructure;
+import frc3512.robot.subsystems.Superstructure.IntakeGamePiece;
+import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import java.util.HashMap;
 
@@ -18,18 +21,21 @@ import java.util.HashMap;
 public final class Autos {
 
   private final Swerve swerve;
+  private final Superstructure superstructure;
   private final Elevator elevator;
-  private final Intake intake;
   private final Arm arm;
+  private final Intake intake;
   private final SendableChooser<Command> autonChooser;
   private final HashMap<String, Command> eventMap;
   private final SwerveAutoBuilder autonBuilder;
 
-  public Autos(Swerve swerve, Elevator elevator, Intake intake, Arm arm) {
+  public Autos(
+      Swerve swerve, Elevator elevator, Arm arm, Superstructure superstructure, Intake intake) {
     this.swerve = swerve;
     this.elevator = elevator;
-    this.intake = intake;
     this.arm = arm;
+    this.superstructure = superstructure;
+    this.intake = intake;
 
     eventMap = new HashMap<>();
     setMarkers();
@@ -57,11 +63,17 @@ public final class Autos {
   }
 
   private void setMarkers() {
-    eventMap.put("Intake Stop", intake.stopIntake());
-    eventMap.put("Intake Intake Cube", intake.intakeGamePiece());
-    eventMap.put("Intake Outtake Cube", intake.outtakeGamePiece());
-    eventMap.put("Intake Intake Cone", intake.outtakeGamePiece());
-    eventMap.put("Intake Outtake Cone", intake.intakeGamePiece());
+    eventMap.put("Stop Intake", intake.stopIntake());
+    eventMap.put("Intake Cube", intake.intakeGamePiece());
+    eventMap.put("Intake Cone", intake.outtakeGamePiece());
+    eventMap.put("Go To Intake Position", superstructure.goToPreset(ScoringEnum.INTAKE));
+    eventMap.put("Stow", superstructure.goToPreset(ScoringEnum.STOW));
+    eventMap.put("Score Cone L2", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
+    eventMap.put("Score Cone L3", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    eventMap.put("Score Cube L2", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
+    eventMap.put("Score Cube L3", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
+    eventMap.put("Spit Out Cone", superstructure.spitOutGamePiece(IntakeGamePiece.CONE));
+    eventMap.put("Spit Out Cube", superstructure.spitOutGamePiece(IntakeGamePiece.CUBE));
   }
 
   public Command getSelected() {

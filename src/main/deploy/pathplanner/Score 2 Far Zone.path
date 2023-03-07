@@ -70,12 +70,5 @@
       }
     }
   ],
-  "markers": [
-    {
-      "position": 0.5071999289772727,
-      "names": [
-        "Intake Intake Cone"
-      ]
-    }
-  ]
+  "markers": []
 }
