@@ -10,6 +10,7 @@ import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
 import frc3512.robot.subsystems.Superstructure;
+import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
 
@@ -43,8 +44,17 @@ public class Robot2023 {
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
 
     appendage.button(1).whileTrue(intake.stopIntake());
-    appendage.button(5).whileTrue(intake.intakeGamePiece());
-    appendage.button(6).whileTrue(intake.outtakeGamePiece());
+    appendage.button(2).onTrue(superstructure.enableManualControl());
+    appendage.button(3).whileTrue(intake.intakeGamePiece());
+    appendage.button(4).whileTrue(intake.outtakeGamePiece());
+    appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.STOW));
+    appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.INTAKE));
+    appendage.button(7).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
+    appendage.button(8).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    appendage.button(9).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
+    appendage.button(10).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
+    appendage.button(11).onTrue(superstructure.goToPreset(ScoringEnum.SINGLE_PLAYER_STATION));
+    // appendage.button(12).onTrue(superstructure.goToPreset(ScoringEnum.DOUBLE_PLAYER_STATION));
   }
 
   /** Used for joystick/xbox axis actions. */
@@ -56,7 +66,7 @@ public class Robot2023 {
             () -> -driver.getRawAxis(rotationAxis)));
 
     elevator.setDefaultCommand(
-        elevator.moveElevator(() -> MathUtil.applyDeadband(appendage.getRawAxis(1), 0.01)));
+        elevator.runElevator(() -> MathUtil.applyDeadband(-appendage.getRawAxis(1), 0.01)));
 
     arm.setDefaultCommand(arm.runArm(() -> appendage.getHID().getPOV()));
   }
