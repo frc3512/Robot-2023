@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc3512.robot.subsystems.Arm;
-import frc3512.robot.subsystems.blinkin;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
 import frc3512.robot.subsystems.Superstructure;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
+import frc3512.robot.subsystems.blinkin;
 
 public class Robot2023 {
   // Robot subsystems
@@ -69,6 +69,10 @@ public class Robot2023 {
    *
    * @return the command to run in autonomous
    */
+  public void setColors() {
+    m_blinkin.solid_orange();
+  }
+
   public Command getAutonomousCommand() {
     return superstructure.getAuton();
   }
