@@ -96,9 +96,10 @@ public class Elevator extends SubsystemBase {
 
   public Command setGoal(TrapezoidProfile.State state) {
     return runOnce(
-        () -> {
-          goal = state;
-        }).until(controller::atGoal);
+            () -> {
+              goal = state;
+            })
+        .until(controller::atGoal);
   }
 
   public CommandBase runElevator(DoubleSupplier elevator) {

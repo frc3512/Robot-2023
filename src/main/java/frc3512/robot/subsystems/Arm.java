@@ -84,9 +84,10 @@ public class Arm extends SubsystemBase {
 
   public CommandBase setGoal(TrapezoidProfile.State state) {
     return runOnce(
-        () -> {
-          goal = state;
-        }).until(controller::atGoal);
+            () -> {
+              goal = state;
+            })
+        .until(controller::atGoal);
   }
 
   public CommandBase runArm(DoubleSupplier joystickValue) {

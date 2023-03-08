@@ -54,7 +54,7 @@ public class Robot2023 {
     appendage.button(9).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
     appendage.button(10).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
     appendage.button(11).onTrue(superstructure.goToPreset(ScoringEnum.SINGLE_PLAYER_STATION));
-    appendage.button(12).onTrue(superstructure.goToPreset(ScoringEnum.DOUBLE_PLAYER_STATION));
+    // appendage.button(12).onTrue(superstructure.goToPreset(ScoringEnum.DOUBLE_PLAYER_STATION));
   }
 
   /** Used for joystick/xbox axis actions. */
