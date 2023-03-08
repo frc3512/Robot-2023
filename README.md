@@ -72,9 +72,10 @@ This years robot's unique features include:
 |Yes|AprilTags|Read and process AprilTags using PhotonVision
 |Yes|Pose Estimation|Add in pose estimation using AprilTags.
 |Yes|Pose based Alignment|Use pose estimation to drive onto a certain point on the field.
-|No|Manual and Automated Elevator|Elevator subsystem with both manual and automated control.
-|No|Manual and Automated Arm|Arm subsystem with both manual and automated control.
-|No|AutoDrop|Sequence for automatically scoring onto the correct node.
+|Yes|Manual and Automated Elevator|Elevator subsystem with both manual and automated control.
+|Yes|Manual and Automated Arm|Arm subsystem with both manual and automated control.
+|No|AutoDrop|Sequence for automatically scoring (arm, elevator, and intake) onto the correct node.
+|No|Full Fledged Autos|Have auton modes from one piece all the way up to a full link + balance.
 
 ## Roster
 
