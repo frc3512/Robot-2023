@@ -128,13 +128,13 @@ public final class Constants {
     public static final double dGain = 0.0;
 
     public static final double positionConversionFactor = (Math.PI * 2.0);
-    public static final double armOffset = 2.41;
+    public static final double armOffset = 0.0;
 
     public static final double maxVelocityRadPerSecond = 3.5;
     public static final double maxAccelerationRadPerSecSquared = 2.75;
 
-    public static final double minAngle = 0.05;
-    public static final double maxAngle = 1.34;
+    public static final double minAngle = 0.0;
+    public static final double maxAngle = 3.8;
   }
 
   /** Constants revolving around the intake subsystem. */

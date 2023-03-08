@@ -71,7 +71,7 @@ public class Arm extends SubsystemBase {
   public void enable() {
     isClosedLoop = true;
     controller.reset(getAngle());
-    goal = new State(1.23, 0.0);
+    goal = new State(3.8, 0.0);
   }
 
   public void disable() {
@@ -112,7 +112,7 @@ public class Arm extends SubsystemBase {
                     Constants.ArmConstants.maxAngle),
                 goal.velocity));
       } else {
-        controller.setGoal(new State(1.23, 0.0));
+        controller.setGoal(new State(3.8, 0.0));
       }
 
       armGroup.setVoltage(controller.calculate(getAngle(), controller.getGoal()));
