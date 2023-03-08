@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -71,7 +72,9 @@ public class Arm extends SubsystemBase {
   public void enable() {
     isClosedLoop = true;
     controller.reset(getAngle());
-    goal = new State(1.23, 0.0);
+    if (DriverStation.isTeleopEnabled()) {
+      goal = new State(2.62, 0.0);
+    }
   }
 
   public void disable() {
@@ -83,7 +86,7 @@ public class Arm extends SubsystemBase {
     return runOnce(
         () -> {
           goal = state;
-        });
+        }).until(controller::atGoal);
   }
 
   public CommandBase runArm(DoubleSupplier joystickValue) {
@@ -112,7 +115,7 @@ public class Arm extends SubsystemBase {
                     Constants.ArmConstants.maxAngle),
                 goal.velocity));
       } else {
-        controller.setGoal(new State(1.23, 0.0));
+        controller.setGoal(new State(2.62, 0.0));
       }
 
       armGroup.setVoltage(controller.calculate(getAngle(), controller.getGoal()));

@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc3512.robot.Constants;
+import frc3512.robot.commands.AutoBalance;
 import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
@@ -53,20 +55,24 @@ public final class Autos {
 
     autonChooser = new SendableChooser<Command>();
     autonChooser.setDefaultOption("No-op", new InstantCommand());
-    autonChooser.addOption("Score 1, Balance", balanceMidZone());
-    autonChooser.addOption("Score 2 Money Zone", score2MoneyZone());
-    autonChooser.addOption("Score 3 Money Zone", score3MoneyZone());
-    autonChooser.addOption("Score 2 Far Zone", score2FarZone());
-    autonChooser.addOption("Score 3 Far Zone", score3FarZone());
+    autonChooser.addOption("Score 1, Mobility", score1Mobility());
+    autonChooser.addOption("Score 1, Balance", score1Balance());
+
+    // autonChooser.addOption("Score 2 Money Zone", score2MoneyZone());
+    // autonChooser.addOption("Score 3 Money Zone", score3MoneyZone());
+    // autonChooser.addOption("Score 2 Far Zone", score2FarZone());
+    // autonChooser.addOption("Score 3 Far Zone", score3FarZone());
 
     SmartDashboard.putData("Auton Chooser", autonChooser);
   }
 
   private void setMarkers() {
+    eventMap.put("Wait a Second", new WaitCommand(1.5));
     eventMap.put("Stop Intake", intake.stopIntake());
-    eventMap.put("Intake Cube", intake.intakeGamePiece());
-    eventMap.put("Intake Cone", intake.outtakeGamePiece());
-    eventMap.put("Go To Intake Position", superstructure.goToPreset(ScoringEnum.INTAKE));
+    eventMap.put("Lock Swerve", new InstantCommand(() -> swerve.lock()));
+    eventMap.put("Intake", intake.outtakeGamePiece().withTimeout(1.0));
+    eventMap.put("Outtake", intake.intakeGamePiece().withTimeout(1.0));
+    eventMap.put("Go to Intake Position", superstructure.goToPreset(ScoringEnum.INTAKE));
     eventMap.put("Stow", superstructure.goToPreset(ScoringEnum.STOW));
     eventMap.put("Score Cone L2", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
     eventMap.put("Score Cone L3", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
@@ -74,15 +80,22 @@ public final class Autos {
     eventMap.put("Score Cube L3", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
     eventMap.put("Spit Out Cone", superstructure.spitOutGamePiece(IntakeGamePiece.CONE));
     eventMap.put("Spit Out Cube", superstructure.spitOutGamePiece(IntakeGamePiece.CUBE));
+    eventMap.put("Auto Balance", new AutoBalance(swerve));
+    eventMap.put("Reset Gyro", new InstantCommand(() -> swerve.zeroGyro()));
   }
 
   public Command getSelected() {
     return autonChooser.getSelected();
   }
 
-  public Command balanceMidZone() {
+  public Command score1Mobility() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Balance Mid Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPath("Ventura Mobility", Constants.AutonConstants.constraints));
+  }
+
+  public Command score1Balance() {
+    return autonBuilder.fullAuto(
+        PathPlanner.loadPath("Ventura Balance", Constants.AutonConstants.constraints));
   }
 
   public Command score2MoneyZone() {

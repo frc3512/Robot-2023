@@ -67,25 +67,24 @@ public class Superstructure extends SubsystemBase {
 
   public Command goToPreset(ScoringEnum scoringPose) {
     if (scoringPose == ScoringEnum.INTAKE) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(0.08, 0.0));
+      return goToScoreSetpoint(new State(0.0, 0.0), new State(1.33, 0.0));
     } else if (scoringPose == ScoringEnum.STOW) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(1.23, 0.0));
+      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.62, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L2) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(1.23, 0.0));
+      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.62, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L3) {
-      return goToScoreSetpoint(new State(0.30, 0.0), new State(0.08, 0.0));
+      return goToScoreSetpoint(new State(0.26, 0.0), new State(1.75, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L2) {
-      return goToScoreSetpoint(new State(0.16, 0.0), new State(0.48, 0.0));
+      return goToScoreSetpoint(new State(0.15, 0.0), new State(1.75, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L3) {
-      return goToScoreSetpoint(new State(0.35, 0.0), new State(0.15, 0.0));
+      return goToScoreSetpoint(new State(0.35, 0.0), new State(1.43, 0.0));
     } else if (scoringPose == ScoringEnum.SINGLE_PLAYER_STATION) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(1.05, 0.0));
+      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.25, 0.0));
     } else if (scoringPose == ScoringEnum.DOUBLE_PLAYER_STATION) {
-      // 0.350460, 6.251140
       return goToScoreSetpoint(new State(0.35, 0.0), new State(0.08, 0.0));
     } else {
       // Default choice: Stowed
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(1.23, 0.0));
+      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.62, 0.0));
     }
   }
 

@@ -2,23 +2,24 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.7691706139271655,
-        "y": 2.8218440564448097
+        "x": 1.825445106124587,
+        "y": 5.068606698072772
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7691706139271655,
-        "y": 2.8218440564448097
+        "x": 2.8254451061245875,
+        "y": 5.068606698072772
       },
-      "holonomicAngle": 179.7864000371901,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Score Cube L3",
-          "Spit Out Cube",
+          "Score Cone L3",
+          "Wait a Second",
+          "Outtake",
           "Stow"
         ],
         "executionBehavior": "sequential",
@@ -28,22 +29,24 @@
     },
     {
       "anchorPoint": {
-        "x": 3.4,
-        "y": 2.8261940752397137
+        "x": 6.5,
+        "y": 5.069483566790795
       },
       "prevControl": {
-        "x": 2.4,
-        "y": 2.8261940752397137
+        "x": 5.5,
+        "y": 5.069483566790795
       },
       "nextControl": null,
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "Reset Gyro"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }

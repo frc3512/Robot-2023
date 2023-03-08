@@ -12,6 +12,12 @@
           "open": true
         },
         "open": true
+      },
+      "SmartDashboard": {
+        "PPSwerveControllerCommand": {
+          "open": true
+        },
+        "open": true
       }
     },
     "types": {
@@ -22,7 +28,6 @@
     }
   },
   "NetworkTables Settings": {
-    "dsClient": false,
     "mode": "Client (NT4)",
     "serverTeam": "3512"
   },
@@ -30,7 +35,7 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 1477,
+          "height": 1757,
           "series": [
             {
               "color": [
@@ -52,7 +57,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }

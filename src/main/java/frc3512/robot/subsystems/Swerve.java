@@ -80,12 +80,24 @@ public class Swerve extends SubsystemBase {
     swerve.zeroGyro();
   }
 
-  public void resetOdometry(Pose2d pose) {
-    swerve.resetOdometry(pose);
-  }
-
   public void lock() {
     swerve.lockPose();
+  }
+
+  public void stop() {
+    swerve.setChassisSpeeds(new ChassisSpeeds());
+  }
+
+  public double getYaw() {
+    return swerve.getYaw().getDegrees();
+  }
+
+  public double getPitch() {
+    return swerve.getPitch().getDegrees();
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    swerve.resetOdometry(pose);
   }
 
   public Pose2d getPose() {

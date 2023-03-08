@@ -98,7 +98,7 @@ public class Elevator extends SubsystemBase {
     return runOnce(
         () -> {
           goal = state;
-        });
+        }).until(controller::atGoal);
   }
 
   public CommandBase runElevator(DoubleSupplier elevator) {
