@@ -14,7 +14,6 @@ import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
 import frc3512.robot.subsystems.Superstructure;
-import frc3512.robot.subsystems.Superstructure.IntakeGamePiece;
 import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import java.util.HashMap;
@@ -55,6 +54,7 @@ public final class Autos {
 
     autonChooser = new SendableChooser<Command>();
     autonChooser.setDefaultOption("No-op", new InstantCommand());
+    // autonChooser.addOption("Score 1", scoreOne());
     autonChooser.addOption("Score 1, Mobility", score1Mobility());
     autonChooser.addOption("Score 1, Balance", score1Balance());
 
@@ -69,23 +69,30 @@ public final class Autos {
   private void setMarkers() {
     eventMap.put("Wait a Second", new WaitCommand(1.5));
     eventMap.put("Stop Intake", intake.stopIntake());
-    eventMap.put("Lock Swerve", new InstantCommand(() -> swerve.lock()));
     eventMap.put("Intake", intake.outtakeGamePiece().withTimeout(1.0));
     eventMap.put("Outtake", intake.intakeGamePiece().withTimeout(1.0));
-    eventMap.put("Go to Intake Position", superstructure.goToPreset(ScoringEnum.INTAKE));
+    eventMap.put("Intake Position", superstructure.goToPreset(ScoringEnum.INTAKE));
     eventMap.put("Stow", superstructure.goToPreset(ScoringEnum.STOW));
     eventMap.put("Score Cone L2", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
     eventMap.put("Score Cone L3", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
     eventMap.put("Score Cube L2", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
     eventMap.put("Score Cube L3", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
-    eventMap.put("Spit Out Cone", superstructure.spitOutGamePiece(IntakeGamePiece.CONE));
-    eventMap.put("Spit Out Cube", superstructure.spitOutGamePiece(IntakeGamePiece.CUBE));
     eventMap.put("Auto Balance", new AutoBalance(swerve));
+    eventMap.put("Lock Swerve", new InstantCommand(() -> swerve.lock()));
     eventMap.put("Reset Gyro", new InstantCommand(() -> swerve.zeroGyro()));
   }
 
   public Command getSelected() {
     return autonChooser.getSelected();
+  }
+
+  public Command scoreOne() {
+    return superstructure
+        .goToPreset(ScoringEnum.SCORE_CONE_L3)
+        .andThen(new WaitCommand(1.5))
+        .andThen(intake.intakeGamePiece().withTimeout(1.0))
+        .andThen(superstructure.goToPreset(ScoringEnum.STOW))
+        .andThen(intake.stopIntake());
   }
 
   public Command score1Mobility() {

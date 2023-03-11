@@ -177,7 +177,7 @@ public class SwerveDrive {
       SwerveDriveTelemetry.desiredStates[(module.moduleNumber * 2) + 1] =
           moduleState.speedMetersPerSecond;
 
-      module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop);
+      module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop, false);
       SmartDashboard.putNumber(
           "Module " + module.moduleNumber + " Speed Setpoint: ",
           desiredStates[module.moduleNumber].speedMetersPerSecond);
@@ -380,7 +380,9 @@ public class SwerveDrive {
   public void lockPose() {
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setDesiredState(
-          new SwerveModuleState2(0, swerveModule.configuration.moduleLocation.getAngle(), 0), true);
+          new SwerveModuleState2(0, swerveModule.configuration.moduleLocation.getAngle(), 0),
+          true,
+          true);
     }
   }
 

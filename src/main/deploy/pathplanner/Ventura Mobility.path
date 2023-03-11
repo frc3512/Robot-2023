@@ -44,7 +44,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Reset Gyro"
+          "Reset Gyro",
+          "Stop Intake"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

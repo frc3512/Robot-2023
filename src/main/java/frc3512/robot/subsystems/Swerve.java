@@ -22,9 +22,9 @@ public class Swerve extends SubsystemBase {
   private final Vision vision;
   private final SwerveDrive swerve;
 
-  private SlewRateLimiter translationLimiter = new SlewRateLimiter(3.0);
-  private SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.0);
-  private SlewRateLimiter rotationLimiter = new SlewRateLimiter(3.0);
+  private SlewRateLimiter translationLimiter = new SlewRateLimiter(6.0);
+  private SlewRateLimiter strafeLimiter = new SlewRateLimiter(6.0);
+  private SlewRateLimiter rotationLimiter = new SlewRateLimiter(6.0);
 
   /** Subsystem class for the swerve drive. */
   public Swerve(Vision vision) {
@@ -82,10 +82,6 @@ public class Swerve extends SubsystemBase {
 
   public void lock() {
     swerve.lockPose();
-  }
-
-  public void stop() {
-    swerve.setChassisSpeeds(new ChassisSpeeds());
   }
 
   public double getYaw() {

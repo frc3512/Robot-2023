@@ -71,17 +71,17 @@ public class Superstructure extends SubsystemBase {
     } else if (scoringPose == ScoringEnum.STOW) {
       return goToScoreSetpoint(new State(0.0, 0.0), new State(2.62, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L2) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.62, 0.0));
+      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.25, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L3) {
       return goToScoreSetpoint(new State(0.26, 0.0), new State(1.75, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L2) {
-      return goToScoreSetpoint(new State(0.15, 0.0), new State(1.75, 0.0));
+      return goToScoreSetpoint(new State(0.18, 0.0), new State(1.75, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L3) {
       return goToScoreSetpoint(new State(0.35, 0.0), new State(1.43, 0.0));
     } else if (scoringPose == ScoringEnum.SINGLE_PLAYER_STATION) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.25, 0.0));
+      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.30, 0.0));
     } else if (scoringPose == ScoringEnum.DOUBLE_PLAYER_STATION) {
-      return goToScoreSetpoint(new State(0.35, 0.0), new State(0.08, 0.0));
+      return goToScoreSetpoint(new State(0.35, 0.0), new State(1.03, 0.0));
     } else {
       // Default choice: Stowed
       return goToScoreSetpoint(new State(0.0, 0.0), new State(2.62, 0.0));

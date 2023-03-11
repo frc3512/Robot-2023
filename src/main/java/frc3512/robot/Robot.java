@@ -85,10 +85,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    if (disabledTimer.hasElapsed(Constants.GeneralConstants.wheelLockTime)) {
-      m_robot.setMotorBrake(false);
-      disabledTimer.stop();
-    }
+    m_robot.setMotorBrake(true);
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
