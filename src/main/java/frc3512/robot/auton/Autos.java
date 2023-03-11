@@ -54,7 +54,7 @@ public final class Autos {
 
     autonChooser = new SendableChooser<Command>();
     autonChooser.setDefaultOption("No-op", new InstantCommand());
-    // autonChooser.addOption("Score 1", scoreOne());
+    autonChooser.addOption("Score 1", scoreOne());
     autonChooser.addOption("Score 1, Mobility", score1Mobility());
     autonChooser.addOption("Score 1, Balance", score1Balance());
 
