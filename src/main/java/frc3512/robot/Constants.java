@@ -53,7 +53,7 @@ public final class Constants {
   /** General robot constants */
   public static final class GeneralConstants {
     // Enable or disable competition mode
-    public static final boolean tuningMode = true;
+    public static final boolean tuningMode = false;
 
     // Joystick axis deadband for the swerve drive
     public static final double swerveDeadband = 0.1;
@@ -130,8 +130,8 @@ public final class Constants {
     public static final double positionConversionFactor = (Math.PI * 2.0);
     public static final double armOffset = 0.0;
 
-    public static final double maxVelocityRadPerSecond = 3.5;
-    public static final double maxAccelerationRadPerSecSquared = 2.75;
+    public static final double maxVelocityRadPerSecond = 6.0;
+    public static final double maxAccelerationRadPerSecSquared = 3.0;
 
     public static final double minAngle = 0.05;
     public static final double maxAngle = 6.0;
@@ -143,7 +143,7 @@ public final class Constants {
 
     public static final int currentLimit = 40;
 
-    public static final double motorSpeed = 0.5;
+    public static final double motorSpeed = 0.9;
     public static final double intakeCurrentThreshold = 40.0;
   }
 

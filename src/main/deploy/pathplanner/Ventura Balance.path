@@ -29,12 +29,12 @@
     },
     {
       "anchorPoint": {
-        "x": 4.518383934524565,
-        "y": 3.2868879197245007
+        "x": 5.79,
+        "y": 3.2832237616241993
       },
       "prevControl": {
-        "x": 4.123157281593581,
-        "y": 3.2958792854081245
+        "x": 5.394773347069016,
+        "y": 3.292215127307823
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -44,10 +44,10 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Stop Intake",
-          "Auto Balance"
+          "Lock Swerve",
+          "Stop Intake"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
