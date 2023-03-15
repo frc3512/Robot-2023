@@ -17,10 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Score Cone L3",
-          "Wait a Second",
-          "Outtake",
-          "Stow"
+          "Score Cone L3"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

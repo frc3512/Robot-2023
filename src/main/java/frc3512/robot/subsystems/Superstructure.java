@@ -5,8 +5,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc3512.robot.Constants;
 import frc3512.robot.auton.Autos;
 import frc3512.robot.commands.DriveToPose;
@@ -33,36 +33,32 @@ public class Superstructure extends SubsystemBase {
     SCORE_CONE_L3
   }
 
-  // Game piece intake scoring
-  public enum IntakeGamePiece {
-    CUBE,
-    CONE,
-    NONE
-  }
-
   public Superstructure(Swerve swerve, Elevator elevator, Arm arm, Intake intake) {
     this.swerve = swerve;
     this.elevator = elevator;
     this.intake = intake;
     this.arm = arm;
 
-    autos = new Autos(swerve, elevator, arm, this, intake);
+    autos = new Autos(swerve, this, intake);
   }
 
   public Command getAuton() {
     return autos.getSelected();
   }
 
-  public Command spitOutGamePiece(IntakeGamePiece gamePiece) {
-    if (gamePiece == IntakeGamePiece.CUBE) {
-      return Commands.sequence(
-          intake.outtakeGamePiece().withTimeout(0.5).andThen(intake.stopIntake()));
-    } else if (gamePiece == IntakeGamePiece.CONE) {
-      return Commands.sequence(
-          intake.intakeGamePiece().withTimeout(0.5).andThen(intake.stopIntake()));
-    } else {
-      return new InstantCommand();
-    }
+  public Command enableManualControl() {
+    return Commands.runOnce(
+        () -> {
+          elevator.disable();
+          arm.disable();
+        },
+        arm,
+        elevator);
+  }
+
+  public Command goToScoreSetpoint(
+      TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
+    return Commands.sequence(arm.setGoal(armState), elevator.setGoal(elevatorState));
   }
 
   public Command goToPreset(ScoringEnum scoringPose) {
@@ -88,33 +84,12 @@ public class Superstructure extends SubsystemBase {
     }
   }
 
-  public Command goToScoreSetpoint(
-      TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
-    return Commands.sequence(arm.setGoal(armState), elevator.setGoal(elevatorState));
-  }
-
-  public Command enableManualControl() {
-    return Commands.runOnce(
-        () -> {
-          elevator.disable();
-          arm.disable();
-        },
-        arm,
-        elevator);
-  }
-
-  public Command enableAutoControl() {
-    return Commands.runOnce(
-        () -> {
-          elevator.enable();
-          arm.enable();
-        },
-        arm,
-        elevator);
-  }
-
-  public Command driveToClosetPose() {
-    return new DriveToPose(swerve, findClosestPose());
+  public Command autoScore(ScoringEnum scoringPose) {
+    return goToPreset(scoringPose)
+        .andThen(new WaitCommand(1.5))
+        .andThen(intake.intakeGamePiece().withTimeout(1.0))
+        .andThen(goToPreset(ScoringEnum.STOW))
+        .andThen(intake.stopIntake());
   }
 
   private Pose2d findClosestPose() {
@@ -126,5 +101,9 @@ public class Superstructure extends SubsystemBase {
       }
     }
     return new Pose2d();
+  }
+
+  public Command driveToClosetPose() {
+    return new DriveToPose(swerve, findClosestPose());
   }
 }

@@ -7,34 +7,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc3512.robot.Constants;
 import frc3512.robot.commands.AutoBalance;
-import frc3512.robot.subsystems.Arm;
-import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
 import frc3512.robot.subsystems.Superstructure;
 import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import java.util.HashMap;
 
-@SuppressWarnings("unused")
 public final class Autos {
 
   private final Swerve swerve;
   private final Superstructure superstructure;
-  private final Elevator elevator;
-  private final Arm arm;
   private final Intake intake;
   private final SendableChooser<Command> autonChooser;
   private final HashMap<String, Command> eventMap;
   private final SwerveAutoBuilder autonBuilder;
 
-  public Autos(
-      Swerve swerve, Elevator elevator, Arm arm, Superstructure superstructure, Intake intake) {
+  public Autos(Swerve swerve, Superstructure superstructure, Intake intake) {
     this.swerve = swerve;
-    this.elevator = elevator;
-    this.arm = arm;
     this.superstructure = superstructure;
     this.intake = intake;
 
@@ -67,16 +58,15 @@ public final class Autos {
   }
 
   private void setMarkers() {
-    eventMap.put("Wait a Second", new WaitCommand(1.5));
     eventMap.put("Stop Intake", intake.stopIntake());
     eventMap.put("Intake", intake.outtakeGamePiece().withTimeout(1.0));
     eventMap.put("Outtake", intake.intakeGamePiece().withTimeout(1.0));
     eventMap.put("Intake Position", superstructure.goToPreset(ScoringEnum.INTAKE));
     eventMap.put("Stow", superstructure.goToPreset(ScoringEnum.STOW));
-    eventMap.put("Score Cone L2", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
-    eventMap.put("Score Cone L3", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
-    eventMap.put("Score Cube L2", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
-    eventMap.put("Score Cube L3", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
+    eventMap.put("Score Cone L2", superstructure.autoScore(ScoringEnum.SCORE_CONE_L2));
+    eventMap.put("Score Cone L3", superstructure.autoScore(ScoringEnum.SCORE_CONE_L3));
+    eventMap.put("Score Cube L2", superstructure.autoScore(ScoringEnum.SCORE_CUBE_L2));
+    eventMap.put("Score Cube L3", superstructure.autoScore(ScoringEnum.SCORE_CUBE_L3));
     eventMap.put("Auto Balance", new AutoBalance(swerve));
     eventMap.put("Lock Swerve", new InstantCommand(() -> swerve.lock()));
     eventMap.put("Reset Gyro", new InstantCommand(() -> swerve.zeroGyro()));
@@ -87,41 +77,36 @@ public final class Autos {
   }
 
   public Command scoreOne() {
-    return superstructure
-        .goToPreset(ScoringEnum.SCORE_CONE_L3)
-        .andThen(new WaitCommand(1.5))
-        .andThen(intake.intakeGamePiece().withTimeout(1.0))
-        .andThen(superstructure.goToPreset(ScoringEnum.STOW))
-        .andThen(intake.stopIntake());
+    return superstructure.autoScore(ScoringEnum.SCORE_CONE_L3);
   }
 
   public Command score1Mobility() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Ventura Mobility", Constants.AutonConstants.constraints));
+        PathPlanner.loadPath("Score 1 Mobility", Constants.AutonConstants.constraints));
   }
 
   public Command score1Balance() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Ventura Balance", Constants.AutonConstants.constraints));
+        PathPlanner.loadPath("Score 1 Balance", Constants.AutonConstants.constraints));
   }
 
-  public Command score2MoneyZone() {
+  public Command score2Left() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Score 2 Money Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPath("Score 2 Left Mobility", Constants.AutonConstants.constraints));
   }
 
-  public Command score3MoneyZone() {
+  public Command score3Left() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Score 3 Money Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPath("Score 3 Left Mobility", Constants.AutonConstants.constraints));
   }
 
-  public Command score2FarZone() {
+  public Command score2Right() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("Score 2 Far Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup("Score 2 Right Mobility", Constants.AutonConstants.constraints));
   }
 
-  public Command score3FarZone() {
+  public Command score3Right() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("Score 3 Far Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup("Score 3 Right Mobility", Constants.AutonConstants.constraints));
   }
 }
