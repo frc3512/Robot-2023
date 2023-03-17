@@ -58,14 +58,20 @@ public class Superstructure extends SubsystemBase {
 
   public Command goToScoreSetpoint(
       TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
+    return Commands.sequence(
+        elevator.setGoal(elevatorState), new WaitCommand(0.25), arm.setGoal(armState));
+  }
+
+  public Command goToScoreSetpointHyrbid(
+      TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
     return Commands.sequence(arm.setGoal(armState), elevator.setGoal(elevatorState));
   }
 
   public Command goToPreset(ScoringEnum scoringPose) {
     if (scoringPose == ScoringEnum.INTAKE) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(1.33, 0.0));
+      return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(1.33, 0.0));
     } else if (scoringPose == ScoringEnum.STOW) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.62, 0.0));
+      return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(2.70, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L2) {
       return goToScoreSetpoint(new State(0.0, 0.0), new State(2.25, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L3) {
@@ -75,12 +81,12 @@ public class Superstructure extends SubsystemBase {
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L3) {
       return goToScoreSetpoint(new State(0.35, 0.0), new State(1.43, 0.0));
     } else if (scoringPose == ScoringEnum.SINGLE_PLAYER_STATION) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.30, 0.0));
+      return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(2.30, 0.0));
     } else if (scoringPose == ScoringEnum.DOUBLE_PLAYER_STATION) {
       return goToScoreSetpoint(new State(0.35, 0.0), new State(1.03, 0.0));
     } else {
       // Default choice: Stowed
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.62, 0.0));
+      return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(2.70, 0.0));
     }
   }
 

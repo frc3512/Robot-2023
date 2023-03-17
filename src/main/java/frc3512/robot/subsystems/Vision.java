@@ -42,6 +42,7 @@ public class Vision extends SubsystemBase {
 
   public Vision() {
     PhotonCamera.setVersionCheckEnabled(false);
+    photonCamera.setDriverMode(true);
 
     try {
       atfl = AprilTagFields.kDefaultField.loadAprilTagLayoutField();

@@ -5,6 +5,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -24,9 +25,9 @@ public class Swerve extends SubsystemBase {
   private final Vision vision;
   private final SwerveDrive swerve;
 
-  private SlewRateLimiter translationLimiter = new SlewRateLimiter(10.0);
-  private SlewRateLimiter strafeLimiter = new SlewRateLimiter(10.0);
-  private SlewRateLimiter rotationLimiter = new SlewRateLimiter(10.0);
+  private SlewRateLimiter translationLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
+  private SlewRateLimiter strafeLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
+  private SlewRateLimiter rotationLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
 
   private final Timer visionTimer = new Timer();
 
