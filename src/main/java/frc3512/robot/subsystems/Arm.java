@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanBooleanEntry;
 import frc3512.lib.logging.SpartanDoubleEntry;
+import frc3512.lib.util.CANSparkMaxUtil;
+import frc3512.lib.util.CANSparkMaxUtil.Usage;
 import frc3512.robot.Constants;
 import java.util.function.DoubleSupplier;
 
@@ -50,6 +52,9 @@ public class Arm extends SubsystemBase {
     leftArmMotor.restoreFactoryDefaults();
     rightArmMotor.restoreFactoryDefaults();
 
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(leftArmMotor, Usage.kMinimal, false, false, true);
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(rightArmMotor, Usage.kMinimal);
+
     leftArmMotor.setSmartCurrentLimit(Constants.ArmConstants.currentLimit);
     rightArmMotor.setSmartCurrentLimit(Constants.ArmConstants.currentLimit);
     leftArmMotor.setIdleMode(IdleMode.kBrake);
@@ -73,7 +78,7 @@ public class Arm extends SubsystemBase {
     isClosedLoop = true;
     controller.reset(getAngle());
     if (DriverStation.isTeleopEnabled()) {
-      goal = new State(2.62, 0.0);
+      goal = new State(2.70, 0.0);
     }
   }
 
@@ -116,7 +121,7 @@ public class Arm extends SubsystemBase {
                     Constants.ArmConstants.maxAngle),
                 goal.velocity));
       } else {
-        controller.setGoal(new State(2.62, 0.0));
+        controller.setGoal(new State(2.70, 0.0));
       }
 
       armGroup.setVoltage(controller.calculate(getAngle(), controller.getGoal()));

@@ -61,9 +61,9 @@ This years robot's unique features include:
 
 - Swerve drive with SDS MK4 L2 modules using CANCoders and NEOs
 - New vision camera system for use with AprilTags
-- Elevator using NEOs and a REV Through Bore encoder set to absolute mode
-- Arm using NEOs and a REV Through Bore encoder set to absolute mode
-- Intake similar to the 2023 Everybot to pick up cones/cubes
+- Elevator using NEOs and a REV Through Bore encoder running through the RIO
+- Arm using NEOs and a REV Through Bore encoder set to absolute mode running through a SparkMAX
+- Intake similar to 111/1339 to pick up cubes and cones in any orientation
 
 ## Goals of the year
 |Status|Goal|Additional Description|

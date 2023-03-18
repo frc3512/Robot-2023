@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanBooleanEntry;
 import frc3512.lib.logging.SpartanDoubleEntry;
+import frc3512.lib.util.CANSparkMaxUtil;
+import frc3512.lib.util.CANSparkMaxUtil.Usage;
 import frc3512.robot.Constants;
 import java.util.function.DoubleSupplier;
 
@@ -62,6 +64,9 @@ public class Elevator extends SubsystemBase {
   public Elevator() {
     leftElevatorMotor.restoreFactoryDefaults();
     rightElevatorMotor.restoreFactoryDefaults();
+
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(leftElevatorMotor, Usage.kAll);
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(rightElevatorMotor, Usage.kMinimal);
 
     leftElevatorMotor.setIdleMode(IdleMode.kBrake);
     rightElevatorMotor.setIdleMode(IdleMode.kBrake);
