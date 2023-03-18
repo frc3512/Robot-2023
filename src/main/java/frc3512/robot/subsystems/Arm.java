@@ -52,7 +52,7 @@ public class Arm extends SubsystemBase {
     leftArmMotor.restoreFactoryDefaults();
     rightArmMotor.restoreFactoryDefaults();
 
-    CANSparkMaxUtil.setCANSparkMaxBusUsage(leftArmMotor, Usage.kMinimal, false, false, true);
+    CANSparkMaxUtil.setCANSparkMaxBusUsage(leftArmMotor, Usage.kPositionOnly);
     CANSparkMaxUtil.setCANSparkMaxBusUsage(rightArmMotor, Usage.kMinimal);
 
     leftArmMotor.setSmartCurrentLimit(Constants.ArmConstants.currentLimit);
