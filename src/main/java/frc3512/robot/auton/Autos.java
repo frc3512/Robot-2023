@@ -57,7 +57,7 @@ public final class Autos {
     autonChooser.addOption("Score 1", scoreOne());
     autonChooser.addOption("Score 1, Mobility", score1Mobility());
     autonChooser.addOption("Score 1, Balance", score1Balance());
-    autonChooser.addOption("Score 2 Money Zone", score2MoneyZone());
+    autonChooser.addOption("Score 2 No-Cable Mobility", score2MoneyZone());
     autonChooser.addOption("test", test());
 
     // autonChooser.addOption("Score 2 Money Zone", score2MoneyZone());
@@ -75,6 +75,7 @@ public final class Autos {
     eventMap.put("Outtake", intake.intakeGamePiece().withTimeout(0.5));
     eventMap.put("Intake Position", superstructure.goToPreset(ScoringEnum.INTAKE));
     eventMap.put("Stow", superstructure.goToPreset(ScoringEnum.STOW));
+    eventMap.put("Stow then Stop Intake", superstructure.goToPreset(ScoringEnum.STOW).andThen(intake.stopIntake()));
     eventMap.put("Score Cone L2", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
     eventMap.put("Score Cone L3", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
     eventMap.put("Score Cube L2", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
@@ -109,12 +110,12 @@ public final class Autos {
 
   public Command score2MoneyZone() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Score 2 Money Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup("Score 2 Money Zone", Constants.AutonConstants.constraints));
   }
 
   public Command score3MoneyZone() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Score 3 Money Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup("Score 3 Money Zone", Constants.AutonConstants.constraints));
   }
 
   public Command score2FarZone() {
