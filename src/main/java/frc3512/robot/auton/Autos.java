@@ -57,6 +57,8 @@ public final class Autos {
     autonChooser.addOption("Score 1", scoreOne());
     autonChooser.addOption("Score 1, Mobility", score1Mobility());
     autonChooser.addOption("Score 1, Balance", score1Balance());
+    autonChooser.addOption("Score 2 Money Zone", score2MoneyZone());
+    autonChooser.addOption("test", test());
 
     // autonChooser.addOption("Score 2 Money Zone", score2MoneyZone());
     // autonChooser.addOption("Score 3 Money Zone", score3MoneyZone());
@@ -67,10 +69,10 @@ public final class Autos {
   }
 
   private void setMarkers() {
-    eventMap.put("Wait a Second", new WaitCommand(1.5));
+    eventMap.put("Wait a Second", new WaitCommand(1.0));
     eventMap.put("Stop Intake", intake.stopIntake());
     eventMap.put("Intake", intake.outtakeGamePiece().withTimeout(1.0));
-    eventMap.put("Outtake", intake.intakeGamePiece().withTimeout(1.0));
+    eventMap.put("Outtake", intake.intakeGamePiece().withTimeout(0.5));
     eventMap.put("Intake Position", superstructure.goToPreset(ScoringEnum.INTAKE));
     eventMap.put("Stow", superstructure.goToPreset(ScoringEnum.STOW));
     eventMap.put("Score Cone L2", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
@@ -123,5 +125,10 @@ public final class Autos {
   public Command score3FarZone() {
     return autonBuilder.fullAuto(
         PathPlanner.loadPathGroup("Score 3 Far Zone", Constants.AutonConstants.constraints));
+  }
+
+  public Command test() {
+    return autonBuilder.fullAuto(
+        PathPlanner.loadPathGroup("test", Constants.AutonConstants.constraints));
   }
 }

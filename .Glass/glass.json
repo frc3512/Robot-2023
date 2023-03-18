@@ -1,8 +1,5 @@
 {
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
     "transitory": {
       "Diagnostics": {
         "Arm": {
