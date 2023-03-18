@@ -26,16 +26,14 @@ public class CANSparkMaxUtil {
    * @param enableFollowing Whether to enable motor following.
    */
   public static void setCANSparkMaxBusUsage(
-      CANSparkMax motor,
-      Usage usage,
-      boolean enableFollowing) {
+      CANSparkMax motor, Usage usage, boolean enableFollowing) {
 
     if (enableFollowing) {
       motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 10);
     } else {
       motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 500);
     }
-    
+
     if (usage == Usage.kAll) {
       motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20);
       motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 20);
