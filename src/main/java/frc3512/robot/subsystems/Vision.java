@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanDoubleArrayEntry;
 import frc3512.lib.logging.SpartanDoubleEntry;
@@ -42,21 +43,17 @@ public class Vision extends SubsystemBase {
 
   public Vision() {
     PhotonCamera.setVersionCheckEnabled(false);
-    photonCamera.setDriverMode(true);
 
     try {
-      atfl = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+      atfl = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+      photonPoseEstimator =
+          new PhotonPoseEstimator(
+              atfl, PoseStrategy.MULTI_TAG_PNP, photonCamera, Constants.VisionConstants.robotToCam);
+      photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     } catch (IOException e) {
-      e.printStackTrace();
+      DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
+      photonPoseEstimator = null;
     }
-
-    // Create pose estimator
-    photonPoseEstimator =
-        new PhotonPoseEstimator(
-            atfl,
-            PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
-            photonCamera,
-            Constants.VisionConstants.robotToCam);
   }
 
   public List<GlobalMeasurement> getMeasurements() {
@@ -81,6 +78,9 @@ public class Vision extends SubsystemBase {
    *     of the observation. Assumes a planar field and the robot is always firmly on the ground
    */
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+    if (photonPoseEstimator == null) {
+      return Optional.empty();
+    }
     photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
     return photonPoseEstimator.update();
   }

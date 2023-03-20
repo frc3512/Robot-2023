@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /** Manages physics simulation for CTRE products. */
 public class PhysicsSim {
 
-  private static final PhysicsSim sim = new PhysicsSim();
+  private static PhysicsSim sim;
   private final ArrayList<SimProfile> _simProfiles = new ArrayList<SimProfile>();
 
   /**
@@ -17,13 +17,15 @@ public class PhysicsSim {
    * @return {@link PhysicsSim} instance.
    */
   public static PhysicsSim getInstance() {
+    if (sim == null) {
+      sim = new PhysicsSim();
+    }
     return sim;
   }
 
   /* scales a random domain of [0, 2pi] to [min, max] while prioritizing the peaks */
   static double random(double min, double max) {
-    return (max - min) / 2 * Math.sin(Math.IEEEremainder(Math.random(), 2 * 3.14159))
-        + (max + min) / 2;
+    return (max - min) / 2 * Math.sin((Math.random() % 2 * Math.PI)) + (max + min) / 2;
   }
 
   static double random(double max) {
