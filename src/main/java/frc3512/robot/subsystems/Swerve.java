@@ -6,10 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.robot.Constants;
@@ -29,8 +26,6 @@ public class Swerve extends SubsystemBase {
   private SlewRateLimiter strafeLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
   private SlewRateLimiter rotationLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
 
-  private final Timer visionTimer = new Timer();
-
   /** Subsystem class for the swerve drive. */
   public Swerve(Vision vision) {
     this.vision = vision;
@@ -40,8 +35,6 @@ public class Swerve extends SubsystemBase {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-
-    visionTimer.start();
   }
 
   public Command drive(
@@ -111,20 +104,12 @@ public class Swerve extends SubsystemBase {
   public void periodic() {
     swerve.updateOdometry();
 
-    if (RobotBase.isReal()
-        && visionTimer.hasElapsed(15.0)
-        && vision.hasTarget()
-        && DriverStation.isTeleop()) {
-      Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(getPose());
+    Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(getPose());
 
-      if (result.isPresent() && result != null) {
-        EstimatedRobotPose camPose = result.get();
-        swerve.addVisionMeasurement(
-            camPose.estimatedPose.toPose2d(), camPose.timestampSeconds, true);
-        visionTimer.stop();
-        visionTimer.reset();
-        visionTimer.start();
-      }
+    if (result.isPresent() && !result.isEmpty()) {
+      EstimatedRobotPose camPose = result.get();
+      swerve.addVisionMeasurement(
+          camPose.estimatedPose.toPose2d(), camPose.timestampSeconds, true, 1.0);
     }
   }
 }

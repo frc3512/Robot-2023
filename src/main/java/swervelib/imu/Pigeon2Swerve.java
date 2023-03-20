@@ -2,13 +2,19 @@ package swervelib.imu;
 
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import edu.wpi.first.math.geometry.Quaternion;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Optional;
 
 /** SwerveIMU interface for the Pigeon2 */
 public class Pigeon2Swerve extends SwerveIMU {
 
   /** Pigeon2 IMU device. */
   WPI_Pigeon2 imu;
+  /** Offset for the Pigeon 2. */
+  private Rotation3d offset = new Rotation3d();
 
   /**
    * Generate the SwerveIMU for pigeon.
@@ -36,6 +42,8 @@ public class Pigeon2Swerve extends SwerveIMU {
   @Override
   public void factoryDefault() {
     imu.configFactoryDefault();
+    imu.configEnableCompass(
+        false); // Compass utilization causes readings to jump dramatically in some cases.
   }
 
   /** Clear sticky faults on IMU. */
@@ -45,23 +53,47 @@ public class Pigeon2Swerve extends SwerveIMU {
   }
 
   /**
-   * Set the yaw in degrees.
+   * Set the gyro offset.
    *
-   * @param yaw Angle in degrees.
+   * @param offset gyro offset as a {@link Rotation3d}.
    */
-  @Override
-  public void setYaw(double yaw) {
-    imu.setYaw(yaw);
+  public void setOffset(Rotation3d offset) {
+    this.offset = offset;
   }
 
   /**
-   * Fetch the yaw/pitch/roll from the IMU, inverts them all if SwerveIMU is inverted.
+   * Fetch the {@link Rotation3d} from the IMU without any zeroing. Robot relative.
    *
-   * @param yprArray Array which will be filled with {yaw, pitch, roll} in degrees.
+   * @return {@link Rotation3d} from the IMU.
    */
   @Override
-  public void getYawPitchRoll(double[] yprArray) {
-    imu.getYawPitchRoll(yprArray);
+  public Rotation3d getRawRotation3d() {
+    double[] wxyz = new double[4];
+    imu.get6dQuaternion(wxyz);
+    return new Rotation3d(new Quaternion(wxyz[0], wxyz[1], wxyz[2], wxyz[3]));
+  }
+
+  /**
+   * Fetch the {@link Rotation3d} from the IMU. Robot relative.
+   *
+   * @return {@link Rotation3d} from the IMU.
+   */
+  @Override
+  public Rotation3d getRotation3d() {
+    return getRawRotation3d().minus(offset);
+  }
+
+  /**
+   * Fetch the acceleration [x, y, z] from the IMU in meters per second squared. If acceleration
+   * isn't supported returns empty.
+   *
+   * @return {@link Translation3d} of the acceleration as an {@link Optional}.
+   */
+  @Override
+  public Optional<Translation3d> getAccel() {
+    short[] initial = new short[3];
+    imu.getBiasedAccelerometer(initial);
+    return Optional.of(new Translation3d(initial[0], initial[1], initial[2]).times(9.81 / 16384.0));
   }
 
   /**
