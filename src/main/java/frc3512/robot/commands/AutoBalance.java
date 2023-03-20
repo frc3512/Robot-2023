@@ -13,7 +13,7 @@ public class AutoBalance extends CommandBase {
 
   public AutoBalance(Swerve swerve) {
     this.swerve = swerve;
-    controller = new PIDController(1.0, 0.0, 0.0);
+    controller = new PIDController(0.5, 0.0, 0.0);
     controller.setTolerance(1);
     controller.setSetpoint(0.0);
     addRequirements(swerve);
@@ -21,9 +21,9 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public void execute() {
-    SmartDashboard.putBoolean("At Tolerance", controller.atSetpoint());
+    SmartDashboard.putBoolean("At Setpoint", controller.atSetpoint());
 
-    double translationVal = MathUtil.clamp(controller.calculate(swerve.getPitch(), 0.0), -0.5, 0.5);
+    double translationVal = MathUtil.clamp(controller.calculate(swerve.getPitch()), -0.5, 0.5);
     swerve.drive(new Translation2d(translationVal, 0.0), 0.0, true, false);
   }
 

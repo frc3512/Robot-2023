@@ -56,14 +56,12 @@ public final class Autos {
     autonChooser.setDefaultOption("No-op", new InstantCommand());
     autonChooser.addOption("Score 1", scoreOne());
     autonChooser.addOption("Score 1, Mobility", score1Mobility());
-    autonChooser.addOption("Score 1, Balance", score1Balance());
-    autonChooser.addOption("Score 2 No-Cable Mobility", score2MoneyZone());
-    autonChooser.addOption("Test", test());
-
-    // autonChooser.addOption("Score 2 Money Zone", score2MoneyZone());
-    // autonChooser.addOption("Score 3 Money Zone", score3MoneyZone());
-    // autonChooser.addOption("Score 2 Far Zone", score2FarZone());
-    // autonChooser.addOption("Score 3 Far Zone", score3FarZone());
+    autonChooser.addOption("Score 1, Mid Balance", score1Balance());
+    autonChooser.addOption("Score 2, No-Cable Mobility", score2NoCable());
+    autonChooser.addOption("Score 2, No-Cable Balance", score2NoCableBalance());
+    autonChooser.addOption("Score 2, Cable Mobility", score2Cable());
+    autonChooser.addOption("Score 3, No-Cable Mobility", score3NoCableBalance());
+    // autonChooser.addOption("Test", test());
 
     SmartDashboard.putData("Auton Chooser", autonChooser);
   }
@@ -76,7 +74,7 @@ public final class Autos {
     eventMap.put("Intake Position", superstructure.goToPreset(ScoringEnum.INTAKE));
     eventMap.put("Stow", superstructure.goToPreset(ScoringEnum.STOW));
     eventMap.put(
-        "Stow then Stop Intake",
+        "Stow and Stop Intake",
         superstructure.goToPreset(ScoringEnum.STOW).andThen(intake.stopIntake()));
     eventMap.put("Score Cone L2", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
     eventMap.put("Score Cone L3", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
@@ -102,36 +100,39 @@ public final class Autos {
 
   public Command score1Mobility() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Ventura Mobility", Constants.AutonConstants.constraints));
+        PathPlanner.loadPath("Score 1 Mobility", Constants.AutonConstants.constraints));
   }
 
   public Command score1Balance() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Ventura Balance", Constants.AutonConstants.constraints));
+        PathPlanner.loadPath("Score 1 Mid Balance", Constants.AutonConstants.constraints));
   }
 
-  public Command score2MoneyZone() {
+  public Command score2NoCable() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("Score 2 Money Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup(
+            "Score 2 No-Cable Mobility", Constants.AutonConstants.constraints));
   }
 
-  public Command score3MoneyZone() {
+  public Command score2NoCableBalance() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("Score 3 Money Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup(
+            "Score 2 No-Cable Balance", Constants.AutonConstants.constraints));
   }
 
-  public Command score2FarZone() {
+  public Command score3NoCableBalance() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("Score 2 Far Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup(
+            "Score 3 No-Cable Balance", Constants.AutonConstants.constraints));
   }
 
-  public Command score3FarZone() {
+  public Command score2Cable() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("Score 3 Far Zone", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup("Score 2 Cable Mobility", Constants.AutonConstants.constraints));
   }
 
   public Command test() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("test", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup("Test", Constants.AutonConstants.constraints));
   }
 }

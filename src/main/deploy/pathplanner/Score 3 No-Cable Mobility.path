@@ -37,8 +37,8 @@
         "y": 4.702524138823397
       },
       "nextControl": {
-        "x": 4.605774863134548,
-        "y": 4.6951468688484255
+        "x": 4.412301042901374,
+        "y": 4.696260226368103
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -54,16 +54,16 @@
     },
     {
       "anchorPoint": {
-        "x": 6.718850792277478,
-        "y": 4.317405958863257
+        "x": 6.692763947916289,
+        "y": 4.34
       },
       "prevControl": {
-        "x": 6.202692405384811,
-        "y": 4.314889576397457
+        "x": 6.176605561023622,
+        "y": 4.3374836175341995
       },
       "nextControl": {
-        "x": 6.202692405384811,
-        "y": 4.314889576397457
+        "x": 6.176605561023622,
+        "y": 4.3374836175341995
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -104,15 +104,15 @@
     },
     {
       "anchorPoint": {
-        "x": 1.78,
+        "x": 1.85,
         "y": 4.25
       },
       "prevControl": {
-        "x": 1.7656184080200685,
+        "x": 1.8356184080200686,
         "y": 4.25
       },
       "nextControl": {
-        "x": 1.7656184080200685,
+        "x": 1.8356184080200686,
         "y": 4.25
       },
       "holonomicAngle": 180.0,
@@ -166,9 +166,12 @@
         "x": 6.030255595098245,
         "y": 3.7077335614046234
       },
-      "nextControl": null,
+      "nextControl": {
+        "x": 6.030255595098245,
+        "y": 3.7077335614046234
+      },
       "holonomicAngle": -33.9052745803579,
-      "isReversal": false,
+      "isReversal": true,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
@@ -180,40 +183,59 @@
         "waitBehavior": "none",
         "waitTime": 0
       }
+    },
+    {
+      "anchorPoint": {
+        "x": 3.858158324809953,
+        "y": 4.695605205819787
+      },
+      "prevControl": {
+        "x": 5.611160465111227,
+        "y": 4.695605205819787
+      },
+      "nextControl": {
+        "x": 2.1051561845086795,
+        "y": 4.695605205819787
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.8454371360082007,
+        "y": 3.6428770050732067
+      },
+      "prevControl": {
+        "x": 2.142229794911599,
+        "y": 4.0244960400300265
+      },
+      "nextControl": null,
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Score Cone L3",
+          "Wait a Second",
+          "Outtake",
+          "Stow and Stop Intake"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 1.0
+      }
     }
   ],
-  "markers": [
-    {
-      "position": 0.21818181818181817,
-      "names": [
-        "Stop Intake"
-      ]
-    },
-    {
-      "position": 0.5,
-      "names": [
-        "Intake",
-        "Intake Position"
-      ]
-    },
-    {
-      "position": 1.9,
-      "names": [
-        "Stow"
-      ]
-    },
-    {
-      "position": 4.521533203125001,
-      "names": [
-        "Intake Position",
-        "Intake"
-      ]
-    },
-    {
-      "position": 4.232685990767045,
-      "names": [
-        "Stop Intake"
-      ]
-    }
-  ]
+  "markers": []
 }
