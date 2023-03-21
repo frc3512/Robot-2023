@@ -55,15 +55,15 @@
     {
       "anchorPoint": {
         "x": 6.692763947916289,
-        "y": 4.34
+        "y": 4.59
       },
       "prevControl": {
         "x": 6.176605561023622,
-        "y": 4.3374836175341995
+        "y": 4.5874836175341995
       },
       "nextControl": {
         "x": 6.176605561023622,
-        "y": 4.3374836175341995
+        "y": 4.5874836175341995
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -104,15 +104,15 @@
     },
     {
       "anchorPoint": {
-        "x": 1.85,
+        "x": 1.9,
         "y": 4.25
       },
       "prevControl": {
-        "x": 1.8356184080200686,
+        "x": 1.8856184080200684,
         "y": 4.25
       },
       "nextControl": {
-        "x": 1.8356184080200686,
+        "x": 1.8856184080200684,
         "y": 4.25
       },
       "holonomicAngle": 180.0,
@@ -134,12 +134,12 @@
     },
     {
       "anchorPoint": {
-        "x": 3.458135430746308,
-        "y": 3.203187339265304
+        "x": 2.4953502688745743,
+        "y": 3.2
       },
       "prevControl": {
-        "x": 2.391911528164574,
-        "y": 3.2010770854689032
+        "x": 1.6376909216015287,
+        "y": 3.257177289818203
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -148,14 +148,38 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "Auto Balance"
-        ],
+        "names": [],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.5,
+      "names": [
+        "Intake",
+        "Intake Position"
+      ]
+    },
+    {
+      "position": 1.9,
+      "names": [
+        "Stow"
+      ]
+    },
+    {
+      "position": 0.1,
+      "names": [
+        "Stop Intake"
+      ]
+    },
+    {
+      "position": 4.290909090909086,
+      "names": [
+        "Stop Intake"
+      ]
+    }
+  ]
 }

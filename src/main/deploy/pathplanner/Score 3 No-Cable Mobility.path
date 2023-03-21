@@ -20,7 +20,7 @@
           "Score Cone L3",
           "Wait a Second",
           "Outtake",
-          "Stow"
+          "Stow and Stop Intake"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -125,7 +125,7 @@
           "Score Cube L3",
           "Wait a Second",
           "Outtake",
-          "Stow"
+          "Stow and Stop Intake"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -237,5 +237,32 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.5,
+      "names": [
+        "Intake",
+        "Intake Position"
+      ]
+    },
+    {
+      "position": 1.9,
+      "names": [
+        "Stow"
+      ]
+    },
+    {
+      "position": 4.5,
+      "names": [
+        "Intake",
+        "Intake Position"
+      ]
+    },
+    {
+      "position": 5.9,
+      "names": [
+        "Stow"
+      ]
+    }
+  ]
 }

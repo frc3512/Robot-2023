@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.8630326683730312,
-        "y": 3.9214137082120324
+        "x": 1.7987611833929025,
+        "y": 3.300503614121068
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8630326683730312,
-        "y": 3.911778785096032
+        "x": 2.3362912261817828,
+        "y": 3.2801204546382308
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -20,7 +20,7 @@
           "Score Cone L3",
           "Wait a Second",
           "Outtake",
-          "Stow and Stop Intake"
+          "Stow"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -29,12 +29,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.853397745257031,
-        "y": 3.9214137082120324
+        "x": 5.8,
+        "y": 3.293411893528494
       },
       "prevControl": {
-        "x": 1.853397745257031,
-        "y": 3.9214137082120324
+        "x": 5.404773347069016,
+        "y": 3.302403259212118
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -43,8 +43,11 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "Stop Intake",
+          "Auto Balance"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
