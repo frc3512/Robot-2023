@@ -64,6 +64,7 @@ This years robot's unique features include:
 - Elevator using NEOs and a REV Through Bore encoder running through the RIO
 - Arm using NEOs and a REV Through Bore encoder set to absolute mode running through a SparkMAX
 - Intake similar to 111/1339 to pick up cubes and cones in any orientation
+- LED subsystem using the PCM to control different lighting options
 
 ## Goals of the year
 |Status|Goal|Additional Description|
@@ -71,11 +72,12 @@ This years robot's unique features include:
 |Yes|Swerve Drive|Operational auton/teleop swerve code
 |Yes|AprilTags|Read and process AprilTags using PhotonVision
 |Yes|Pose Estimation|Add in pose estimation using AprilTags.
-|Yes|Pose based Alignment|Use pose estimation to drive onto a certain point on the field.
 |Yes|Manual and Automated Elevator|Elevator subsystem with both manual and automated control.
 |Yes|Manual and Automated Arm|Arm subsystem with both manual and automated control.
-|No|AutoDrop|Sequence for automatically scoring (arm, elevator, and intake) onto the correct node.
-|No|Full Fledged Autos|Have auton modes from one piece all the way up to a full link + balance.
+|Yes|Full Fledged Autos|Have auton modes from one piece all the way up to a full link.
+|No|Pose based Alignment|Use pose estimation to drive onto a certain point on the field.
+|No|AutoDrop|Sequence for automatically scoring (arm, elevator, and intake) onto the correct node
+|No|LEDs|Full fledged LED system for communicationing with human players|
 
 ## Roster
 

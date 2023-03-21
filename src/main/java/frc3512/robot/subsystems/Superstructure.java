@@ -16,7 +16,6 @@ public class Superstructure extends SubsystemBase {
   private final Swerve swerve;
   private final Elevator elevator;
   private final Arm arm;
-  private final Intake intake;
 
   // Autons
   private final Autos autos;
@@ -36,7 +35,6 @@ public class Superstructure extends SubsystemBase {
   public Superstructure(Swerve swerve, Elevator elevator, Arm arm, Intake intake) {
     this.swerve = swerve;
     this.elevator = elevator;
-    this.intake = intake;
     this.arm = arm;
 
     autos = new Autos(swerve, elevator, arm, this, intake);
@@ -46,32 +44,12 @@ public class Superstructure extends SubsystemBase {
     return autos.getSelected();
   }
 
-  public Command enableManualControl() {
-    return Commands.runOnce(
-        () -> {
-          elevator.disable();
-          arm.disable();
-        },
-        arm,
-        elevator);
-  }
-
-  public Command goToScoreSetpoint(
-      TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
-    return Commands.sequence(
-        elevator.setGoal(elevatorState), new WaitCommand(0.25), arm.setGoal(armState));
-  }
-
-  public Command goToScoreSetpointHyrbid(
-      TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
-    return Commands.sequence(arm.setGoal(armState), elevator.setGoal(elevatorState));
-  }
-
   public Command goToPreset(ScoringEnum scoringPose) {
     if (scoringPose == ScoringEnum.INTAKE) {
       return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(1.33, 0.0));
     } else if (scoringPose == ScoringEnum.STOW) {
-      return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(2.70, 0.0));
+      return goToScoreSetpointHyrbid(
+          new State(0.0, 0.0), new State(Constants.ArmConstants.stowValue, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L2) {
       return goToScoreSetpoint(new State(0.0, 0.0), new State(2.25, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L3) {
@@ -86,16 +64,44 @@ public class Superstructure extends SubsystemBase {
       return goToScoreSetpoint(new State(0.35, 0.0), new State(1.03, 0.0));
     } else {
       // Default choice: Stowed
-      return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(2.70, 0.0));
+      return goToScoreSetpointHyrbid(
+          new State(0.0, 0.0), new State(Constants.ArmConstants.stowValue, 0.0));
     }
   }
 
-  public Command autoScore(ScoringEnum scoringPose) {
-    return goToPreset(scoringPose)
-        .andThen(new WaitCommand(1.5))
-        .andThen(intake.intakeGamePiece().withTimeout(1.0))
-        .andThen(goToPreset(ScoringEnum.STOW))
-        .andThen(intake.stopIntake());
+  public Command goToScoreSetpoint(
+      TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
+    return Commands.sequence(
+        elevator.setGoal(elevatorState), new WaitCommand(0.25), arm.setGoal(armState));
+  }
+
+  public Command goToScoreSetpointHyrbid(
+      TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
+    return Commands.sequence(arm.setGoal(armState), elevator.setGoal(elevatorState));
+  }
+
+  public Command enableManualControl() {
+    return Commands.runOnce(
+        () -> {
+          elevator.disable();
+          arm.disable();
+        },
+        arm,
+        elevator);
+  }
+
+  public Command enableAutoControl() {
+    return Commands.runOnce(
+        () -> {
+          elevator.enable();
+          arm.enable();
+        },
+        arm,
+        elevator);
+  }
+
+  public Command driveToClosetPose() {
+    return new DriveToPose(swerve, findClosestPose());
   }
 
   private Pose2d findClosestPose() {
@@ -107,9 +113,5 @@ public class Superstructure extends SubsystemBase {
       }
     }
     return new Pose2d();
-  }
-
-  public Command driveToClosetPose() {
-    return new DriveToPose(swerve, findClosestPose());
   }
 }
