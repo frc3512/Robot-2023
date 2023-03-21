@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -92,6 +93,10 @@ public class Swerve extends SubsystemBase {
     return swerve.getPitch().getDegrees();
   }
 
+  public ChassisSpeeds getFieldVelocity() {
+    return swerve.getFieldVelocity();
+  }
+
   public void resetOdometry(Pose2d pose) {
     swerve.resetOdometry(pose);
   }
@@ -106,7 +111,7 @@ public class Swerve extends SubsystemBase {
 
     Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(getPose());
 
-    if (result.isPresent() && !result.isEmpty()) {
+    if (result.isPresent() && !result.isEmpty() && DriverStation.isTeleop()) {
       EstimatedRobotPose camPose = result.get();
       swerve.addVisionMeasurement(
           camPose.estimatedPose.toPose2d(), camPose.timestampSeconds, true, 1.0);

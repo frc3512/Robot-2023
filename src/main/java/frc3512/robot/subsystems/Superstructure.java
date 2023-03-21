@@ -1,6 +1,5 @@
 package frc3512.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -9,11 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc3512.robot.Constants;
 import frc3512.robot.auton.Autos;
-import frc3512.robot.commands.DriveToPose;
 
 public class Superstructure extends SubsystemBase {
   // Subsystems
-  private final Swerve swerve;
   private final Elevator elevator;
   private final Arm arm;
 
@@ -33,7 +30,6 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Superstructure(Swerve swerve, Elevator elevator, Arm arm, Intake intake) {
-    this.swerve = swerve;
     this.elevator = elevator;
     this.arm = arm;
 
@@ -88,30 +84,5 @@ public class Superstructure extends SubsystemBase {
         },
         arm,
         elevator);
-  }
-
-  public Command enableAutoControl() {
-    return Commands.runOnce(
-        () -> {
-          elevator.enable();
-          arm.enable();
-        },
-        arm,
-        elevator);
-  }
-
-  public Command driveToClosetPose() {
-    return new DriveToPose(swerve, findClosestPose());
-  }
-
-  private Pose2d findClosestPose() {
-    Pose2d closestPose = Constants.FieldConstants.scoringPositions.get(0);
-    for (Pose2d pose : Constants.FieldConstants.scoringPositions) {
-      if (closestPose.relativeTo(swerve.getPose()).getTranslation().getNorm()
-          > pose.relativeTo(swerve.getPose()).getTranslation().getNorm()) {
-        closestPose = pose;
-      }
-    }
-    return new Pose2d();
   }
 }

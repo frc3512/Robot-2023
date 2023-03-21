@@ -4,29 +4,26 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc3512.robot.Constants;
 import frc3512.robot.subsystems.Swerve;
 
 public class DriveToPose extends CommandBase {
 
   private final Swerve swerve;
+  private Pose2d currentPose;
+  private ChassisSpeeds currentVelocity;
   private Pose2d desiredPose;
 
   private final ProfiledPIDController xController =
-      new ProfiledPIDController(0.6, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
+      new ProfiledPIDController(0.6, 0.0, 0.0, new TrapezoidProfile.Constraints(3.0, 3.0));
   private final ProfiledPIDController yController =
-      new ProfiledPIDController(0.6, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
+      new ProfiledPIDController(0.6, 0.0, 0.0, new TrapezoidProfile.Constraints(3.0, 3.0));
   private final ProfiledPIDController thetaController =
-      new ProfiledPIDController(2.2, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
+      new ProfiledPIDController(2.2, 0.0, 0.0, new TrapezoidProfile.Constraints(3.0, 3.0));
 
-  public DriveToPose(Swerve swerve, Pose2d pose) {
+  public DriveToPose(Swerve swerve) {
     this.swerve = swerve;
-    this.desiredPose = pose;
-
-    xController.setTolerance(0.5);
-    yController.setTolerance(0.5);
-    thetaController.setTolerance(Units.degreesToRadians(3.0));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     addRequirements(swerve);
@@ -34,35 +31,42 @@ public class DriveToPose extends CommandBase {
 
   @Override
   public void initialize() {
-    var currPose = swerve.getPose();
-    xController.reset(currPose.getX());
-    yController.reset(currPose.getY());
-    thetaController.reset(currPose.getRotation().getRadians());
+    currentPose = swerve.getPose();
+    currentVelocity = swerve.getFieldVelocity();
+
+    xController.reset(currentPose.getX(), currentVelocity.vxMetersPerSecond);
+    yController.reset(currentPose.getY(), currentVelocity.vyMetersPerSecond);
+    thetaController.reset(
+        currentPose.getRotation().getRadians(), currentVelocity.omegaRadiansPerSecond);
+
+    desiredPose = findClosestPose();
   }
 
   @Override
   public void execute() {
-    var currPose = swerve.getPose();
-    var targetPose = desiredPose;
-
-    double xvelocity = xController.calculate(currPose.getX(), targetPose.getX());
-    double yvelocity = yController.calculate(currPose.getY(), targetPose.getY());
-    double thetaVelocity =
+    double x = xController.calculate(currentPose.getX(), desiredPose.getX());
+    double y = yController.calculate(currentPose.getY(), desiredPose.getY());
+    double theta =
         thetaController.calculate(
-            currPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+            currentPose.getRotation().getRadians(), desiredPose.getRotation().getRadians());
+    ChassisSpeeds speeds = new ChassisSpeeds(x, y, theta);
 
-    if (atGoal()) {
-      xvelocity = 0.0;
-      yvelocity = 0.0;
-      thetaVelocity = 0.0;
-    }
-
-    swerve.setChassisSpeeds(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            xvelocity, yvelocity, thetaVelocity, currPose.getRotation()));
+    swerve.setChassisSpeeds(speeds);
   }
 
-  public boolean atGoal() {
-    return (xController.atGoal() && yController.atGoal() && thetaController.atGoal());
+  @Override
+  public void end(boolean interrupted) {
+    swerve.drive(() -> 0.0, () -> 0.0, () -> 0.0);
+  }
+
+  private Pose2d findClosestPose() {
+    Pose2d closestPose = Constants.FieldConstants.scoringPositions.get(0);
+    for (Pose2d pose : Constants.FieldConstants.scoringPositions) {
+      if (closestPose.relativeTo(currentPose).getTranslation().getNorm()
+          > pose.relativeTo(currentPose).getTranslation().getNorm()) {
+        closestPose = pose;
+      }
+    }
+    return closestPose;
   }
 }
