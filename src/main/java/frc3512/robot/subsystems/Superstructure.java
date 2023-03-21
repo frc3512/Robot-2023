@@ -5,7 +5,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc3512.robot.Constants;
@@ -17,7 +16,6 @@ public class Superstructure extends SubsystemBase {
   private final Swerve swerve;
   private final Elevator elevator;
   private final Arm arm;
-  private final Intake intake;
 
   // Autons
   private final Autos autos;
@@ -34,17 +32,9 @@ public class Superstructure extends SubsystemBase {
     SCORE_CONE_L3
   }
 
-  // Game piece intake scoring
-  public enum IntakeGamePiece {
-    CUBE,
-    CONE,
-    NONE
-  }
-
   public Superstructure(Swerve swerve, Elevator elevator, Arm arm, Intake intake) {
     this.swerve = swerve;
     this.elevator = elevator;
-    this.intake = intake;
     this.arm = arm;
 
     autos = new Autos(swerve, elevator, arm, this, intake);
@@ -52,18 +42,6 @@ public class Superstructure extends SubsystemBase {
 
   public Command getAuton() {
     return autos.getSelected();
-  }
-
-  public Command spitOutGamePiece(IntakeGamePiece gamePiece) {
-    if (gamePiece == IntakeGamePiece.CUBE) {
-      return Commands.sequence(
-          intake.outtakeGamePiece().withTimeout(0.5).andThen(intake.stopIntake()));
-    } else if (gamePiece == IntakeGamePiece.CONE) {
-      return Commands.sequence(
-          intake.intakeGamePiece().withTimeout(0.5).andThen(intake.stopIntake()));
-    } else {
-      return new InstantCommand();
-    }
   }
 
   public Command goToPreset(ScoringEnum scoringPose) {

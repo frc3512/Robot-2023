@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc3512.robot.Constants;
-import frc3512.robot.commands.AutoBalance;
 import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
@@ -57,11 +56,9 @@ public final class Autos {
     autonChooser.addOption("Score 1", scoreOne());
     autonChooser.addOption("Score 1, Mobility", score1Mobility());
     autonChooser.addOption("Score 1, Mid Balance", score1Balance());
-    autonChooser.addOption("Score 1, Mid Balance Gyro", score1BalanceGyro());
     autonChooser.addOption("Score 2, No-Cable Mobility", score2NoCable());
     autonChooser.addOption("Score 2, No-Cable Balance", score2NoCableBalance());
     autonChooser.addOption("Score 3, No-Cable Mobility", score3NoCableBalance());
-    // autonChooser.addOption("Test", test());
 
     SmartDashboard.putData("Auton Chooser", autonChooser);
   }
@@ -80,7 +77,6 @@ public final class Autos {
     eventMap.put("Score Cone L3", superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
     eventMap.put("Score Cube L2", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
     eventMap.put("Score Cube L3", superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
-    eventMap.put("Auto Balance", new AutoBalance(swerve));
     eventMap.put("Lock Swerve", new InstantCommand(() -> swerve.lock()));
     eventMap.put("Reset Gyro", new InstantCommand(() -> swerve.zeroGyro()));
   }
@@ -108,11 +104,6 @@ public final class Autos {
         PathPlanner.loadPath("Score 1 Mid Balance", Constants.AutonConstants.constraints));
   }
 
-  public Command score1BalanceGyro() {
-    return autonBuilder.fullAuto(
-        PathPlanner.loadPath("Score 1 Mid Balance Gyro", Constants.AutonConstants.constraints));
-  }
-
   public Command score2NoCable() {
     return autonBuilder.fullAuto(
         PathPlanner.loadPathGroup(
@@ -129,15 +120,5 @@ public final class Autos {
     return autonBuilder.fullAuto(
         PathPlanner.loadPathGroup(
             "Score 3 No-Cable Mobility", Constants.AutonConstants.constraints));
-  }
-
-  public Command score2Cable() {
-    return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("Score 2 Cable Mobility", Constants.AutonConstants.constraints));
-  }
-
-  public Command test() {
-    return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("Test", Constants.AutonConstants.constraints));
   }
 }
