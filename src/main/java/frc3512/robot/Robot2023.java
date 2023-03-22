@@ -6,14 +6,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc3512.robot.commands.DriveToPose;
 import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
+import frc3512.robot.subsystems.LEDs;
 import frc3512.robot.subsystems.Superstructure;
 import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
+import frc3512.robot.subsystems.LEDs.LEDColor;
 
 public class Robot2023 {
   // Robot subsystems
@@ -23,6 +24,7 @@ public class Robot2023 {
   private Arm arm = new Arm();
   private Intake intake = new Intake();
   private Superstructure superstructure = new Superstructure(swerve, elevator, arm, intake);
+  private LEDs leds = new LEDs();
 
   // Driver Control
   private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -44,9 +46,11 @@ public class Robot2023 {
   public void configureButtonBindings() {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
-    driver.leftBumper().whileTrue(new DriveToPose(swerve));
+    //driver.leftBumper().whileTrue(new DriveToPose(swerve));
+    driver.a().onTrue(leds.switchLEDMode(LEDColor.WHITE));
+    driver.b().onTrue(leds.switchLEDMode(LEDColor.OFF));
 
-    appendage.button(1).whileTrue(intake.stopIntake());
+    appendage.button(1).onTrue(intake.stopIntake());
     appendage.button(2).onTrue(superstructure.enableManualControl());
     appendage.button(3).whileTrue(intake.intakeGamePiece());
     appendage.button(4).whileTrue(intake.outtakeGamePiece());

@@ -29,8 +29,7 @@ public final class Autos {
   private final HashMap<String, Command> eventMap;
   private final SwerveAutoBuilder autonBuilder;
 
-  public Autos(
-      Swerve swerve, Elevator elevator, Arm arm, Superstructure superstructure, Intake intake) {
+  public Autos(Swerve swerve, Elevator elevator, Arm arm, Superstructure superstructure, Intake intake) {
     this.swerve = swerve;
     this.elevator = elevator;
     this.arm = arm;
