@@ -22,40 +22,24 @@ public class LEDs extends SubsystemBase {
   private final Solenoid red = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
 
   public Command switchLEDMode(LEDColor color) {
-    return run(
+    return runOnce(
         () -> {
-          if (color == LEDColor.WHITE) {
-            green.set(true);
-            blue.set(true);
-            red.set(true);
-          } else if (color == LEDColor.GREEN) {
-            green.set(true);
-            blue.set(false);
-            red.set(false);
-          } else if (color == LEDColor.RED) {
+          if (green.get()) {
             green.set(false);
-            blue.set(false);
-            red.set(true);
-          } else if (color == LEDColor.BLUE) {
-            green.set(false);
-            blue.set(true);
-            red.set(false);
-          } else if (color == LEDColor.YELLOW) {
+          } else {
             green.set(true);
+          }
+
+          if (blue.get()) {
             blue.set(false);
-            red.set(true);
-          } else if (color == LEDColor.PURPLE) {
-            green.set(false);
+          } else {
             blue.set(true);
-            red.set(true);
-          } else if (color == LEDColor.TEAL) {
-            green.set(true);
-            blue.set(true);
+          }
+
+          if (red.get()) {
             red.set(false);
           } else {
-            green.set(false);
-            blue.set(false);
-            red.set(false);
+            red.set(true);
           }
         });
   }

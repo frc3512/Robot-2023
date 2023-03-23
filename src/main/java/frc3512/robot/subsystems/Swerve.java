@@ -114,7 +114,7 @@ public class Swerve extends SubsystemBase {
     if (result.isPresent() && !result.isEmpty() && DriverStation.isTeleop()) {
       EstimatedRobotPose camPose = result.get();
       swerve.addVisionMeasurement(
-          camPose.estimatedPose.toPose2d(), camPose.timestampSeconds, true, 1.0);
+          camPose.estimatedPose.toPose2d(), camPose.timestampSeconds, true, 0.8);
     }
   }
 }

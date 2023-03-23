@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc3512.robot.commands.DriveToPose;
 import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
@@ -46,7 +47,7 @@ public class Robot2023 {
   public void configureButtonBindings() {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
-    //driver.leftBumper().whileTrue(new DriveToPose(swerve));
+    driver.leftBumper().whileTrue(new DriveToPose(swerve));
     driver.a().onTrue(leds.switchLEDMode(LEDColor.WHITE));
     driver.b().onTrue(leds.switchLEDMode(LEDColor.OFF));
 
