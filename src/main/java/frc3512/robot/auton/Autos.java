@@ -59,10 +59,6 @@ public final class Autos {
     autonChooser.addOption("Score 2, No-Cable Mobility", score2NoCable());
     autonChooser.addOption("Score 2, No-Cable Balance", score2NoCableBalance());
     autonChooser.addOption("Score 3, No-Cable Mobility", score3NoCableBalance());
-    //autonChooser.addOption("Cable 2 Mobility", cable2Mobility());
-    //autonChooser.addOption("Cable 2 Balance", cable2Balance());
-    //autonChooser.addOption("No-Cable 2 Mobility", noCable2Mobility());
-    //autonChooser.addOption("No-Cable 2 Balance", noCable2Balance());
 
     SmartDashboard.putData("Auton Chooser", autonChooser);
   }
@@ -126,27 +122,8 @@ public final class Autos {
             "Score 3 No-Cable Mobility", Constants.AutonConstants.constraints));
   }
 
-  public Command cable2Mobility() {
-    return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup(
-            "Cable 2 Mobility", Constants.AutonConstants.constraints));
-  }
-
-  public Command cable2Balance() {
-    return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup(
-            "Cable 2 Balance + grab", Constants.AutonConstants.constraints));
-  }
-
   public Command noCable2Mobility() {
     return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup(
-            "No-Cable 2 Mobility", Constants.AutonConstants.constraints));
-  }
-
-  public Command noCable2Balance() {
-    return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup(
-            "No-Cable 2 Balance + grab", Constants.AutonConstants.constraints));
+        PathPlanner.loadPathGroup("No-Cable 2 Mobility", Constants.AutonConstants.constraints));
   }
 }
