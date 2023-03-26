@@ -42,6 +42,13 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public Command halfOuttakeGamePiece() {
+    return run(
+        () -> {
+          intakeMotor.set(Constants.IntakeConstants.motorSpeed*0.5);
+        });
+  }
+
   public Command stopIntake() {
     return run(
         () -> {
