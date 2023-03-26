@@ -121,9 +121,4 @@ public final class Autos {
         PathPlanner.loadPathGroup(
             "Score 3 No-Cable Mobility", Constants.AutonConstants.constraints));
   }
-
-  public Command noCable2Mobility() {
-    return autonBuilder.fullAuto(
-        PathPlanner.loadPathGroup("No-Cable 2 Mobility", Constants.AutonConstants.constraints));
-  }
 }
