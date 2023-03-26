@@ -31,6 +31,7 @@ public class DeviceJson {
       case "thrifty":
       case "throughbore":
       case "dutycycle":
+      case "analog":
       case "cancoder":
         return new CANCoderSwerve(id, canbus != null ? canbus : "");
       default:
@@ -60,8 +61,13 @@ public class DeviceJson {
    */
   public SwerveMotor createMotor(boolean isDriveMotor) {
     switch (type) {
+      case "sparkmax_brushed":
+      case "neo":
       case "sparkmax":
         return new SparkMaxSwerve(id, isDriveMotor);
+      case "falcon":
+      case "talonfx":
+      case "talonsrx":
       default:
         throw new RuntimeException(type + " is not a recognized absolute encoder type.");
     }
@@ -74,6 +80,13 @@ public class DeviceJson {
    * @return {@link SwerveAbsoluteEncoder} from the motor controller.
    */
   public SwerveAbsoluteEncoder createIntegratedEncoder(SwerveMotor motor) {
-    return null;
+    switch (type) {
+      case "sparkmax":
+      case "falcon":
+      case "talonfx":
+        return null;
+    }
+    throw new RuntimeException(
+        "Could not create absolute encoder from data port of " + type + " id " + id);
   }
 }

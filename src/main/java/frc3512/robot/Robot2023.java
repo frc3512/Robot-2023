@@ -9,16 +9,17 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
+import frc3512.robot.subsystems.LEDs;
 import frc3512.robot.subsystems.Superstructure;
 import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
-import frc3512.robot.subsystems.LEDs;
 
+@SuppressWarnings("unused")
 public class Robot2023 {
   // Robot subsystems
   private Vision vision = new Vision();
-  private Swerve swerve = new Swerve(vision);
+  private Swerve swerve = new Swerve();
   private Elevator elevator = new Elevator();
   private Arm arm = new Arm();
   private Intake intake = new Intake();
@@ -50,13 +51,13 @@ public class Robot2023 {
     appendage.button(2).onTrue(superstructure.enableManualControl());
     appendage.button(3).whileTrue(intake.intakeGamePiece());
     appendage.button(4).whileTrue(intake.outtakeGamePiece());
-    appendage.button(9).whileTrue(intake.halfOuttakeGamePiece());
     appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.STOW));
     appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.INTAKE));
     appendage.button(7).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
     appendage.button(8).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    appendage.button(9).whileTrue(intake.halfOuttakeGamePiece());
     appendage.button(10).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
-    appendage.button(11).onTrue(superstructure.goToPreset(ScoringEnum.SINGLE_PLAYER_STATION));
+    appendage.button(11).onTrue(superstructure.goToPreset(ScoringEnum.CONE_PLAYER_STATION));
     appendage.button(12).onTrue(superstructure.goToPreset(ScoringEnum.CUBE_PLAYER_STATION));
   }
 

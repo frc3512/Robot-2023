@@ -24,8 +24,7 @@ public class Superstructure extends SubsystemBase {
   public enum ScoringEnum {
     INTAKE,
     STOW,
-    SINGLE_PLAYER_STATION,
-    DOUBLE_PLAYER_STATION,
+    CONE_PLAYER_STATION,
     CUBE_PLAYER_STATION,
     SCORE_CUBE_L2,
     SCORE_CUBE_L3,
@@ -59,12 +58,10 @@ public class Superstructure extends SubsystemBase {
       return goToScoreSetpoint(new State(0.18, 0.0), new State(1.75, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L3) {
       return goToScoreSetpoint(new State(0.35, 0.0), new State(1.43, 0.0));
-    } else if (scoringPose == ScoringEnum.SINGLE_PLAYER_STATION) {
+    } else if (scoringPose == ScoringEnum.CONE_PLAYER_STATION) {
       return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(2.30, 0.0));
     } else if (scoringPose == ScoringEnum.CUBE_PLAYER_STATION) {
       return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(2.42, 0.0));
-    } else if (scoringPose == ScoringEnum.DOUBLE_PLAYER_STATION) {
-      return goToScoreSetpoint(new State(0.35, 0.0), new State(1.03, 0.0));
     } else {
       // Default choice: Stowed
       return goToScoreSetpointHyrbid(

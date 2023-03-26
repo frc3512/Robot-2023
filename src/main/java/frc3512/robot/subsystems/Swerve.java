@@ -6,42 +6,40 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc3512.lib.logging.SpartanEntryManager;
 import frc3512.robot.Constants;
 import java.io.File;
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
-import org.photonvision.EstimatedRobotPose;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class Swerve extends SubsystemBase {
 
-  private final Vision vision;
   private final SwerveDrive swerve;
 
   private SlewRateLimiter translationLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
   private SlewRateLimiter strafeLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
   private SlewRateLimiter rotationLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
 
-  private final Timer visionTimer = new Timer();
-
   /** Subsystem class for the swerve drive. */
-  public Swerve(Vision vision) {
-    this.vision = vision;
+  public Swerve() {
+    if (SpartanEntryManager.isTuningMode()) {
+      SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    } else {
+      SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    }
+
     try {
       swerve =
           new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve")).createSwerveDrive();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-
-    visionTimer.start();
   }
 
   public Command drive(
@@ -110,21 +108,5 @@ public class Swerve extends SubsystemBase {
   @Override
   public void periodic() {
     swerve.updateOdometry();
-
-    if (RobotBase.isReal()
-        && visionTimer.hasElapsed(15.0)
-        && vision.hasTarget()
-        && DriverStation.isTeleop()) {
-      Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(getPose());
-
-      if (result.isPresent() && result != null) {
-        EstimatedRobotPose camPose = result.get();
-        swerve.addVisionMeasurement(
-            camPose.estimatedPose.toPose2d(), camPose.timestampSeconds, true);
-        visionTimer.stop();
-        visionTimer.reset();
-        visionTimer.start();
-      }
-    }
   }
 }

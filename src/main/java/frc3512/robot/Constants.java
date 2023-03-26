@@ -145,7 +145,6 @@ public final class Constants {
     public static final int currentLimit = 40;
 
     public static final double motorSpeed = 0.9;
-    public static final double intakeCurrentThreshold = 40.0;
   }
 
   /** Constants revolving around auton modes. */
