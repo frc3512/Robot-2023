@@ -13,6 +13,7 @@ import frc3512.robot.subsystems.Superstructure;
 import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
+import frc3512.robot.subsystems.LEDs;
 
 public class Robot2023 {
   // Robot subsystems
@@ -21,6 +22,7 @@ public class Robot2023 {
   private Elevator elevator = new Elevator();
   private Arm arm = new Arm();
   private Intake intake = new Intake();
+  private LEDs leds = new LEDs();
   private Superstructure superstructure = new Superstructure(swerve, elevator, arm, intake);
 
   // Driver Control
@@ -42,6 +44,7 @@ public class Robot2023 {
   public void configureButtonBindings() {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
+    driver.leftBumper().onTrue(leds.switchLEDMode());
 
     appendage.button(1).whileTrue(intake.stopIntake());
     appendage.button(2).onTrue(superstructure.enableManualControl());

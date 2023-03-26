@@ -1,0 +1,141 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.8437628221410307,
+        "y": 4.9812552509720405
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.9517789804810395,
+        "y": 5.048699712784042
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Score Cone L3"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.487795764053068,
+        "y": 4.595858326332038
+      },
+      "prevControl": {
+        "x": 5.399049451945059,
+        "y": 4.605493249448038
+      },
+      "nextControl": {
+        "x": 5.399049451945059,
+        "y": 4.605493249448038
+      },
+      "holonomicAngle": 0.0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "Intake"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.8341278990250307,
+        "y": 4.422429710244036
+      },
+      "prevControl": {
+        "x": 3.5684140599050442,
+        "y": 4.778921865536039
+      },
+      "nextControl": {
+        "x": 1.5623970637343336,
+        "y": 4.366573927434282
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.449256071589068,
+        "y": 3.372223090600028
+      },
+      "prevControl": {
+        "x": 6.175075208203593,
+        "y": 5.291489134298404
+      },
+      "nextControl": {
+        "x": 6.458890994705068,
+        "y": 3.3047786287880276
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 5.264160528321059,
+        "y": 2.784492780524024
+      },
+      "prevControl": {
+        "x": 5.774811453469063,
+        "y": 2.7941277036400236
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 2.0,
+      "names": [
+        "Score Cube L3"
+      ]
+    },
+    {
+      "position": 3.0,
+      "names": [
+        "Intake"
+      ]
+    }
+  ]
+}
