@@ -23,17 +23,17 @@
           "Stow"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "waitBehavior": "after",
+        "waitTime": 1.0
       }
     },
     {
       "anchorPoint": {
-        "x": 6.6,
+        "x": 5.5,
         "y": 3.2832237616241993
       },
       "prevControl": {
-        "x": 6.204773347069016,
+        "x": 5.104773347069016,
         "y": 3.292215127307823
       },
       "nextControl": null,
