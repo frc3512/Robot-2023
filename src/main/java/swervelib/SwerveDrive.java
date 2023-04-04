@@ -113,6 +113,9 @@ public class SwerveDrive {
 
     zeroGyro();
 
+    Timer.delay(1.0);
+    synchronizeModuleEncoders();
+
     // Initialize Telemetry
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal()) {
       SmartDashboard.putData("Field", field);
