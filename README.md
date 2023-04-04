@@ -77,7 +77,7 @@ This years robot's unique features include:
 |Yes|Full Fledged Autos|Have auton modes from one piece all the way up to a full link.
 |No|Pose based Alignment|Use pose estimation to drive onto a certain point on the field.
 |No|AutoDrop|Sequence for automatically scoring (arm, elevator, and intake) onto the correct node
-|No|LEDs|Full fledged LED system for communicationing with human players|
+|Yes|LEDs|Full fledged LED system for communicationing with human players|
 
 ## Roster
 
