@@ -15,11 +15,10 @@ import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
 
-@SuppressWarnings("unused")
 public class Robot2023 {
   // Robot subsystems
   private Vision vision = new Vision();
-  private Swerve swerve = new Swerve();
+  private Swerve swerve = new Swerve(vision);
   private Elevator elevator = new Elevator();
   private Arm arm = new Arm();
   private Intake intake = new Intake();
@@ -46,6 +45,7 @@ public class Robot2023 {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
     driver.leftBumper().onTrue(leds.switchLEDMode());
+    driver.button(1).whileTrue(superstructure.driveToClosetPose());
 
     appendage.button(1).whileTrue(intake.stopIntake());
     appendage.button(2).onTrue(superstructure.enableManualControl());

@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -12,7 +13,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc3512.lib.logging.SpartanEntryManager;
 import frc3512.robot.Constants;
 import java.io.File;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
+import org.photonvision.EstimatedRobotPose;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
@@ -21,13 +24,16 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class Swerve extends SubsystemBase {
 
   private final SwerveDrive swerve;
+  private final Vision vision;
 
   private SlewRateLimiter translationLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
   private SlewRateLimiter strafeLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
   private SlewRateLimiter rotationLimiter = new SlewRateLimiter(Units.feetToMeters(14.5));
 
   /** Subsystem class for the swerve drive. */
-  public Swerve() {
+  public Swerve(Vision vision) {
+    this.vision = vision;
+
     if (SpartanEntryManager.isTuningMode()) {
       SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     } else {
@@ -105,8 +111,24 @@ public class Swerve extends SubsystemBase {
     return swerve.getPose();
   }
 
+  public ChassisSpeeds getFieldVelocity() {
+    return swerve.getFieldVelocity();
+  }
+
+  public Optional<Translation3d> getAcceleration() {
+    return swerve.getAccel();
+  }
+
   @Override
   public void periodic() {
     swerve.updateOdometry();
+
+    Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(getPose());
+
+    if (result.isPresent()) {
+      EstimatedRobotPose camPose = result.get();
+      swerve.addVisionMeasurement(
+          camPose.estimatedPose.toPose2d(), camPose.timestampSeconds, true, 0.5);
+    }
   }
 }
