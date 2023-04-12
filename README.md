@@ -9,8 +9,8 @@ Source code also for the 2023 practice robot: Atlas
 Install the relevant FRC toolchain for your platform (see
 https://github.com/wpilibsuite/allwpilib/releases). Make sure the toolchain
 is
-placed in `~/wpilib/2022/roborio` (Linux) or
-`C:\Users\Public\wpilib\2022\roborio` (Windows).
+placed in `~/wpilib/2023/roborio` (Linux) or
+`C:\Users\Public\wpilib\2023\roborio` (Windows).
 
 ## Build options
 
@@ -61,10 +61,10 @@ This years robot's unique features include:
 
 - Swerve drive with SDS MK4 L2 modules using CANCoders and NEOs
 - New vision camera system for use with AprilTags
-- Elevator using NEOs and a REV Through Bore encoder running through the RIO
+- Elevator using NEOs and a REV Through Bore encoder running through the RIO as a relative encoder
 - Arm using NEOs and a REV Through Bore encoder set to absolute mode running through a SparkMAX
 - Intake similar to 111/1339 to pick up cubes and cones in any orientation
-- LED subsystem using the PCM to control different lighting options
+- LED subsystem using the PCM for signaling to the human player
 
 ## Goals of the year
 |Status|Goal|Additional Description|
