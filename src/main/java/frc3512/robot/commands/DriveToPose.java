@@ -1,7 +1,5 @@
 package frc3512.robot.commands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,8 +10,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc3512.robot.subsystems.Swerve;
+import java.util.function.Supplier;
 
-// Modified version of 6328's DriveToPose Command 
+// Modified version of 6328's DriveToPose Command
 // https://github.com/Mechanical-Advantage/RobotCode2023/blob/main/src/main/java/org/littletonrobotics/frc2023/commands/DriveToPose.java
 public class DriveToPose extends CommandBase {
   private final Swerve swerve;
@@ -21,11 +20,9 @@ public class DriveToPose extends CommandBase {
 
   private boolean running = false;
   private final ProfiledPIDController driveController =
-      new ProfiledPIDController(
-          1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
+      new ProfiledPIDController(1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
   private final ProfiledPIDController thetaController =
-      new ProfiledPIDController(
-          1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
+      new ProfiledPIDController(1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
   private double driveErrorAbs;
   private double thetaErrorAbs;
   private Translation2d lastSetpointTranslation;
@@ -54,7 +51,9 @@ public class DriveToPose extends CommandBase {
         currentPose.getTranslation().getDistance(poseSupplier.get().getTranslation()),
         Math.min(
             0.0,
-            -new Translation2d(swerve.getFieldVelocity().vxMetersPerSecond, swerve.getFieldVelocity().vyMetersPerSecond)
+            -new Translation2d(
+                    swerve.getFieldVelocity().vxMetersPerSecond,
+                    swerve.getFieldVelocity().vyMetersPerSecond)
                 .rotateBy(
                     poseSupplier
                         .get()
@@ -81,15 +80,13 @@ public class DriveToPose extends CommandBase {
         lastSetpointTranslation.getDistance(targetPose.getTranslation()),
         driveController.getSetpoint().velocity);
     double driveVelocityScalar =
-        driveController.getSetpoint().velocity
-            + driveController.calculate(driveErrorAbs, 0.0);
+        driveController.getSetpoint().velocity + driveController.calculate(driveErrorAbs, 0.0);
     if (driveController.atGoal()) driveVelocityScalar = 0.0;
     lastSetpointTranslation =
         new Pose2d(
                 targetPose.getTranslation(),
                 currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle())
-            .transformBy(
-                translationToTransform(driveController.getSetpoint().position, 0.0))
+            .transformBy(translationToTransform(driveController.getSetpoint().position, 0.0))
             .getTranslation();
 
     double thetaVelocity =

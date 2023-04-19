@@ -45,26 +45,42 @@ public class Superstructure extends SubsystemBase {
 
   public Command goToPreset(ScoringEnum scoringPose) {
     if (scoringPose == ScoringEnum.INTAKE) {
-      return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(1.33, 0.0));
+      return goToScoreSetpointHyrbid(
+          new State(Constants.ScoringConstants.elevatorLeveled, 0.0),
+          new State(Constants.ScoringConstants.armIntake, 0.0));
     } else if (scoringPose == ScoringEnum.STOW) {
       return goToScoreSetpointHyrbid(
-          new State(0.0, 0.0), new State(Constants.ArmConstants.stowValue, 0.0));
+          new State(Constants.ScoringConstants.elevatorLeveled, 0.0),
+          new State(Constants.ArmConstants.stowValue, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L2) {
-      return goToScoreSetpoint(new State(0.0, 0.0), new State(2.25, 0.0));
+      return goToScoreSetpoint(
+          new State(Constants.ScoringConstants.elevatorLeveled, 0.0),
+          new State(Constants.ScoringConstants.armCubeL2, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L3) {
-      return goToScoreSetpoint(new State(0.26, 0.0), new State(1.75, 0.0));
+      return goToScoreSetpoint(
+          new State(Constants.ScoringConstants.elevatorCubeL3, 0.0),
+          new State(Constants.ScoringConstants.armCubeL3, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L2) {
-      return goToScoreSetpoint(new State(0.18, 0.0), new State(1.75, 0.0));
+      return goToScoreSetpoint(
+          new State(Constants.ScoringConstants.elevatorConeL2, 0.0),
+          new State(Constants.ScoringConstants.armConeL2, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L3) {
-      return goToScoreSetpoint(new State(0.35, 0.0), new State(1.43, 0.0));
+      return goToScoreSetpoint(
+          new State(Constants.ScoringConstants.elevatorConeL3, 0.0),
+          new State(Constants.ScoringConstants.armConeL3, 0.0));
     } else if (scoringPose == ScoringEnum.CONE_PLAYER_STATION) {
-      return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(2.30, 0.0));
+      return goToScoreSetpointHyrbid(
+          new State(Constants.ScoringConstants.elevatorLeveled, 0.0),
+          new State(Constants.ScoringConstants.armConeHP, 0.0));
     } else if (scoringPose == ScoringEnum.CUBE_PLAYER_STATION) {
-      return goToScoreSetpointHyrbid(new State(0.0, 0.0), new State(2.42, 0.0));
+      return goToScoreSetpointHyrbid(
+          new State(Constants.ScoringConstants.elevatorLeveled, 0.0),
+          new State(Constants.ScoringConstants.armCubeHP, 0.0));
     } else {
       // Default choice: Stowed
       return goToScoreSetpointHyrbid(
-          new State(0.0, 0.0), new State(Constants.ArmConstants.stowValue, 0.0));
+          new State(Constants.ScoringConstants.elevatorLeveled, 0.0),
+          new State(Constants.ArmConstants.stowValue, 0.0));
     }
   }
 

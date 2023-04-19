@@ -78,6 +78,22 @@ public final class Constants {
     public static final int appendageControllerPort = 1;
   }
 
+  /** Constants revolving around scoring */
+  public static class ScoringConstants {
+    public static final double elevatorLeveled = 0.0;
+    public static final double elevatorCubeL3 = 0.26;
+    public static final double elevatorConeL2 = 0.18;
+    public static final double elevatorConeL3 = 0.35;
+
+    public static final double armIntake = 1.33;
+    public static final double armCubeL2 = 2.25;
+    public static final double armCubeL3 = 1.75;
+    public static final double armConeL2 = 1.75;
+    public static final double armConeL3 = 1.43;
+    public static final double armConeHP = 2.30;
+    public static final double armCubeHP = 2.42;
+  }
+
   /** Constants revolving around the vision subsystem. */
   public static final class VisionConstants {
     // Camera name
