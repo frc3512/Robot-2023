@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc3512.robot.subsystems.Swerve;
 import java.util.function.Supplier;
@@ -20,9 +21,9 @@ public class DriveToPose extends CommandBase {
 
   private boolean running = false;
   private final ProfiledPIDController driveController =
-      new ProfiledPIDController(1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
+      new ProfiledPIDController(0.5, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
   private final ProfiledPIDController thetaController =
-      new ProfiledPIDController(1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
+      new ProfiledPIDController(0.5, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
   private double driveErrorAbs;
   private double thetaErrorAbs;
   private Translation2d lastSetpointTranslation;
@@ -105,7 +106,12 @@ public class DriveToPose extends CommandBase {
             .getTranslation();
     swerve.setChassisSpeeds(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            driveVelocity.getX(), driveVelocity.getY(), thetaVelocity, currentPose.getRotation()));
+            driveVelocity.getX(), driveVelocity.getY(), thetaVelocity, Rotation2d.fromDegrees(swerve.getYaw())));
+
+    SmartDashboard.putNumberArray("Current Pose", new double[] {swerve.getPose().getX(), swerve.getPose().getY(), swerve.getPose().getRotation().getDegrees()});
+    SmartDashboard.putNumberArray("Desired Pose", new double[] {poseSupplier.get().getX(), poseSupplier.get().getY(), poseSupplier.get().getRotation().getDegrees()});
+    SmartDashboard.putBoolean("Drive At Goal", driveController.atGoal());
+    SmartDashboard.putBoolean("Theta At Goal", thetaController.atGoal());
   }
 
   @Override

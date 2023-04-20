@@ -45,7 +45,7 @@ public class Robot2023 {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
     driver.leftBumper().onTrue(leds.switchLEDMode());
-    driver.button(1).whileTrue(superstructure.driveToClosetPose());
+    driver.rightBumper().whileTrue(superstructure.driveToClosetPose());
 
     appendage.button(1).whileTrue(intake.stopIntake());
     appendage.button(2).onTrue(superstructure.enableManualControl());

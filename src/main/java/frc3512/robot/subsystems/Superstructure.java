@@ -1,5 +1,6 @@
 package frc3512.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -116,6 +117,17 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command driveToClosetPose() {
-    return new DriveToPose(swerve);
+    return new DriveToPose(swerve, Constants.FieldConstants.scoringPositions.get(4));
+  }
+
+  private Pose2d findClosestPose() {
+    Pose2d closestPose = Constants.FieldConstants.scoringPositions.get(0);
+    for (Pose2d pose : Constants.FieldConstants.scoringPositions) {
+      if (closestPose.relativeTo(swerve.getPose()).getTranslation().getNorm()
+          > pose.relativeTo(swerve.getPose()).getTranslation().getNorm()) {
+        closestPose = pose;
+      }
+    }
+    return new Pose2d();
   }
 }

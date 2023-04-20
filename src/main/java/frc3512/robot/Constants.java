@@ -81,17 +81,17 @@ public final class Constants {
   /** Constants revolving around scoring */
   public static class ScoringConstants {
     public static final double elevatorLeveled = 0.0;
-    public static final double elevatorCubeL3 = 0.26;
+    public static final double elevatorCubeL3 = 0.22;
     public static final double elevatorConeL2 = 0.18;
     public static final double elevatorConeL3 = 0.35;
 
-    public static final double armIntake = 1.33;
-    public static final double armCubeL2 = 2.25;
-    public static final double armCubeL3 = 1.75;
-    public static final double armConeL2 = 1.75;
-    public static final double armConeL3 = 1.43;
-    public static final double armConeHP = 2.30;
-    public static final double armCubeHP = 2.42;
+    public static final double armIntake = 2.37;
+    public static final double armCubeL2 = 3.37;
+    public static final double armCubeL3 = 2.7;
+    public static final double armConeL2 = 2.7;
+    public static final double armConeL3 = 2.5;
+    public static final double armConeHP = 3.41;
+    public static final double armCubeHP = 3.49;
   }
 
   /** Constants revolving around the vision subsystem. */
@@ -145,7 +145,7 @@ public final class Constants {
 
     public static final double positionConversionFactor = (Math.PI * 2.0);
     public static final double armOffset = 0.0;
-    public static final double stowValue = 2.70;
+    public static final double stowValue = 3.8;
 
     public static final double maxVelocityRadPerSecond = 12.0;
     public static final double maxAccelerationRadPerSecSquared = 9.0;
