@@ -117,7 +117,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command driveToClosetPose() {
-    return new DriveToPose(swerve, Constants.FieldConstants.scoringPositions.get(4));
+    return new DriveToPose(swerve, Constants.FieldConstants.scoringPositions.get(3));
   }
 
   private Pose2d findClosestPose() {

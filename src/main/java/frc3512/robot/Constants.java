@@ -19,24 +19,16 @@ public final class Constants {
     public static final List<Pose2d> scoringPositions =
         List.of(
             new Pose2d(
-                new Translation2d(0.555, 7.436),
-                Rotation2d.fromRadians(Math.PI)), // Red loading double station
-            new Pose2d(new Translation2d(0.555, 6.146), Rotation2d.fromRadians(Math.PI)),
-            new Pose2d(
                 new Translation2d(15.03, 5.061),
                 Rotation2d.fromDegrees(0.0)), // Red node scoring locations
-            new Pose2d(new Translation2d(15.03, 4.405), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 3.846), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 3.298), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 2.74), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 2.2), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 1.62), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 1.06), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 0.52), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(
-                new Translation2d(15.64, 7.430),
-                Rotation2d.fromDegrees(0.0)), // Blue loading double substation
-            new Pose2d(new Translation2d(15.64, 6.16), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(15.03, 4.405), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(15.03, 3.846), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(15.03, 3.298), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(15.03, 2.74), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(15.03, 2.2), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(15.03, 1.62), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(15.03, 1.06), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(15.03, 0.52), Rotation2d.fromDegrees(-Math.PI)),
             new Pose2d(
                 new Translation2d(1.598, 4.996),
                 Rotation2d.fromRadians(-Math.PI)), // Blue node scoring locations

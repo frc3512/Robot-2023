@@ -106,10 +106,25 @@ public class DriveToPose extends CommandBase {
             .getTranslation();
     swerve.setChassisSpeeds(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            driveVelocity.getX(), driveVelocity.getY(), thetaVelocity, Rotation2d.fromDegrees(swerve.getYaw())));
+            driveVelocity.getX(),
+            driveVelocity.getY(),
+            thetaVelocity,
+            Rotation2d.fromDegrees(swerve.getYaw())));
 
-    SmartDashboard.putNumberArray("Current Pose", new double[] {swerve.getPose().getX(), swerve.getPose().getY(), swerve.getPose().getRotation().getDegrees()});
-    SmartDashboard.putNumberArray("Desired Pose", new double[] {poseSupplier.get().getX(), poseSupplier.get().getY(), poseSupplier.get().getRotation().getDegrees()});
+    SmartDashboard.putNumberArray(
+        "Current Pose",
+        new double[] {
+          swerve.getPose().getX(),
+          swerve.getPose().getY(),
+          swerve.getPose().getRotation().getDegrees()
+        });
+    SmartDashboard.putNumberArray(
+        "Desired Pose",
+        new double[] {
+          poseSupplier.get().getX(),
+          poseSupplier.get().getY(),
+          poseSupplier.get().getRotation().getDegrees()
+        });
     SmartDashboard.putBoolean("Drive At Goal", driveController.atGoal());
     SmartDashboard.putBoolean("Theta At Goal", thetaController.atGoal());
   }
