@@ -109,7 +109,7 @@ public final class Constants {
         (Math.PI * 2.0 * Units.inchesToMeters(1.751)) / 8192;
 
     public static final double maxVelocityMeterPerSecond = 3.0;
-    public static final double maxAccelerationMeterPerSecondSquared = 0.75;
+    public static final double maxAccelerationMeterPerSecondSquared = 1.0;
 
     public static final double minHeight = 0.0;
     public static final double maxHeight = 0.35;
