@@ -10,12 +10,14 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc3512.robot.Constants;
 import frc3512.robot.auton.Autos;
 import frc3512.robot.commands.DriveToPose;
+import frc3512.robot.subsystems.LEDs.Selection;
 
 public class Superstructure extends SubsystemBase {
   // Subsystems
   private final Swerve swerve;
   private final Elevator elevator;
   private final Arm arm;
+  private final LEDs leds;
 
   // Autons
   private final Autos autos;
@@ -32,10 +34,11 @@ public class Superstructure extends SubsystemBase {
     SCORE_CONE_L3
   }
 
-  public Superstructure(Swerve swerve, Elevator elevator, Arm arm, Intake intake) {
+  public Superstructure(Swerve swerve, Elevator elevator, Arm arm, Intake intake, LEDs leds) {
     this.swerve = swerve;
     this.elevator = elevator;
     this.arm = arm;
+    this.leds = leds;
 
     autos = new Autos(swerve, elevator, arm, this, intake);
   }
@@ -88,36 +91,32 @@ public class Superstructure extends SubsystemBase {
   public Command goToScoreSetpoint(
       TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
     return Commands.sequence(
-        elevator.setGoal(elevatorState), new WaitCommand(0.25), arm.setGoal(armState));
+            elevator.setGoal(elevatorState), new WaitCommand(0.25), arm.setGoal(armState))
+        .andThen(new WaitCommand(1.0))
+        .andThen(leds.selectMode(Selection.READY_TO_SCORE));
   }
 
   public Command goToScoreSetpointHyrbid(
       TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
-    return Commands.sequence(arm.setGoal(armState), elevator.setGoal(elevatorState));
+    return Commands.sequence(arm.setGoal(armState), elevator.setGoal(elevatorState))
+        .andThen(leds.goToElementColor());
   }
 
   public Command enableManualControl() {
     return Commands.runOnce(
-        () -> {
-          elevator.disable();
-          arm.disable();
-        },
-        arm,
-        elevator);
-  }
-
-  public Command enableAutoControl() {
-    return Commands.runOnce(
-        () -> {
-          elevator.enable();
-          arm.enable();
-        },
-        arm,
-        elevator);
+            () -> {
+              elevator.disable();
+              arm.disable();
+            },
+            arm,
+            elevator)
+        .andThen(leds.selectMode(Selection.MANUAL_MODE))
+        .andThen(new WaitCommand(0.5))
+        .andThen(leds.goToElementColor());
   }
 
   public Command driveToClosetPose() {
-    return new DriveToPose(swerve, Constants.FieldConstants.scoringPositions.get(3));
+    return new DriveToPose(swerve, findClosestPose());
   }
 
   private Pose2d findClosestPose() {

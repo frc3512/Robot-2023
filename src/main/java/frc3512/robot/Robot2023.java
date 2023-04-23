@@ -23,7 +23,7 @@ public class Robot2023 {
   private Arm arm = new Arm();
   private Intake intake = new Intake();
   private LEDs leds = new LEDs();
-  private Superstructure superstructure = new Superstructure(swerve, elevator, arm, intake);
+  private Superstructure superstructure = new Superstructure(swerve, elevator, arm, intake, leds);
 
   // Driver Control
   private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -44,7 +44,7 @@ public class Robot2023 {
   public void configureButtonBindings() {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
-    driver.leftBumper().onTrue(leds.switchLEDMode());
+    driver.leftBumper().onTrue(leds.switchColor());
     driver.rightBumper().whileTrue(superstructure.driveToClosetPose());
 
     appendage.button(1).whileTrue(intake.stopIntake());

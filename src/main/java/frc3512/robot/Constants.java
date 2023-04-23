@@ -98,6 +98,12 @@ public final class Constants {
             new Rotation3d(0.0, 0.0, 0.0));
   }
 
+  /** Constants revolving around the LED subsystem. */
+  public static class LEDConstants {
+    public static final int pwmPort = 0;
+    public static final int ledBufferLength = 60;
+  }
+
   /** Constants revolving around the elevator subsystem. */
   public static final class ElevatorConstants {
     public static final int leftMotorID = 17;
