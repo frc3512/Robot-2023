@@ -1,6 +1,8 @@
 package frc3512.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,6 +20,7 @@ public class Superstructure extends SubsystemBase {
   private final Elevator elevator;
   private final Arm arm;
   private final LEDs leds;
+  private final Intake intake;
 
   // Autons
   private final Autos autos;
@@ -39,12 +42,22 @@ public class Superstructure extends SubsystemBase {
     this.elevator = elevator;
     this.arm = arm;
     this.leds = leds;
+    this.intake = intake;
 
     autos = new Autos(swerve, elevator, arm, this, intake);
   }
 
   public Command getAuton() {
     return autos.getSelected();
+  }
+
+  public Command autoScore(ScoringEnum scoringPose) {
+    return goToPreset(scoringPose)
+        .andThen(new WaitCommand(0.3))
+        .andThen(intake.intakeGamePiece())
+        .andThen(new WaitCommand(0.3))
+        .andThen(intake.stopIntake())
+        .andThen(goToPreset(ScoringEnum.STOW));
   }
 
   public Command goToPreset(ScoringEnum scoringPose) {
@@ -116,7 +129,12 @@ public class Superstructure extends SubsystemBase {
   }
 
   public Command driveToClosetPose() {
-    return new DriveToPose(swerve, findClosestPose());
+    Pose2d pose = findClosestPose();
+    return new DriveToPose(
+        swerve,
+        () -> swerve.getPose(),
+        new Pose2d(new Translation2d(14.6, 4.0), Rotation2d.fromDegrees(0.0)),
+        true);
   }
 
   private Pose2d findClosestPose() {

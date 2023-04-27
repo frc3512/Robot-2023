@@ -19,16 +19,16 @@ public final class Constants {
     public static final List<Pose2d> scoringPositions =
         List.of(
             new Pose2d(
-                new Translation2d(15.03, 5.061),
+                new Translation2d(14.70, 5.061),
                 Rotation2d.fromDegrees(0.0)), // Red node scoring locations
-            new Pose2d(new Translation2d(15.03, 4.405), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(15.03, 3.846), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(15.03, 3.298), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(15.03, 2.74), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(15.03, 2.2), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(15.03, 1.62), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(15.03, 1.06), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(15.03, 0.52), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(14.70, 4.405), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(14.70, 3.846), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(14.70, 3.298), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(14.70, 2.74), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(14.70, 2.2), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(14.70, 1.62), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(14.70, 1.06), Rotation2d.fromDegrees(-Math.PI)),
+            new Pose2d(new Translation2d(14.70, 0.52), Rotation2d.fromDegrees(-Math.PI)),
             new Pose2d(
                 new Translation2d(1.598, 4.996),
                 Rotation2d.fromRadians(-Math.PI)), // Blue node scoring locations
@@ -73,17 +73,17 @@ public final class Constants {
   /** Constants revolving around scoring */
   public static class ScoringConstants {
     public static final double elevatorLeveled = 0.0;
-    public static final double elevatorCubeL3 = 0.22;
+    public static final double elevatorCubeL3 = 0.26;
     public static final double elevatorConeL2 = 0.18;
     public static final double elevatorConeL3 = 0.35;
 
-    public static final double armIntake = 2.37;
-    public static final double armCubeL2 = 3.37;
-    public static final double armCubeL3 = 2.7;
-    public static final double armConeL2 = 2.7;
-    public static final double armConeL3 = 2.5;
-    public static final double armConeHP = 3.41;
-    public static final double armCubeHP = 3.49;
+    public static final double armIntake = 1.33;
+    public static final double armCubeL2 = 2.25;
+    public static final double armCubeL3 = 1.75;
+    public static final double armConeL2 = 1.75;
+    public static final double armConeL3 = 1.43;
+    public static final double armConeHP = 2.30;
+    public static final double armCubeHP = 2.42;
   }
 
   /** Constants revolving around the vision subsystem. */
@@ -143,7 +143,7 @@ public final class Constants {
 
     public static final double positionConversionFactor = (Math.PI * 2.0);
     public static final double armOffset = 0.0;
-    public static final double stowValue = 3.8;
+    public static final double stowValue = 2.7;
 
     public static final double maxVelocityRadPerSecond = 12.0;
     public static final double maxAccelerationRadPerSecSquared = 9.0;

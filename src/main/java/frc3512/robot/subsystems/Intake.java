@@ -14,6 +14,15 @@ public class Intake extends SubsystemBase {
       new CANSparkMax(
           Constants.IntakeConstants.intakeMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
+  public enum IntakeDirection {
+    INTAKE,
+    HALF_SPEED,
+    OUTTAKE,
+    STOP
+  }
+
+  private IntakeDirection direction = IntakeDirection.STOP;
+
   public Intake() {
     intakeMotor.restoreFactoryDefaults();
 
@@ -26,30 +35,43 @@ public class Intake extends SubsystemBase {
   }
 
   public Command intakeGamePiece() {
-    return run(
+    return runOnce(
         () -> {
-          intakeMotor.set(Constants.IntakeConstants.motorSpeed);
+          direction = IntakeDirection.INTAKE;
         });
   }
 
   public Command outtakeGamePiece() {
-    return run(
+    return runOnce(
         () -> {
-          intakeMotor.set(-Constants.IntakeConstants.motorSpeed);
+          direction = IntakeDirection.OUTTAKE;
         });
   }
 
   public Command halfOuttakeGamePiece() {
-    return run(
+    return runOnce(
         () -> {
-          intakeMotor.set(Constants.IntakeConstants.motorSpeed * 0.5);
+          direction = IntakeDirection.HALF_SPEED;
         });
   }
 
   public Command stopIntake() {
-    return run(
+    return runOnce(
         () -> {
-          intakeMotor.set(0.0);
+          direction = IntakeDirection.STOP;
         });
+  }
+
+  @Override
+  public void periodic() {
+    if (direction == IntakeDirection.INTAKE) {
+      intakeMotor.set(Constants.IntakeConstants.motorSpeed);
+    } else if (direction == IntakeDirection.OUTTAKE) {
+      intakeMotor.set(-Constants.IntakeConstants.motorSpeed);
+    } else if (direction == IntakeDirection.HALF_SPEED) {
+      intakeMotor.set(Constants.IntakeConstants.motorSpeed * 0.5);
+    } else if (direction == IntakeDirection.STOP) {
+      intakeMotor.set(0.0);
+    }
   }
 }
