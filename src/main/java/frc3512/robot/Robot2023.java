@@ -11,6 +11,7 @@ import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
 import frc3512.robot.subsystems.LEDs;
 import frc3512.robot.subsystems.Superstructure;
+import frc3512.robot.subsystems.Superstructure.GridSelection;
 import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
@@ -45,7 +46,11 @@ public class Robot2023 {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
     driver.leftBumper().onTrue(leds.switchColor());
-    driver.rightBumper().whileTrue(superstructure.driveToClosetPose());
+    driver.rightBumper().onTrue(superstructure.autoScore());
+    driver.povUp().onTrue(superstructure.moveRobotForward());
+    driver.povDown().onTrue(superstructure.moveRobotBack());
+    driver.povLeft().onTrue(superstructure.moveRobotLeft());
+    driver.povRight().onTrue(superstructure.moveRobotRight());
 
     appendage.button(1).onTrue(intake.stopIntake());
     appendage.button(2).onTrue(superstructure.enableManualControl());
@@ -53,10 +58,17 @@ public class Robot2023 {
     appendage.button(4).onTrue(intake.outtakeGamePiece());
     appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.STOW));
     appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.INTAKE));
-    appendage.button(7).onTrue(superstructure.autoScore(ScoringEnum.SCORE_CONE_L2));
-    appendage.button(8).onTrue(superstructure.autoScore(ScoringEnum.SCORE_CONE_L3));
+    appendage
+        .button(7)
+        .onTrue(superstructure.prepareToScore(ScoringEnum.SCORE_CONE_L2, GridSelection.LEFT_CONE));
+    appendage
+        .button(8)
+        .onTrue(superstructure.prepareToScore(ScoringEnum.SCORE_CONE_L3, GridSelection.LEFT_CONE));
     appendage.button(9).onTrue(intake.halfOuttakeGamePiece());
-    appendage.button(10).onTrue(superstructure.autoScore(ScoringEnum.SCORE_CUBE_L3));
+    appendage
+        .button(10)
+        .onTrue(
+            superstructure.prepareToScore(ScoringEnum.SCORE_CUBE_L3, GridSelection.CUBE_MIDDLE));
     appendage.button(11).onTrue(superstructure.goToPreset(ScoringEnum.CONE_PLAYER_STATION));
     appendage.button(12).onTrue(superstructure.goToPreset(ScoringEnum.CUBE_PLAYER_STATION));
   }

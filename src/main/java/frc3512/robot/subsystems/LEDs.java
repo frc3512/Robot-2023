@@ -1,55 +1,78 @@
 package frc3512.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc3512.lib.util.HSV;
 import frc3512.robot.Constants;
 
 public class LEDs extends SubsystemBase {
-  private final AddressableLED m_led;
-  private final AddressableLEDBuffer m_ledBuffer;
+  private final AddressableLED led;
+  private final AddressableLEDBuffer buffer;
 
   public enum Selection {
     CONE,
     CUBE,
     READY_TO_SCORE,
     MANUAL_MODE,
-    RED_ALLIANCE,
-    BLUE_ALLIANCE,
-    DEFAULT
+    ADJUSTING,
   }
 
   private Selection currSelection;
   private boolean isCone = false;
 
+  public static final int pauseBetween = 15;
+  public static final int length = 25;
+  public static final double spread = 8;
+  public static final double speed = .5;
+  private double middleIndex = -pauseBetween;
+  public static final HSV hsv = HSV.googleColorPickerHSV(240, 100, 97);
+
   public LEDs() {
-    m_led = new AddressableLED(Constants.LEDConstants.pwmPort);
+    led = new AddressableLED(Constants.LEDConstants.pwmPort);
 
-    m_ledBuffer = new AddressableLEDBuffer(Constants.LEDConstants.ledBufferLength);
-    m_led.setLength(m_ledBuffer.getLength());
+    buffer = new AddressableLEDBuffer(Constants.LEDConstants.ledBufferLength);
+    led.setLength(buffer.getLength());
 
-    m_led.setData(m_ledBuffer);
-    m_led.start();
+    led.setData(buffer);
+    led.start();
+  }
 
-    currSelection = Selection.DEFAULT;
+  public void defaultPattern() {
+    for (int i = 0; i < buffer.getLength() / 2 + pauseBetween; i++) {
+      int value =
+          MathUtil.clamp(
+                  (int) ((1 / spread) * (Math.abs(middleIndex - i)) * hsv.v) - length,
+                  0,
+                  hsv.v - 10)
+              + 10;
+
+      if (buffer.getLength() / 2 > i) {
+        buffer.setHSV(i, hsv.h, hsv.s, value);
+        buffer.setHSV(buffer.getLength() - i - 1, hsv.h, hsv.s, value);
+      }
+    }
+    middleIndex =
+        (middleIndex + speed) > buffer.getLength() + pauseBetween
+            ? -pauseBetween
+            : (middleIndex + speed);
+
+    led.setData(buffer);
   }
 
   public void setColor(int r, int g, int b) {
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, r, g, b);
+    for (var i = 0; i < buffer.getLength(); i++) {
+      buffer.setRGB(i, r, g, b);
     }
 
-    m_led.setData(m_ledBuffer);
+    led.setData(buffer);
   }
 
   public void ledStateMachine() {
     switch (currSelection) {
-      case DEFAULT:
-        setColor(255, 255, 255);
-        break;
       case CONE:
         setColor(247, 231, 14);
         break;
@@ -59,14 +82,11 @@ public class LEDs extends SubsystemBase {
       case READY_TO_SCORE:
         setColor(0, 255, 0);
         break;
-      case RED_ALLIANCE:
-        setColor(255, 0, 0);
-        break;
-      case BLUE_ALLIANCE:
-        setColor(0, 0, 255);
-        break;
       case MANUAL_MODE:
         setColor(249, 150, 2);
+        break;
+      case ADJUSTING:
+        setColor(0, 234, 218);
         break;
     }
   }
@@ -105,17 +125,9 @@ public class LEDs extends SubsystemBase {
   @Override
   public void periodic() {
     if (DriverStation.isDisabled()) {
-      currSelection = Selection.DEFAULT;
-    } else if (DriverStation.isAutonomous()) {
-      if (DriverStation.getAlliance() == Alliance.Red) {
-        currSelection = Selection.RED_ALLIANCE;
-      } else if (DriverStation.getAlliance() == Alliance.Blue) {
-        currSelection = Selection.BLUE_ALLIANCE;
-      } else {
-        currSelection = Selection.DEFAULT;
-      }
+      defaultPattern();
+    } else {
+      ledStateMachine();
     }
-
-    ledStateMachine();
   }
 }

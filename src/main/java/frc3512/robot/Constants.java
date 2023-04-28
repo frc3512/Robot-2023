@@ -1,46 +1,13 @@
 package frc3512.robot;
 
 import com.pathplanner.lib.PathConstraints;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import java.util.List;
 
 /** Constants for the robot project */
 public final class Constants {
-
-  /* Field related constants */
-  public static final class FieldConstants {
-    // List of possible scoring locations as Pose2d objects
-    public static final List<Pose2d> scoringPositions =
-        List.of(
-            new Pose2d(
-                new Translation2d(14.70, 5.061),
-                Rotation2d.fromDegrees(0.0)), // Red node scoring locations
-            new Pose2d(new Translation2d(14.70, 4.405), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(14.70, 3.846), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(14.70, 3.298), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(14.70, 2.74), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(14.70, 2.2), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(14.70, 1.62), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(14.70, 1.06), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(new Translation2d(14.70, 0.52), Rotation2d.fromDegrees(-Math.PI)),
-            new Pose2d(
-                new Translation2d(1.598, 4.996),
-                Rotation2d.fromRadians(-Math.PI)), // Blue node scoring locations
-            new Pose2d(new Translation2d(1.598, 4.373), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 3.85), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 3.3), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 2.75), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 2.2), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 1.63), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 1.05), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 0.5), Rotation2d.fromRadians(-Math.PI)));
-  }
 
   /** General robot constants */
   public static final class GeneralConstants {

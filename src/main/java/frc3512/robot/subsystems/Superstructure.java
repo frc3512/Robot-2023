@@ -2,6 +2,7 @@ package frc3512.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
@@ -37,12 +38,23 @@ public class Superstructure extends SubsystemBase {
     SCORE_CONE_L3
   }
 
+  // Grid enum
+  public enum GridSelection {
+    LEFT_CONE,
+    CUBE_MIDDLE,
+    RIGHT_CONE
+  }
+
+  private ScoringEnum scoringSelection = ScoringEnum.STOW;
+  private Pose2d scoringPose;
+
   public Superstructure(Swerve swerve, Elevator elevator, Arm arm, Intake intake, LEDs leds) {
     this.swerve = swerve;
     this.elevator = elevator;
     this.arm = arm;
     this.leds = leds;
     this.intake = intake;
+    scoringPose = swerve.getPose();
 
     autos = new Autos(swerve, elevator, arm, this, intake);
   }
@@ -51,11 +63,11 @@ public class Superstructure extends SubsystemBase {
     return autos.getSelected();
   }
 
-  public Command autoScore(ScoringEnum scoringPose) {
-    return goToPreset(scoringPose)
+  public Command autoScore() {
+    return goToPreset(scoringSelection)
         .andThen(new WaitCommand(0.3))
         .andThen(intake.intakeGamePiece())
-        .andThen(new WaitCommand(0.3))
+        .andThen(new WaitCommand(0.2))
         .andThen(intake.stopIntake())
         .andThen(goToPreset(ScoringEnum.STOW));
   }
@@ -104,9 +116,7 @@ public class Superstructure extends SubsystemBase {
   public Command goToScoreSetpoint(
       TrapezoidProfile.State elevatorState, TrapezoidProfile.State armState) {
     return Commands.sequence(
-            elevator.setGoal(elevatorState), new WaitCommand(0.25), arm.setGoal(armState))
-        .andThen(new WaitCommand(1.0))
-        .andThen(leds.selectMode(Selection.READY_TO_SCORE));
+        elevator.setGoal(elevatorState), new WaitCommand(0.25), arm.setGoal(armState));
   }
 
   public Command goToScoreSetpointHyrbid(
@@ -124,27 +134,95 @@ public class Superstructure extends SubsystemBase {
             arm,
             elevator)
         .andThen(leds.selectMode(Selection.MANUAL_MODE))
-        .andThen(new WaitCommand(0.5))
+        .andThen(new WaitCommand(1.0))
         .andThen(leds.goToElementColor());
   }
 
-  public Command driveToClosetPose() {
-    Pose2d pose = findClosestPose();
-    return new DriveToPose(
-        swerve,
-        () -> swerve.getPose(),
-        new Pose2d(new Translation2d(14.6, 4.0), Rotation2d.fromDegrees(0.0)),
-        true);
-  }
+  public Command prepareToScore(ScoringEnum scoringEnum, GridSelection gridSelection) {
+    scoringSelection = scoringEnum;
 
-  private Pose2d findClosestPose() {
-    Pose2d closestPose = Constants.FieldConstants.scoringPositions.get(0);
-    for (Pose2d pose : Constants.FieldConstants.scoringPositions) {
-      if (closestPose.relativeTo(swerve.getPose()).getTranslation().getNorm()
-          > pose.relativeTo(swerve.getPose()).getTranslation().getNorm()) {
-        closestPose = pose;
+    if (gridSelection == GridSelection.CUBE_MIDDLE) {
+      scoringPose = swerve.getPose();
+    } else if (gridSelection == GridSelection.LEFT_CONE) {
+      if (scoringEnum == ScoringEnum.SCORE_CONE_L2) {
+        scoringPose =
+            new Pose2d(
+                new Translation2d(swerve.getPose().getX() - 1.0, swerve.getPose().getY() + 1.0),
+                swerve.getPose().getRotation());
+      } else {
+        scoringPose =
+            new Pose2d(
+                new Translation2d(swerve.getPose().getX(), swerve.getPose().getY() + 1.0),
+                swerve.getPose().getRotation());
+      }
+    } else if (gridSelection == GridSelection.RIGHT_CONE) {
+      if (scoringEnum == ScoringEnum.SCORE_CONE_L2) {
+        scoringPose =
+            new Pose2d(
+                new Translation2d(swerve.getPose().getX() - 1.0, swerve.getPose().getY() - 1.0),
+                swerve.getPose().getRotation());
+      } else {
+        scoringPose =
+            new Pose2d(
+                new Translation2d(swerve.getPose().getX(), swerve.getPose().getY() - 1.0),
+                swerve.getPose().getRotation());
       }
     }
-    return new Pose2d();
+
+    return new DriveToPose(swerve, () -> swerve.getPose(), scoringPose, false)
+        .withTimeout(1.0)
+        .andThen(leds.selectMode(Selection.READY_TO_SCORE));
+  }
+
+  public Command moveRobotLeft() {
+    return leds.selectMode(Selection.ADJUSTING)
+        .andThen(
+            new DriveToPose(
+                    swerve,
+                    () -> swerve.getPose(),
+                    scoringPose.plus(
+                        new Transform2d(new Translation2d(0.0, 0.1), Rotation2d.fromDegrees(0.0))),
+                    false)
+                .withTimeout(1.0)
+                .andThen(leds.selectMode(Selection.READY_TO_SCORE)));
+  }
+
+  public Command moveRobotRight() {
+    return leds.selectMode(Selection.ADJUSTING)
+        .andThen(
+            new DriveToPose(
+                    swerve,
+                    () -> swerve.getPose(),
+                    scoringPose.plus(
+                        new Transform2d(new Translation2d(0.0, -0.1), Rotation2d.fromDegrees(0.0))),
+                    false)
+                .withTimeout(1.0)
+                .andThen(leds.selectMode(Selection.READY_TO_SCORE)));
+  }
+
+  public Command moveRobotForward() {
+    return leds.selectMode(Selection.ADJUSTING)
+        .andThen(
+            new DriveToPose(
+                    swerve,
+                    () -> swerve.getPose(),
+                    scoringPose.plus(
+                        new Transform2d(new Translation2d(0.1, 0.0), Rotation2d.fromDegrees(0.0))),
+                    false)
+                .withTimeout(1.0)
+                .andThen(leds.selectMode(Selection.READY_TO_SCORE)));
+  }
+
+  public Command moveRobotBack() {
+    return leds.selectMode(Selection.ADJUSTING)
+        .andThen(
+            new DriveToPose(
+                    swerve,
+                    () -> swerve.getPose(),
+                    scoringPose.plus(
+                        new Transform2d(new Translation2d(-0.1, 0.0), Rotation2d.fromDegrees(0.0))),
+                    false)
+                .withTimeout(1.0)
+                .andThen(leds.selectMode(Selection.READY_TO_SCORE)));
   }
 }
