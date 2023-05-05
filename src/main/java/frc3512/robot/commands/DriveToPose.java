@@ -6,17 +6,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc3512.robot.Constants;
 import frc3512.robot.subsystems.Swerve;
 import java.util.function.Supplier;
 
 /** Command to drive to a pose. */
 public class DriveToPose extends CommandBase {
-
-  private static final double TRANSLATION_TOLERANCE = 0.02;
-  private static final double THETA_TOLERANCE = Units.degreesToRadians(2.0);
 
   private final ProfiledPIDController xController;
   private final ProfiledPIDController yController;
@@ -24,18 +21,13 @@ public class DriveToPose extends CommandBase {
 
   private final Swerve drivetrainSubsystem;
   private final Supplier<Pose2d> poseProvider;
-  private final Pose2d goalPose;
   private final boolean useAllianceColor;
 
   public DriveToPose(
-      Swerve drivetrainSubsystem,
-      Supplier<Pose2d> poseProvider,
-      Pose2d goalPose,
-      boolean useAllianceColor) {
+      Swerve drivetrainSubsystem, Supplier<Pose2d> poseProvider, boolean useAllianceColor) {
     this(
         drivetrainSubsystem,
         poseProvider,
-        goalPose,
         new TrapezoidProfile.Constraints(4.0, 4.0),
         new TrapezoidProfile.Constraints(4.0, 4.0),
         useAllianceColor);
@@ -44,22 +36,17 @@ public class DriveToPose extends CommandBase {
   public DriveToPose(
       Swerve drivetrainSubsystem,
       Supplier<Pose2d> poseProvider,
-      Pose2d goalPose,
       TrapezoidProfile.Constraints xyConstraints,
       TrapezoidProfile.Constraints omegaConstraints,
       boolean useAllianceColor) {
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.poseProvider = poseProvider;
-    this.goalPose = goalPose;
     this.useAllianceColor = useAllianceColor;
 
     xController = new ProfiledPIDController(1.5, 0.0, 0.0, xyConstraints);
     yController = new ProfiledPIDController(1.5, 0.0, 0.0, xyConstraints);
-    xController.setTolerance(TRANSLATION_TOLERANCE);
-    yController.setTolerance(TRANSLATION_TOLERANCE);
     thetaController = new ProfiledPIDController(1.5, 0.0, 0.0, omegaConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    thetaController.setTolerance(THETA_TOLERANCE);
 
     addRequirements(drivetrainSubsystem);
   }
@@ -67,7 +54,7 @@ public class DriveToPose extends CommandBase {
   @Override
   public void initialize() {
     resetPIDControllers();
-    var pose = goalPose;
+    var pose = findClosestPose();
     if (useAllianceColor && DriverStation.getAlliance() == DriverStation.Alliance.Red) {
       Translation2d transformedTranslation = new Translation2d(pose.getX(), 8.0137 - pose.getY());
       Rotation2d transformedHeading = pose.getRotation().times(-1);
@@ -76,6 +63,17 @@ public class DriveToPose extends CommandBase {
     thetaController.setGoal(pose.getRotation().getRadians());
     xController.setGoal(pose.getX());
     yController.setGoal(pose.getY());
+  }
+
+  private Pose2d findClosestPose() {
+    Pose2d closestPose = Constants.ScoringConstants.redScoringPositions.get(0);
+    for (Pose2d pose : Constants.ScoringConstants.redScoringPositions) {
+      if (closestPose.relativeTo(drivetrainSubsystem.getPose()).getTranslation().getNorm()
+          > pose.relativeTo(drivetrainSubsystem.getPose()).getTranslation().getNorm()) {
+        closestPose = pose;
+      }
+    }
+    return closestPose;
   }
 
   public boolean atGoal() {

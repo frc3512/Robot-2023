@@ -1,6 +1,6 @@
 package frc3512.robot;
 
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -11,7 +11,6 @@ import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
 import frc3512.robot.subsystems.LEDs;
 import frc3512.robot.subsystems.Superstructure;
-import frc3512.robot.subsystems.Superstructure.GridSelection;
 import frc3512.robot.subsystems.Superstructure.ScoringEnum;
 import frc3512.robot.subsystems.Swerve;
 import frc3512.robot.subsystems.Vision;
@@ -46,29 +45,25 @@ public class Robot2023 {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
     driver.leftBumper().onTrue(leds.switchColor());
-    driver.rightBumper().onTrue(superstructure.autoScore());
-    driver.povUp().onTrue(superstructure.moveRobotForward());
-    driver.povDown().onTrue(superstructure.moveRobotBack());
-    driver.povLeft().onTrue(superstructure.moveRobotLeft());
-    driver.povRight().onTrue(superstructure.moveRobotRight());
+    driver.rightBumper().whileTrue(superstructure.prepareToScore());
 
-    appendage.button(1).onTrue(intake.stopIntake());
-    appendage.button(2).onTrue(superstructure.enableManualControl());
-    appendage.button(3).onTrue(intake.intakeGamePiece());
-    appendage.button(4).onTrue(intake.outtakeGamePiece());
-    appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.STOW));
-    appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.INTAKE));
+    appendage.axisLessThan(Joystick.AxisType.kX.value, -0.5).whileTrue(intake.intakeGamePiece());
+    appendage.axisGreaterThan(Joystick.AxisType.kX.value, 0.5).onTrue(intake.outtakeGamePiece());
     appendage
-        .button(7)
-        .onTrue(superstructure.prepareToScore(ScoringEnum.SCORE_CONE_L2, GridSelection.LEFT_CONE));
+        .axisLessThan(Joystick.AxisType.kY.value, -0.5)
+        .whileTrue(superstructure.goToPreset(ScoringEnum.STOW));
     appendage
-        .button(8)
-        .onTrue(superstructure.prepareToScore(ScoringEnum.SCORE_CONE_L3, GridSelection.LEFT_CONE));
-    appendage.button(9).onTrue(intake.halfOuttakeGamePiece());
-    appendage
-        .button(10)
-        .onTrue(
-            superstructure.prepareToScore(ScoringEnum.SCORE_CUBE_L3, GridSelection.CUBE_MIDDLE));
+        .axisGreaterThan(Joystick.AxisType.kY.value, 0.5)
+        .onTrue(superstructure.goToPreset(ScoringEnum.INTAKE));
+    appendage.button(1).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    appendage.button(2).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
+    appendage.button(3).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    appendage.button(4).onTrue(intake.stopIntake());
+    appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
+    appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
+    appendage.button(7).onTrue(intake.halfOuttakeGamePiece());
+    appendage.button(9).onTrue(superstructure.enableManualControl());
+    appendage.button(10).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
     appendage.button(11).onTrue(superstructure.goToPreset(ScoringEnum.CONE_PLAYER_STATION));
     appendage.button(12).onTrue(superstructure.goToPreset(ScoringEnum.CUBE_PLAYER_STATION));
   }
@@ -81,10 +76,12 @@ public class Robot2023 {
             () -> -driver.getRawAxis(strafeAxis),
             () -> -driver.getRawAxis(rotationAxis)));
 
-    elevator.setDefaultCommand(
-        elevator.runElevator(() -> MathUtil.applyDeadband(-appendage.getRawAxis(1), 0.01)));
-
-    arm.setDefaultCommand(arm.runArm(() -> appendage.getHID().getPOV()));
+    /**
+     * elevator.setDefaultCommand( elevator.runElevator(() ->
+     * MathUtil.applyDeadband(-appendage.getRawAxis(1), 0.01)));
+     *
+     * <p>arm.setDefaultCommand(arm.runArm(() -> appendage.getHID().getPOV()));
+     */
   }
 
   /**

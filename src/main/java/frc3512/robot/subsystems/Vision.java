@@ -26,10 +26,9 @@ public class Vision extends SubsystemBase {
       photonPoseEstimator =
           new PhotonPoseEstimator(
               fieldLayout,
-              PoseStrategy.MULTI_TAG_PNP,
+              PoseStrategy.LOWEST_AMBIGUITY,
               photonCamera,
               Constants.VisionConstants.robotToCam);
-      photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     } catch (IOException e) {
       DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
       photonPoseEstimator = null;

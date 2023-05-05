@@ -1,10 +1,14 @@
 package frc3512.robot;
 
 import com.pathplanner.lib.PathConstraints;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import java.util.List;
 
 /** Constants for the robot project */
 public final class Constants {
@@ -51,6 +55,19 @@ public final class Constants {
     public static final double armConeL3 = 1.43;
     public static final double armConeHP = 2.30;
     public static final double armCubeHP = 2.42;
+
+    public static final List<Pose2d> redScoringPositions =
+        List.of(
+            new Pose2d(new Translation2d(14.70, 5.00), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 4.42), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 3.83), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 3.30), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 2.76), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 2.19), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 1.69), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 1.09), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 0.51), Rotation2d.fromDegrees(0.0)));
+    // public static final List<Pose2d> blueScoringPositions;
   }
 
   /** Constants revolving around the vision subsystem. */

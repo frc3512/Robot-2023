@@ -14,6 +14,7 @@ public class LEDs extends SubsystemBase {
   private final AddressableLEDBuffer buffer;
 
   public enum Selection {
+    NONE,
     CONE,
     CUBE,
     READY_TO_SCORE,
@@ -21,7 +22,7 @@ public class LEDs extends SubsystemBase {
     ADJUSTING,
   }
 
-  private Selection currSelection;
+  private Selection currSelection = Selection.NONE;
   private boolean isCone = false;
 
   public static final int pauseBetween = 15;
@@ -88,6 +89,9 @@ public class LEDs extends SubsystemBase {
       case ADJUSTING:
         setColor(0, 234, 218);
         break;
+      case NONE:
+        defaultPattern();
+        break;
     }
   }
 
@@ -125,9 +129,9 @@ public class LEDs extends SubsystemBase {
   @Override
   public void periodic() {
     if (DriverStation.isDisabled()) {
-      defaultPattern();
-    } else {
-      ledStateMachine();
+      currSelection = Selection.NONE;
     }
+
+    ledStateMachine();
   }
 }
