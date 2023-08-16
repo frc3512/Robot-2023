@@ -13,43 +13,6 @@ import java.util.List;
 /** Constants for the robot project */
 public final class Constants {
 
-  /* Field related constants */
-  public static final class FieldConstants {
-    // List of possible scoring locations as Pose2d objects
-    public static final List<Pose2d> scoringPositions =
-        List.of(
-            new Pose2d(
-                new Translation2d(0.555, 7.436),
-                Rotation2d.fromRadians(Math.PI)), // Red loading double station
-            new Pose2d(new Translation2d(0.555, 6.146), Rotation2d.fromRadians(Math.PI)),
-            new Pose2d(
-                new Translation2d(15.03, 5.061),
-                Rotation2d.fromDegrees(0.0)), // Red node scoring locations
-            new Pose2d(new Translation2d(15.03, 4.405), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 3.846), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 3.298), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 2.74), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 2.2), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 1.62), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 1.06), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(new Translation2d(15.03, 0.52), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(
-                new Translation2d(15.64, 7.430),
-                Rotation2d.fromDegrees(0.0)), // Blue loading double substation
-            new Pose2d(new Translation2d(15.64, 6.16), Rotation2d.fromDegrees(0.0)),
-            new Pose2d(
-                new Translation2d(1.598, 4.996),
-                Rotation2d.fromRadians(-Math.PI)), // Blue node scoring locations
-            new Pose2d(new Translation2d(1.598, 4.373), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 3.85), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 3.3), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 2.75), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 2.2), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 1.63), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 1.05), Rotation2d.fromRadians(-Math.PI)),
-            new Pose2d(new Translation2d(1.598, 0.5), Rotation2d.fromRadians(-Math.PI)));
-  }
-
   /** General robot constants */
   public static final class GeneralConstants {
     // Enable or disable competition mode
@@ -78,6 +41,35 @@ public final class Constants {
     public static final int appendageControllerPort = 1;
   }
 
+  /** Constants revolving around scoring */
+  public static class ScoringConstants {
+    public static final double elevatorLeveled = 0.0;
+    public static final double elevatorCubeL3 = 0.26;
+    public static final double elevatorConeL2 = 0.18;
+    public static final double elevatorConeL3 = 0.35;
+
+    public static final double armIntake = 1.33;
+    public static final double armCubeL2 = 2.25;
+    public static final double armCubeL3 = 1.75;
+    public static final double armConeL2 = 1.75;
+    public static final double armConeL3 = 1.43;
+    public static final double armConeHP = 2.30;
+    public static final double armCubeHP = 2.42;
+
+    public static final List<Pose2d> redScoringPositions =
+        List.of(
+            new Pose2d(new Translation2d(14.70, 5.00), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 4.42), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 3.83), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 3.30), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 2.76), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 2.19), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 1.69), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 1.09), Rotation2d.fromDegrees(0.0)),
+            new Pose2d(new Translation2d(14.70, 0.51), Rotation2d.fromDegrees(0.0)));
+    // public static final List<Pose2d> blueScoringPositions;
+  }
+
   /** Constants revolving around the vision subsystem. */
   public static final class VisionConstants {
     // Camera name
@@ -88,6 +80,12 @@ public final class Constants {
         new Transform3d(
             new Translation3d(0.0, Units.inchesToMeters(1.5), Units.inchesToMeters(39.0)),
             new Rotation3d(0.0, 0.0, 0.0));
+  }
+
+  /** Constants revolving around the LED subsystem. */
+  public static class LEDConstants {
+    public static final int pwmPort = 0;
+    public static final int ledBufferLength = 60;
   }
 
   /** Constants revolving around the elevator subsystem. */
@@ -109,7 +107,7 @@ public final class Constants {
         (Math.PI * 2.0 * Units.inchesToMeters(1.751)) / 8192;
 
     public static final double maxVelocityMeterPerSecond = 3.0;
-    public static final double maxAccelerationMeterPerSecondSquared = 0.75;
+    public static final double maxAccelerationMeterPerSecondSquared = 1.0;
 
     public static final double minHeight = 0.0;
     public static final double maxHeight = 0.35;
@@ -129,6 +127,7 @@ public final class Constants {
 
     public static final double positionConversionFactor = (Math.PI * 2.0);
     public static final double armOffset = 0.0;
+    public static final double stowValue = 2.7;
 
     public static final double maxVelocityRadPerSecond = 12.0;
     public static final double maxAccelerationRadPerSecSquared = 9.0;
@@ -144,7 +143,6 @@ public final class Constants {
     public static final int currentLimit = 40;
 
     public static final double motorSpeed = 0.9;
-    public static final double intakeCurrentThreshold = 40.0;
   }
 
   /** Constants revolving around auton modes. */

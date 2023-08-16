@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc3512.lib.logging.SpartanDoubleEntry;
 import frc3512.lib.util.CANSparkMaxUtil;
 import frc3512.lib.util.CANSparkMaxUtil.Usage;
 import frc3512.robot.Constants;
@@ -14,8 +13,15 @@ public class Intake extends SubsystemBase {
   private CANSparkMax intakeMotor =
       new CANSparkMax(
           Constants.IntakeConstants.intakeMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private SpartanDoubleEntry currentEntry =
-      new SpartanDoubleEntry("/Diagnostics/Intake/Motor Current");
+
+  public enum IntakeDirection {
+    INTAKE,
+    HALF_SPEED,
+    OUTTAKE,
+    STOP
+  }
+
+  private IntakeDirection direction = IntakeDirection.STOP;
 
   public Intake() {
     intakeMotor.restoreFactoryDefaults();
@@ -29,39 +35,43 @@ public class Intake extends SubsystemBase {
   }
 
   public Command intakeGamePiece() {
-    return run(
+    return runOnce(
         () -> {
-          intakeMotor.set(Constants.IntakeConstants.motorSpeed);
+          direction = IntakeDirection.INTAKE;
         });
   }
 
   public Command outtakeGamePiece() {
-    return run(
+    return runOnce(
         () -> {
-          intakeMotor.set(-Constants.IntakeConstants.motorSpeed);
+          direction = IntakeDirection.OUTTAKE;
+        });
+  }
+
+  public Command halfOuttakeGamePiece() {
+    return runOnce(
+        () -> {
+          direction = IntakeDirection.HALF_SPEED;
         });
   }
 
   public Command stopIntake() {
-    return run(
+    return runOnce(
         () -> {
-          intakeMotor.set(0.0);
-        });
-  }
-
-  public Command applyCurrentSensing(double normalSpeed, double stallSpeed) {
-    return run(
-        () -> {
-          if (intakeMotor.getOutputCurrent() >= Constants.IntakeConstants.intakeCurrentThreshold) {
-            intakeMotor.set(stallSpeed);
-          } else {
-            intakeMotor.set(normalSpeed);
-          }
+          direction = IntakeDirection.STOP;
         });
   }
 
   @Override
   public void periodic() {
-    currentEntry.set(intakeMotor.getOutputCurrent());
+    if (direction == IntakeDirection.INTAKE) {
+      intakeMotor.set(Constants.IntakeConstants.motorSpeed);
+    } else if (direction == IntakeDirection.OUTTAKE) {
+      intakeMotor.set(-Constants.IntakeConstants.motorSpeed);
+    } else if (direction == IntakeDirection.HALF_SPEED) {
+      intakeMotor.set(Constants.IntakeConstants.motorSpeed * 0.5);
+    } else if (direction == IntakeDirection.STOP) {
+      intakeMotor.set(0.0);
+    }
   }
 }

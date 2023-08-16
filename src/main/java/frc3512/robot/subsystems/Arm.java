@@ -78,7 +78,7 @@ public class Arm extends SubsystemBase {
     isClosedLoop = true;
     controller.reset(getAngle());
     if (DriverStation.isTeleopEnabled()) {
-      goal = new State(2.70, 0.0);
+      goal = new State(Constants.ArmConstants.stowValue, 0.0);
     }
   }
 
@@ -121,7 +121,7 @@ public class Arm extends SubsystemBase {
                     Constants.ArmConstants.maxAngle),
                 goal.velocity));
       } else {
-        controller.setGoal(new State(2.70, 0.0));
+        controller.setGoal(new State(Constants.ArmConstants.stowValue, 0.0));
       }
 
       armGroup.setVoltage(controller.calculate(getAngle(), controller.getGoal()));

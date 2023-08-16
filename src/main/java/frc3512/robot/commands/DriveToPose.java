@@ -2,67 +2,121 @@ package frc3512.robot.commands;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc3512.robot.Constants;
 import frc3512.robot.subsystems.Swerve;
+import java.util.function.Supplier;
 
+/** Command to drive to a pose. */
 public class DriveToPose extends CommandBase {
 
-  private final Swerve swerve;
-  private Pose2d desiredPose;
+  private final ProfiledPIDController xController;
+  private final ProfiledPIDController yController;
+  private final ProfiledPIDController thetaController;
 
-  private final ProfiledPIDController xController =
-      new ProfiledPIDController(0.6, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
-  private final ProfiledPIDController yController =
-      new ProfiledPIDController(0.6, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
-  private final ProfiledPIDController thetaController =
-      new ProfiledPIDController(2.2, 0.0, 0.0, new TrapezoidProfile.Constraints(1.0, 3.0));
+  private final Swerve drivetrainSubsystem;
+  private final Supplier<Pose2d> poseProvider;
+  private final boolean useAllianceColor;
 
-  public DriveToPose(Swerve swerve, Pose2d pose) {
-    this.swerve = swerve;
-    this.desiredPose = pose;
+  public DriveToPose(
+      Swerve drivetrainSubsystem, Supplier<Pose2d> poseProvider, boolean useAllianceColor) {
+    this(
+        drivetrainSubsystem,
+        poseProvider,
+        new TrapezoidProfile.Constraints(4.0, 4.0),
+        new TrapezoidProfile.Constraints(4.0, 4.0),
+        useAllianceColor);
+  }
 
-    xController.setTolerance(0.5);
-    yController.setTolerance(0.5);
-    thetaController.setTolerance(Units.degreesToRadians(3.0));
+  public DriveToPose(
+      Swerve drivetrainSubsystem,
+      Supplier<Pose2d> poseProvider,
+      TrapezoidProfile.Constraints xyConstraints,
+      TrapezoidProfile.Constraints omegaConstraints,
+      boolean useAllianceColor) {
+    this.drivetrainSubsystem = drivetrainSubsystem;
+    this.poseProvider = poseProvider;
+    this.useAllianceColor = useAllianceColor;
+
+    xController = new ProfiledPIDController(1.5, 0.0, 0.0, xyConstraints);
+    yController = new ProfiledPIDController(1.5, 0.0, 0.0, xyConstraints);
+    thetaController = new ProfiledPIDController(1.5, 0.0, 0.0, omegaConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    addRequirements(swerve);
+    addRequirements(drivetrainSubsystem);
   }
 
   @Override
   public void initialize() {
-    var currPose = swerve.getPose();
-    xController.reset(currPose.getX());
-    yController.reset(currPose.getY());
-    thetaController.reset(currPose.getRotation().getRadians());
+    resetPIDControllers();
+    var pose = findClosestPose();
+    if (useAllianceColor && DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+      Translation2d transformedTranslation = new Translation2d(pose.getX(), 8.0137 - pose.getY());
+      Rotation2d transformedHeading = pose.getRotation().times(-1);
+      pose = new Pose2d(transformedTranslation, transformedHeading);
+    }
+    thetaController.setGoal(pose.getRotation().getRadians());
+    xController.setGoal(pose.getX());
+    yController.setGoal(pose.getY());
+  }
+
+  private Pose2d findClosestPose() {
+    Pose2d closestPose = Constants.ScoringConstants.redScoringPositions.get(0);
+    for (Pose2d pose : Constants.ScoringConstants.redScoringPositions) {
+      if (closestPose.relativeTo(drivetrainSubsystem.getPose()).getTranslation().getNorm()
+          > pose.relativeTo(drivetrainSubsystem.getPose()).getTranslation().getNorm()) {
+        closestPose = pose;
+      }
+    }
+    return closestPose;
+  }
+
+  public boolean atGoal() {
+    return xController.atGoal() && yController.atGoal() && thetaController.atGoal();
+  }
+
+  private void resetPIDControllers() {
+    var robotPose = poseProvider.get();
+    thetaController.reset(robotPose.getRotation().getRadians());
+    xController.reset(robotPose.getX());
+    yController.reset(robotPose.getY());
   }
 
   @Override
   public void execute() {
-    var currPose = swerve.getPose();
-    var targetPose = desiredPose;
-
-    double xvelocity = xController.calculate(currPose.getX(), targetPose.getX());
-    double yvelocity = yController.calculate(currPose.getY(), targetPose.getY());
-    double thetaVelocity =
-        thetaController.calculate(
-            currPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
-
-    if (atGoal()) {
-      xvelocity = 0.0;
-      yvelocity = 0.0;
-      thetaVelocity = 0.0;
+    var robotPose = poseProvider.get();
+    // Drive to the goal
+    var xSpeed = xController.calculate(robotPose.getX());
+    if (xController.atGoal()) {
+      xSpeed = 0;
     }
 
-    swerve.setChassisSpeeds(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            xvelocity, yvelocity, thetaVelocity, currPose.getRotation()));
+    var ySpeed = yController.calculate(robotPose.getY());
+    if (yController.atGoal()) {
+      ySpeed = 0;
+    }
+
+    var omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
+    if (thetaController.atGoal()) {
+      omegaSpeed = 0;
+    }
+
+    drivetrainSubsystem.setChassisSpeeds(
+        ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omegaSpeed, robotPose.getRotation()));
   }
 
-  public boolean atGoal() {
-    return (xController.atGoal() && yController.atGoal() && thetaController.atGoal());
+  @Override
+  public boolean isFinished() {
+    return atGoal();
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    drivetrainSubsystem.setChassisSpeeds(new ChassisSpeeds());
   }
 }

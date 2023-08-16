@@ -9,8 +9,8 @@ Source code also for the 2023 practice robot: Atlas
 Install the relevant FRC toolchain for your platform (see
 https://github.com/wpilibsuite/allwpilib/releases). Make sure the toolchain
 is
-placed in `~/wpilib/2022/roborio` (Linux) or
-`C:\Users\Public\wpilib\2022\roborio` (Windows).
+placed in `~/wpilib/2023/roborio` (Linux) or
+`C:\Users\Public\wpilib\2023\roborio` (Windows).
 
 ## Build options
 
@@ -58,12 +58,26 @@ The game for 2023 is called Charged Up, where teams are tasked with placing infl
 ## Unique features
 
 This years robot's unique features include:
+ - Second order kinematics swerve drive powered by YAGSL
+ - Pose estimation using PhotonVision
+ - Full auton planning using PathPlanner
+ - Profiled PID control on the elevator and arm
+ - Superstructure class containing all of the scoring systems
+ - Driving to a position using odometry
+ - Ability to adjust the position through the DriveToPose command on the XboxController's Dpad
+ - Auto scoring capabilities for all levels
+ - NT4 entries with the ability to disable for competitions
+ - LEDs controlled through the roboRIO
+
+## Robot system
+Thanatos/Atlas are equipped with:
 
 - Swerve drive with SDS MK4 L2 modules using CANCoders and NEOs
 - New vision camera system for use with AprilTags
-- Elevator using NEOs and a REV Through Bore encoder running through the RIO
+- Elevator using NEOs and a REV Through Bore encoder running through the RIO as a relative encoder
 - Arm using NEOs and a REV Through Bore encoder set to absolute mode running through a SparkMAX
 - Intake similar to 111/1339 to pick up cubes and cones in any orientation
+- LED subsystem with the strip powered off the VRM and connected to the roboRIO
 
 ## Goals of the year
 |Status|Goal|Additional Description|
@@ -71,11 +85,12 @@ This years robot's unique features include:
 |Yes|Swerve Drive|Operational auton/teleop swerve code
 |Yes|AprilTags|Read and process AprilTags using PhotonVision
 |Yes|Pose Estimation|Add in pose estimation using AprilTags.
-|Yes|Pose based Alignment|Use pose estimation to drive onto a certain point on the field.
 |Yes|Manual and Automated Elevator|Elevator subsystem with both manual and automated control.
 |Yes|Manual and Automated Arm|Arm subsystem with both manual and automated control.
-|No|AutoDrop|Sequence for automatically scoring (arm, elevator, and intake) onto the correct node.
-|No|Full Fledged Autos|Have auton modes from one piece all the way up to a full link + balance.
+|Yes|Full Fledged Autos|Have auton modes from one piece all the way up to a full link.
+|Yes|Pose based Alignment|Use pose estimation to drive onto a certain point on the field.
+|Yes|Auto Score|Sequence for automatically scoring (arm, elevator, and intake) onto the correct node
+|Yes|LEDs|Full fledged LED system for communicationing with human players|
 
 ## Roster
 
