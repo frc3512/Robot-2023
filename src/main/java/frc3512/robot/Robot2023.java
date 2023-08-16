@@ -58,12 +58,12 @@ public class Robot2023 {
     appendage.button(1).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
     appendage.button(2).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
     appendage.button(3).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
-    appendage.button(4).onTrue(intake.stopIntake());
+    appendage.button(4).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
     appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
     appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
     appendage.button(7).onTrue(intake.halfOuttakeGamePiece());
     appendage.button(9).onTrue(superstructure.enableManualControl());
-    appendage.button(10).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    appendage.button(10).onTrue(intake.stopIntake());
     appendage.button(11).onTrue(superstructure.goToPreset(ScoringEnum.CONE_PLAYER_STATION));
     appendage.button(12).onTrue(superstructure.goToPreset(ScoringEnum.CUBE_PLAYER_STATION));
   }
