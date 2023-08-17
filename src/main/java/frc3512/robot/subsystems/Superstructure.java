@@ -117,6 +117,19 @@ public class Superstructure extends SubsystemBase {
         .andThen(leds.goToElementColor());
   }
 
+  public Command disableManualControl() {
+    return Commands.runOnce(
+            () -> {
+              elevator.enable();
+              arm.enable();
+            },
+            arm,
+            elevator)
+        .andThen(leds.selectMode(Selection.NONE))
+        .andThen(new WaitCommand(1.0))
+        .andThen(leds.goToElementColor());
+  }
+
   public Command prepareToScore() {
     return leds.selectMode(Selection.ADJUSTING)
         .andThen(
