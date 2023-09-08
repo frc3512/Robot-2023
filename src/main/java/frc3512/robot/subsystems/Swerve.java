@@ -119,6 +119,10 @@ public class Swerve extends SubsystemBase {
     return swerve.getAccel();
   }
 
+  public void resetToAbsolute() {
+    swerve.synchronizeModuleEncoders();
+  }
+
   @Override
   public void periodic() {
     swerve.updateOdometry();

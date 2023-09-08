@@ -17,10 +17,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Score Cone L3",
-          "Wait a Second",
-          "Outtake",
-          "Stow and Stop Intake"
+          "Motor Reset",
+          "Starting Cone L3"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",

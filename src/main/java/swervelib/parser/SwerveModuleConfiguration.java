@@ -1,6 +1,5 @@
 package swervelib.parser;
 
-import static swervelib.math.SwerveMath.calculateAngleKV;
 import static swervelib.math.SwerveMath.calculateDegreesPerSteeringRotation;
 import static swervelib.math.SwerveMath.calculateMaxAcceleration;
 import static swervelib.math.SwerveMath.calculateMetersPerRotation;
@@ -22,13 +21,13 @@ public class SwerveModuleConfiguration {
   /** State of inversion of the angle motor. */
   public final boolean angleMotorInverted;
   /** Maximum robot speed in meters per second. */
-  public final double maxSpeed;
+  public double maxSpeed;
   /** PIDF configuration options for the angle motor closed-loop PID controller. */
   public PIDFConfig anglePIDF;
   /** PIDF configuration options for the drive motor closed-loop PID controller. */
   public PIDFConfig velocityPIDF;
   /** Angle volt-meter-per-second. */
-  public double angleKV;
+  public double moduleSteerFFCL;
   /** The integrated encoder pulse per revolution. */
   public double angleMotorEncoderPulsePerRevolution = 0;
   /** Swerve module location relative to the robot. */
@@ -39,6 +38,8 @@ public class SwerveModuleConfiguration {
   public SwerveMotor driveMotor, angleMotor;
   /** The Absolute Encoder for the swerve module. */
   public SwerveAbsoluteEncoder absoluteEncoder;
+  /** Name for the swerve module for telemetry. */
+  public String name;
 
   /**
    * Construct a configuration object for swerve modules.
@@ -58,7 +59,7 @@ public class SwerveModuleConfiguration {
    * @param physicalCharacteristics Physical characteristics of the swerve module.
    * @param angleMotorEncoderPulsePerRevolution The encoder pulse per revolution for the angle motor
    *     encoder.
-   * @param angleMotorFreeSpeedRPM The free speed RPM of the angle motor.
+   * @param name The name for the swerve module.
    */
   public SwerveModuleConfiguration(
       SwerveMotor driveMotor,
@@ -75,7 +76,7 @@ public class SwerveModuleConfiguration {
       boolean driveMotorInverted,
       boolean angleMotorInverted,
       double angleMotorEncoderPulsePerRevolution,
-      double angleMotorFreeSpeedRPM) {
+      String name) {
     this.driveMotor = driveMotor;
     this.angleMotor = angleMotor;
     this.absoluteEncoder = absoluteEncoder;
@@ -87,13 +88,10 @@ public class SwerveModuleConfiguration {
     this.anglePIDF = anglePIDF;
     this.velocityPIDF = velocityPIDF;
     this.maxSpeed = maxSpeed;
-    this.angleKV =
-        calculateAngleKV(
-            physicalCharacteristics.optimalVoltage,
-            angleMotorFreeSpeedRPM,
-            physicalCharacteristics.angleGearRatio);
+    this.moduleSteerFFCL = physicalCharacteristics.moduleSteerFFCL;
     this.physicalCharacteristics = physicalCharacteristics;
     this.angleMotorEncoderPulsePerRevolution = angleMotorEncoderPulsePerRevolution;
+    this.name = name;
   }
 
   /**
@@ -110,6 +108,7 @@ public class SwerveModuleConfiguration {
    * @param velocityPIDF Velocity PIDF configuration.
    * @param maxSpeed Maximum robot speed in meters per second.
    * @param physicalCharacteristics Physical characteristics of the swerve module.
+   * @param name Name for the module.
    */
   public SwerveModuleConfiguration(
       SwerveMotor driveMotor,
@@ -121,7 +120,8 @@ public class SwerveModuleConfiguration {
       PIDFConfig anglePIDF,
       PIDFConfig velocityPIDF,
       double maxSpeed,
-      SwerveModulePhysicalCharacteristics physicalCharacteristics) {
+      SwerveModulePhysicalCharacteristics physicalCharacteristics,
+      String name) {
     this(
         driveMotor,
         angleMotor,
@@ -137,7 +137,7 @@ public class SwerveModuleConfiguration {
         false,
         false,
         physicalCharacteristics.angleEncoderPulsePerRotation,
-        physicalCharacteristics.angleMotorFreeSpeedRPM);
+        name);
   }
 
   /**
@@ -166,7 +166,7 @@ public class SwerveModuleConfiguration {
         ? calculateMetersPerRotation(
             physicalCharacteristics.wheelDiameter,
             physicalCharacteristics.driveGearRatio,
-            angleMotorEncoderPulsePerRevolution)
+            physicalCharacteristics.driveEncoderPulsePerRotation)
         : calculateDegreesPerSteeringRotation(
             physicalCharacteristics.angleGearRatio, angleMotorEncoderPulsePerRevolution);
   }

@@ -64,6 +64,15 @@ public final class Autos {
   }
 
   private void setMarkers() {
+    eventMap.put(
+        "Starting Cone L3",
+        superstructure
+            .goToPreset(ScoringEnum.SCORE_CUBE_L3)
+            .andThen(new WaitCommand(1.5))
+            .andThen(intake.intakeGamePiece().withTimeout(0.5))
+            .andThen(superstructure.goToPreset(ScoringEnum.STOW).andThen(intake.stopIntake())));
+    eventMap.put("Motor Reset", new InstantCommand(() -> swerve.resetToAbsolute()));
+
     eventMap.put("Wait a Second", new WaitCommand(1.5));
     eventMap.put("Stop Intake", intake.stopIntake());
     eventMap.put("Intake", intake.outtakeGamePiece().withTimeout(1.0));

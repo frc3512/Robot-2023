@@ -15,7 +15,7 @@ public class SwerveController {
    */
   public final SwerveControllerConfiguration config;
   /** PID Controller for the robot heading. */
-  public final PIDController thetaController;
+  public final PIDController thetaController; // TODO: Switch to ProfilePIDController
   /** Last angle as a scalar [-1,1] the robot was set to. */
   public double lastAngleScalar;
   /** {@link SlewRateLimiter} for movement in the X direction in meters/second. */
@@ -93,6 +93,19 @@ public class SwerveController {
     double y = yInput * config.maxSpeed;
 
     return getRawTargetSpeeds(x, y, angle, currentHeadingAngleRadians);
+  }
+
+  /**
+   * Get the angle in radians based off of the heading joysticks.
+   *
+   * @param headingX X joystick which controls the angle of the robot.
+   * @param headingY Y joystick which controls the angle of the robot.
+   * @return angle in radians from the joystick.
+   */
+  public double getJoystickAngle(double headingX, double headingY) {
+    lastAngleScalar =
+        withinHypotDeadband(headingX, headingY) ? lastAngleScalar : Math.atan2(headingX, headingY);
+    return lastAngleScalar;
   }
 
   /**
@@ -186,5 +199,16 @@ public class SwerveController {
       double currentHeadingAngleRadians, double targetHeadingAngleRadians) {
     return thetaController.calculate(currentHeadingAngleRadians, targetHeadingAngleRadians)
         * config.maxAngularVelocity;
+  }
+
+  /**
+   * Set a new maximum angular velocity that is different from the auto-generated one. Modified the
+   * {@link SwerveControllerConfiguration#maxAngularVelocity} field which is used in the {@link
+   * SwerveController} class for {@link ChassisSpeeds} generation.
+   *
+   * @param angularVelocity Angular velocity in radians per second.
+   */
+  public void setMaximumAngularVelocity(double angularVelocity) {
+    config.maxAngularVelocity = angularVelocity;
   }
 }
