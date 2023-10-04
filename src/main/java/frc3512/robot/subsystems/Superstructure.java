@@ -55,7 +55,7 @@ public class Superstructure extends SubsystemBase {
     } else if (scoringPose == ScoringEnum.SCORE_CUBE_L3) {
       return goToScoreSetpoint(new State(0.22, 0.0), new State(2.7, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L2) {
-      return goToScoreSetpoint(new State(0.18, 0.0), new State(2.5, 0.0));
+      return goToScoreSetpoint(new State(0.20, 0.0), new State(2.7, 0.0));
     } else if (scoringPose == ScoringEnum.SCORE_CONE_L3) {
       return goToScoreSetpoint(new State(0.35, 0.0), new State(2.5, 0.0));
     } else if (scoringPose == ScoringEnum.CONE_PLAYER_STATION) {
