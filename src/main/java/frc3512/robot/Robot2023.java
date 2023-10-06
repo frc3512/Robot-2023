@@ -1,6 +1,7 @@
 package frc3512.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -45,18 +46,27 @@ public class Robot2023 {
   public void configureButtonBindings() {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
-    driver.leftBumper().onTrue(leds.switchLEDMode());
+    //driver.leftBumper().onTrue(leds.switchColor());
+    //driver.rightBumper().whileTrue(superstructure.prepareToScore());
 
-    appendage.button(1).whileTrue(intake.stopIntake());
-    appendage.button(2).onTrue(superstructure.enableManualControl());
-    appendage.button(3).whileTrue(intake.intakeGamePiece());
-    appendage.button(4).whileTrue(intake.outtakeGamePiece());
-    appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.STOW));
-    appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.INTAKE));
-    appendage.button(7).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
-    appendage.button(8).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
-    appendage.button(9).whileTrue(intake.halfOuttakeGamePiece());
-    appendage.button(10).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
+    appendage.axisLessThan(Joystick.AxisType.kX.value, -0.5).whileTrue(intake.intakeGamePiece());
+    appendage.axisGreaterThan(Joystick.AxisType.kX.value, 0.5).onTrue(intake.outtakeGamePiece());
+    appendage
+        .axisLessThan(Joystick.AxisType.kY.value, -0.5)
+        .whileTrue(superstructure.goToPreset(ScoringEnum.STOW));
+    appendage
+        .axisGreaterThan(Joystick.AxisType.kY.value, 0.5)
+        .onTrue(superstructure.goToPreset(ScoringEnum.INTAKE));
+    appendage.button(1).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    appendage.button(2).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L3));
+    appendage.button(3).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L3));
+    appendage.button(4).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
+    appendage.button(5).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CUBE_L2));
+    appendage.button(6).onTrue(superstructure.goToPreset(ScoringEnum.SCORE_CONE_L2));
+    appendage.button(7).onTrue(intake.halfOuttakeGamePiece());
+    appendage.button(9).onTrue(superstructure.enableManualControl());
+    //appendage.button(9).onFalse(superstructure.disableManualControl());
+    appendage.button(10).onTrue(intake.stopIntake());
     appendage.button(11).onTrue(superstructure.goToPreset(ScoringEnum.CONE_PLAYER_STATION));
     appendage.button(12).onTrue(superstructure.goToPreset(ScoringEnum.CUBE_PLAYER_STATION));
   }
