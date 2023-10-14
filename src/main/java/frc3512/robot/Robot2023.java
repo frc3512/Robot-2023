@@ -45,6 +45,7 @@ public class Robot2023 {
   public void configureButtonBindings() {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
+    driver.y().onTrue(new InstantCommand(() -> swerve.set180Gyro()));
     driver.leftBumper().onTrue(leds.switchLEDMode());
 
     appendage.button(1).whileTrue(intake.stopIntake());

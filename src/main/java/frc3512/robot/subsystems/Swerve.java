@@ -85,6 +85,10 @@ public class Swerve extends SubsystemBase {
     swerve.zeroGyro();
   }
 
+  public void set180Gyro() {
+    swerve.set180Gyro();
+  }
+
   public void lock() {
     swerve.lockPose();
   }
