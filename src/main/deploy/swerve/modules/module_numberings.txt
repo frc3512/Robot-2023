@@ -1,0 +1,4 @@
+front left:  module 0
+front right: module 1
+back left:   module 2
+back right:  module 3
