@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc3512.robot.commands.AprilTagAlign;
 import frc3512.robot.subsystems.Arm;
 import frc3512.robot.subsystems.Elevator;
 import frc3512.robot.subsystems.Intake;
@@ -46,6 +47,7 @@ public class Robot2023 {
 
     driver.x().onTrue(new InstantCommand(() -> swerve.zeroGyro()));
     driver.leftBumper().onTrue(leds.switchLEDMode());
+    driver.rightBumper().whileTrue(new AprilTagAlign(swerve, vision));
 
     appendage.button(1).whileTrue(intake.stopIntake());
     appendage.button(2).onTrue(superstructure.enableManualControl());

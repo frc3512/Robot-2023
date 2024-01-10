@@ -81,13 +81,17 @@ public final class Constants {
   /** Constants revolving around the vision subsystem. */
   public static final class VisionConstants {
     // Camera name
-    public static final String cameraName = "OV5647";
+    public static final String cameraName = "USB_GS_Camera";
 
     // Robot to camera transform
     public static final Transform3d robotToCam =
         new Transform3d(
             new Translation3d(0.0, Units.inchesToMeters(1.5), Units.inchesToMeters(39.0)),
             new Rotation3d(0.0, 0.0, 0.0));
+
+    public static double yawOffsetDegrees = 3.5;
+
+    public static double turnP = 0.2;
   }
 
   /** Constants revolving around the elevator subsystem. */
